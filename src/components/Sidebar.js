@@ -4,14 +4,14 @@ import "./Sidebar.css";
 
 const navItems = [
   { to: "/", key: "home" },
+  { to: "/about", key: "about" },
   { to: "/news", key: "news" },
-  { to: "/forum", key: "forum" },
   { to: "/gallery", key: "gallery" },
   { to: "/tech-info", key: "techInfo" },
   { to: "/journeys", key: "journeys" },
-  { to: "/clubs", key: "clubs" },
   { to: "/shop", key: "shop" },
   { to: "/contacts", key: "contacts" },
+  { to: "/forum", key: "forum" },
 ];
 
 function Sidebar() {
