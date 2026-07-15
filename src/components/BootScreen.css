@@ -1,0 +1,126 @@
+.boot {
+  position: fixed;
+  inset: 0;
+  background: #05060580;
+  background-color: #050605;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #F2EDE3;
+  font-family: 'JetBrains Mono', monospace;
+  cursor: pointer;
+}
+
+.boot-tap {
+  font-size: 14px;
+  letter-spacing: 4px;
+  color: #8FA37E;
+  animation: pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+.boot-panel {
+  width: 100%;
+  max-width: 480px;
+  padding: 0 24px;
+  cursor: default;
+}
+
+.boot-model {
+  font-family: 'Oswald', sans-serif;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.boot-sub {
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 3px;
+  color: #8FA37E;
+  margin-bottom: 32px;
+}
+
+.boot-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  letter-spacing: 1px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(242,237,227,0.08);
+}
+
+.boot-item-status {
+  color: #8FA37E;
+  font-weight: 500;
+}
+
+.boot-mode {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  letter-spacing: 1px;
+  padding: 20px 0 32px;
+  color: #D4831C;
+  font-weight: 500;
+}
+
+.boot-stats {
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: #C9C4B8;
+  margin-bottom: 8px;
+}
+
+.boot-expedition {
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: #8FA37E;
+  margin-bottom: 40px;
+}
+
+.boot-ready {
+  text-align: center;
+  font-family: 'Oswald', sans-serif;
+  font-size: 16px;
+  letter-spacing: 3px;
+  color: #D4831C;
+  margin-bottom: 16px;
+}
+
+.boot-tagline {
+  text-align: center;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: #C9C4B8;
+  line-height: 1.6;
+  margin-bottom: 32px;
+}
+
+.boot-enter {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  background: transparent;
+  border: 1px solid #D4831C;
+  color: #D4831C;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  letter-spacing: 3px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.boot-enter:hover {
+  background: #D4831C;
+  color: #050605;
+}
