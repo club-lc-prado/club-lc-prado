@@ -1,0 +1,103 @@
+.join {
+  position: relative;
+  padding: 100px 32px;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  justify-content: center;
+}
+
+.join::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(11,13,12,0.7);
+}
+
+.join-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 480px;
+  width: 100%;
+  text-align: center;
+}
+
+.join-title {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: clamp(28px, 4vw, 42px);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #F2EDE3;
+  margin: 0 0 16px 0;
+}
+
+.join-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  color: #C9C4B8;
+  line-height: 1.6;
+  margin: 0 0 40px 0;
+}
+
+.join-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.join-form input {
+  background: rgba(11,13,12,0.5);
+  border: 1px solid rgba(242,237,227,0.25);
+  color: #F2EDE3;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  padding: 14px 16px;
+  outline: none;
+}
+
+.join-form input::placeholder {
+  color: #8a8578;
+}
+
+.join-form input:focus {
+  border-color: #D4831C;
+}
+
+.join-submit {
+  margin-top: 8px;
+  background: transparent;
+  border: 1px solid #D4831C;
+  color: #D4831C;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  letter-spacing: 2px;
+  padding: 14px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.join-submit:hover {
+  background: #D4831C;
+  color: #0B0D0C;
+}
+
+.join-submit:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.join-message {
+  margin-top: 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  letter-spacing: 1px;
+}
+
+.join-message.success {
+  color: #8FA37E;
+}
+
+.join-message.error {
+  color: #c25c4a;
+}
