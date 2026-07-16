@@ -3,8 +3,32 @@
   min-height: 100vh;
   overflow-y: auto;
   padding: 100px 60px 100px 232px;
-  background: #0B0D0C;
   font-family: 'Inter', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.about-bg-fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: -2;
+}
+
+.about-bg-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(11,13,12,0.62);
+  z-index: -1;
 }
 
 @media (max-width: 900px) {
@@ -21,24 +45,26 @@
   letter-spacing: 2px;
   margin: 0 0 8px 0;
   color: #F2EDE3;
+  text-align: center;
 }
 
 .about-underline {
   width: 100px;
   height: 3px;
   background: #D4831C;
-  margin-bottom: 48px;
+  margin: 0 0 48px 0;
 }
 
 .about-text {
-  max-width: 700px;
+  max-width: 900px;
+  text-align: center;
 }
 
 .about-paragraph {
-  font-size: 16px;
-  line-height: 1.8;
+  font-size: 20px;
+  line-height: 1.9;
   color: #C9C4B8;
-  margin: 0 0 22px 0;
+  margin: 0 0 24px 0;
 }
 
 .about-paragraph.emphasis {
