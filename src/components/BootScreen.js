@@ -3,31 +3,47 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "../i18n/LanguageContext";
 import "./BootScreen.css";
 
-import zamkiSound from "../zamki-chisto.mp3";
-import mirrorSound from "../mirror-click.mp3";
-import dvigatelSound from "../dvigatel-studio.mp3";
+import bootSound from "../boot-sequence.mp3";
 
-const TOTAL_SOUND_MS = 28000;
-const ITEM_DELAY = 5.3;
+const TOTAL_SOUND_MS = 14000;
+const ITEM_DELAY = 2.6;
+const SEEN_KEY = "club_lc_prado_boot_seen";
 
 function BootScreen({ onEnter }) {
   const { t } = useLanguage();
+  const alreadySeen = localStorage.getItem(SEEN_KEY) === "true";
   const [stage, setStage] = useState("tap");
   const audioRef = useRef(null);
 
-  const playSequence = (sounds, index = 0) => {
-    if (index >= sounds.length) return;
-    const audio = new Audio(sounds[index]);
+  const handleTap = () => {
+    const audio = new Audio(bootSound);
     audioRef.current = audio;
     audio.play().catch(() => {});
-    audio.onended = () => playSequence(sounds, index + 1);
-  };
 
-  const handleTap = () => {
-    playSequence([zamkiSound, mirrorSound, dvigatelSound]);
     setStage("checking");
     setTimeout(() => setStage("ready"), TOTAL_SOUND_MS);
+
+    if (navigator.vibrate) {
+      setTimeout(() => {
+        const rumble = [];
+        for (let i = 0; i < 20; i++) rumble.push(150, 50);
+        navigator.vibrate(rumble);
+      }, TOTAL_SOUND_MS - 4000);
+    }
   };
+
+  const enterClub = () => {
+    localStorage.setItem(SEEN_KEY, "true");
+    onEnter();
+  };
+
+  if (alreadySeen) {
+    return (
+      <div className="boot" onClick={enterClub}>
+        <div className="boot-tap">{t.boot.tap}</div>
+      </div>
+    );
+  }
 
   if (stage === "tap") {
     return (
@@ -81,7 +97,7 @@ function BootScreen({ onEnter }) {
               <div className="boot-ready">{t.boot.systemReady}</div>
               <div className="boot-tagline">{t.boot.tagline}</div>
 
-              <button className="boot-enter" onClick={onEnter}>
+              <button className="boot-enter" onClick={enterClub}>
                 {t.boot.enter}
               </button>
             </motion.div>
