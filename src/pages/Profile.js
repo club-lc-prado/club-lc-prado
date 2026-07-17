@@ -15,7 +15,7 @@ function Profile() {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [editing, setEditing] = useState(false);
-  const [form, setForm] = useState({ city: "", prado: "", bio: "" });
+  const [form, setForm] = useState({ city: "", prado: "", bio: "", visibleInCatalog: true, showCity: true });
   const [loading, setLoading] = useState(true);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleteError, setDeleteError] = useState("");
@@ -38,7 +38,13 @@ function Profile() {
       if (snap.exists()) {
         const data = snap.data();
         setProfile(data);
-        setForm({ city: data.city || "", prado: data.prado || "", bio: data.bio || "" });
+        setForm({
+          city: data.city || "",
+          prado: data.prado || "",
+          bio: data.bio || "",
+          visibleInCatalog: data.visibleInCatalog !== false,
+          showCity: data.showCity !== false,
+        });
       }
       setLoading(false);
     });
@@ -47,6 +53,10 @@ function Profile() {
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleToggle = (field) => {
+    setForm({ ...form, [field]: !form[field] });
   };
 
   const handleSave = async () => {
@@ -263,6 +273,27 @@ function Profile() {
               onChange={handleChange}
               rows={3}
             />
+
+            <label className="profile-toggle">
+              <input
+                type="checkbox"
+                checked={form.visibleInCatalog}
+                onChange={() => handleToggle("visibleInCatalog")}
+              />
+              Показывать меня в каталоге участников
+            </label>
+
+            {form.visibleInCatalog && (
+              <label className="profile-toggle">
+                <input
+                  type="checkbox"
+                  checked={form.showCity}
+                  onChange={() => handleToggle("showCity")}
+                />
+                Показывать мой город
+              </label>
+            )}
+
             <button className="profile-btn" onClick={handleSave}>
               Сохранить
             </button>

@@ -246,3 +246,18 @@
 .crop-actions .profile-btn {
   margin-top: 0;
 }
+
+.profile-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #C9C4B8;
+  cursor: pointer;
+  text-align: left;
+}
+
+.profile-toggle input {
+  width: auto;
+  accent-color: #D4831C;
+}

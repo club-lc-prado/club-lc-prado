@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, collection, getDocs } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import { useLanguage } from "../i18n/LanguageContext";
 import "./Home.css";
@@ -11,6 +11,7 @@ function Home() {
   const { t, lang, changeLang } = useLanguage();
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
+  const [memberCount, setMemberCount] = useState(null);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (u) => {
@@ -21,6 +22,14 @@ function Home() {
       }
     });
     return unsub;
+  }, []);
+
+  useEffect(() => {
+    const loadCount = async () => {
+      const snap = await getDocs(collection(db, "members"));
+      setMemberCount(snap.size);
+    };
+    loadCount();
   }, []);
 
   return (
@@ -67,10 +76,10 @@ function Home() {
             <span className="hero-strip-card-label">{t.home.cardMeeting}</span>
             <span className="hero-strip-card-value">—</span>
           </div>
-          <div className="hero-strip-card">
+          <Link to="/members" className="hero-strip-card">
             <span className="hero-strip-card-label">{t.home.cardMembers}</span>
-            <span className="hero-strip-card-value">—</span>
-          </div>
+            <span className="hero-strip-card-value">{memberCount ?? "—"}</span>
+          </Link>
           <div className="hero-strip-card">
             <span className="hero-strip-card-label">{t.home.cardTrip}</span>
             <span className="hero-strip-card-value">—</span>

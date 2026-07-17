@@ -32,6 +32,8 @@ function Register() {
         prado: "",
         bio: "",
         photoURL: "",
+        visibleInCatalog: true,
+        showCity: true,
         createdAt: new Date().toISOString(),
       });
 
@@ -49,6 +51,9 @@ function Register() {
       <div className="auth-bg-overlay"></div>
       <form className="auth-form" onSubmit={handleSubmit}>
         <h1 className="auth-title">Регистрация</h1>
+        <p className="auth-notice">
+          Другие участники клуба смогут видеть твой профиль в каталоге. Это можно отключить в любой момент в настройках профиля.
+        </p>
 
         <input
           type="text"

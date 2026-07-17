@@ -20,6 +20,8 @@ import Profile from "./pages/Profile";
 import Feed from "./pages/Feed";
 import NewJourney from "./pages/NewJourney";
 import JourneyDetail from "./pages/JourneyDetail";
+import Members from "./pages/Members";
+import MemberProfile from "./pages/MemberProfile";
 
 function App() {
   const [entered, setEntered] = useState(false);
@@ -50,6 +52,8 @@ function App() {
             <Route path="/journeys" element={<Journeys />} />
             <Route path="/journeys/new" element={<NewJourney />} />
             <Route path="/journeys/:id" element={<JourneyDetail />} />
+            <Route path="/members" element={<Members />} />
+            <Route path="/members/:id" element={<MemberProfile />} />
             <Route path="/shop" element={<Shop />} />
             <Route path="/contacts" element={<Contacts />} />
             <Route path="/register" element={<Register />} />
