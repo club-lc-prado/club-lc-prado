@@ -1,0 +1,33 @@
+.static-page {
+  position: relative;
+  min-height: 100vh;
+  background-size: cover;
+  background-position: center;
+  padding: 100px 60px 100px 232px;
+  font-family: 'Inter', sans-serif;
+}
+
+.static-page-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(11,13,12,0.6);
+  z-index: 0;
+}
+
+.static-page-title {
+  position: relative;
+  z-index: 1;
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: clamp(32px, 5vw, 56px);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #F2EDE3;
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .static-page {
+    padding: 80px 24px;
+  }
+}
