@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../firebase";
 import { useLanguage } from "../i18n/LanguageContext";
 import "./Sidebar.css";
 
@@ -18,6 +20,12 @@ const navItems = [
 function Sidebar() {
   const { t } = useLanguage();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (u) => setUser(u));
+    return unsub;
+  }, []);
 
   const closeMenu = () => setMenuOpen(false);
 
@@ -25,6 +33,9 @@ function Sidebar() {
     localStorage.removeItem("club_lc_prado_boot_seen");
     window.location.reload();
   };
+
+  const accountLabel = user ? (user.displayName || "Профиль") : "Регистрация";
+  const accountTo = user ? "/profile" : "/register";
 
   return (
     <>
@@ -49,6 +60,17 @@ function Sidebar() {
               </NavLink>
             </li>
           ))}
+          <li>
+            <NavLink
+              to={accountTo}
+              className={({ isActive }) =>
+                "sidebar-link sidebar-link-account" + (isActive ? " active" : "")
+              }
+            >
+              <span className="sidebar-dot"></span>
+              {accountLabel}
+            </NavLink>
+          </li>
         </ul>
 
         <button className="sidebar-replay" onClick={replayIntro}>
@@ -95,6 +117,18 @@ function Sidebar() {
                 </NavLink>
               </li>
             ))}
+            <li>
+              <NavLink
+                to={accountTo}
+                onClick={closeMenu}
+                className={({ isActive }) =>
+                  "sidebar-link sidebar-link-account" + (isActive ? " active" : "")
+                }
+              >
+                <span className="sidebar-dot"></span>
+                {accountLabel}
+              </NavLink>
+            </li>
           </ul>
           <button className="sidebar-replay" onClick={replayIntro}>
             ▶ INTRO

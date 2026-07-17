@@ -1,0 +1,125 @@
+.profile-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0B0D0C;
+  padding: 32px 32px 32px 232px;
+  font-family: 'Inter', sans-serif;
+}
+
+@media (max-width: 900px) {
+  .profile-page {
+    padding: 100px 24px 32px;
+  }
+}
+
+.profile-card {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+}
+
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #D4831C;
+  color: #0B0D0C;
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.profile-name {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: 26px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #F2EDE3;
+  margin: 0;
+}
+
+.profile-city {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  letter-spacing: 1px;
+  color: #8FA37E;
+  margin-bottom: 16px;
+}
+
+.profile-field {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(242,237,227,0.1);
+  color: #C9C4B8;
+  font-size: 14px;
+}
+
+.profile-label {
+  color: #8a8578;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.profile-card input,
+.profile-card textarea {
+  width: 100%;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(242,237,227,0.25);
+  color: #F2EDE3;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  padding: 12px 14px;
+  outline: none;
+  resize: none;
+}
+
+.profile-card input:focus,
+.profile-card textarea:focus {
+  border-color: #D4831C;
+}
+
+.profile-btn {
+  margin-top: 16px;
+  width: 100%;
+  background: #D4831C;
+  border: none;
+  color: #0B0D0C;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 2px;
+  padding: 14px;
+  cursor: pointer;
+}
+
+.profile-logout {
+  margin-top: 8px;
+  background: transparent;
+  border: 1px solid rgba(242,237,227,0.25);
+  color: #8a8578;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 1px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.profile-logout:hover {
+  border-color: #c25c4a;
+  color: #c25c4a;
+}

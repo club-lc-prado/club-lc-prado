@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useLanguage } from "../i18n/LanguageContext";
 import "./About.css";
 import aboutBg from "../about-bg.jpg";
@@ -21,6 +22,13 @@ function About() {
             </p>
           );
         })}
+      </div>
+
+      <div className="about-cta">
+        <div className="about-cta-text">Хочешь присоединиться?</div>
+        <Link to="/register" className="about-cta-link">
+          СТАТЬ ЧАСТЬЮ КЛУБА
+        </Link>
       </div>
     </div>
   );

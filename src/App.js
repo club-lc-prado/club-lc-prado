@@ -12,6 +12,9 @@ import TechInfo from "./pages/TechInfo";
 import Journeys from "./pages/Journeys";
 import Shop from "./pages/Shop";
 import Contacts from "./pages/Contacts";
+import Register from "./pages/Register";
+import Login from "./pages/Login";
+import Profile from "./pages/Profile";
 
 function App() {
   const [entered, setEntered] = useState(false);
@@ -32,6 +35,9 @@ function App() {
             <Route path="/journeys" element={<Journeys />} />
             <Route path="/shop" element={<Shop />} />
             <Route path="/contacts" element={<Contacts />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/profile" element={<Profile />} />
           </Routes>
         </BrowserRouter>
       )}
