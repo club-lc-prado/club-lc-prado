@@ -4,6 +4,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import "./Journeys.css";
+import journeysBg from "../journeys-bg.jpg";
 
 function getSeasonIcon() {
   const month = new Date().getMonth();
@@ -44,6 +45,8 @@ function Journeys() {
 
   return (
     <div className="journeys-page">
+      <div className="journeys-bg-fixed" style={{ backgroundImage: `url(${journeysBg})` }}></div>
+      <div className="journeys-bg-overlay"></div>
       <div className="journeys-header">
         <div>
           <h1 className="journeys-title">Путешествия</h1>

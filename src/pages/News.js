@@ -1,7 +1,11 @@
+import "./TechInfo.css";
+import newsBg from "../news-bg.jpg";
+
 function News() {
   return (
-    <div>
-      <h1>Новости</h1>
+    <div className="static-page" style={{ backgroundImage: `url(${newsBg})` }}>
+      <div className="static-page-overlay"></div>
+      <h1 className="static-page-title">Новости</h1>
     </div>
   );
 }

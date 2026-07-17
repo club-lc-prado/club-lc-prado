@@ -1,9 +1,25 @@
 .journeys-page {
+  position: relative;
   min-height: 100vh;
-  background: #0B0D0C;
   padding: 100px 60px 100px 232px;
   font-family: 'Inter', sans-serif;
   color: #F2EDE3;
+}
+
+.journeys-bg-fixed {
+  position: fixed;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: -2;
+}
+
+.journeys-bg-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(11,13,12,0.6);
+  z-index: -1;
 }
 
 @media (max-width: 900px) {

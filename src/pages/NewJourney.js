@@ -4,6 +4,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { collection, addDoc, doc, getDoc } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import "./Journeys.css";
+import journeysBg from "../journeys-bg.jpg";
 
 function NewJourney() {
   const navigate = useNavigate();
@@ -52,6 +53,8 @@ function NewJourney() {
 
   return (
     <div className="journeys-page">
+      <div className="journeys-bg-fixed" style={{ backgroundImage: `url(${journeysBg})` }}></div>
+      <div className="journeys-bg-overlay"></div>
       <h1 className="journeys-title">Кинуть клич</h1>
       <div className="journeys-underline"></div>
 
