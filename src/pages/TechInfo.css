@@ -1,17 +1,24 @@
 .static-page {
   position: relative;
   min-height: 100vh;
-  background-size: cover;
-  background-position: center;
   padding: 100px 60px 100px 232px;
   font-family: 'Inter', sans-serif;
+}
+
+.static-page-bg {
+  position: fixed;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: -2;
 }
 
 .static-page-overlay {
   position: fixed;
   inset: 0;
   background: rgba(11,13,12,0.6);
-  z-index: 0;
+  z-index: -1;
 }
 
 .news-static-page .static-page-overlay {
@@ -35,7 +42,7 @@
     padding: 80px 24px;
   }
 
-  .news-static-page {
+  .news-static-page .static-page-bg {
     background-size: contain;
     background-position: top center;
     background-color: #0B0D0C;
