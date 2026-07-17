@@ -4,7 +4,7 @@ import { onAuthStateChanged, signOut, deleteUser } from "firebase/auth";
 import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import "./Profile.css";
-import profileBadge from "../profile-badge.jpg";
+import joinBg from "../join-bg.jpg";
 
 function Profile() {
   const navigate = useNavigate();
@@ -204,7 +204,8 @@ function Profile() {
 
   return (
     <div className="profile-page">
-      <div className="profile-badge-bg" style={{ backgroundImage: `url(${profileBadge})` }}></div>
+      <div className="profile-badge-bg" style={{ backgroundImage: `url(${joinBg})` }}></div>
+      <div className="profile-badge-overlay"></div>
 
       <div className="profile-card">
         <div className="profile-avatar" onClick={handleAvatarClick} style={{ cursor: "pointer" }}>

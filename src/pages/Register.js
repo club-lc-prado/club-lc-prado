@@ -4,7 +4,7 @@ import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import "./Register.css";
-import joinBg from "../join-bg.jpg";
+import joinBg from "../auth-bg.jpg";
 
 function Register() {
   const navigate = useNavigate();
