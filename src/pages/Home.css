@@ -237,17 +237,37 @@
 }
 
 @media (max-width: 900px) {
-  .hero-content {
-    padding-left: 32px;
+  .hero-title-block {
+    padding-top: 180px;
   }
+
+  .lang-switch {
+    top: 76px;
+    right: 16px;
+  }
+
+  .hero-content {
+    padding: 0 20px 40px 20px;
+  }
+
   .hero-strip {
     flex-direction: column;
-    padding-left: 32px;
+    align-items: stretch;
+    padding: 20px 20px 20px 20px;
+    gap: 16px;
   }
+
+  .hero-strip-account {
+    flex: none;
+    width: 100%;
+  }
+
   .hero-strip-cards {
     grid-template-columns: 1fr;
   }
+
   .hero-strip-tag {
+    flex: none;
     align-items: flex-start;
     text-align: left;
   }
