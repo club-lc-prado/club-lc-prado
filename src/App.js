@@ -17,6 +17,7 @@ import Contacts from "./pages/Contacts";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
+import Feed from "./pages/Feed";
 
 function App() {
   const [entered, setEntered] = useState(false);
@@ -50,6 +51,7 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/feed" element={<Feed />} />
           </Routes>
         </BrowserRouter>
       )}

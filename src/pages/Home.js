@@ -1,9 +1,27 @@
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { onAuthStateChanged } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+import { auth, db } from "../firebase";
 import { useLanguage } from "../i18n/LanguageContext";
 import "./Home.css";
 import heroImage from "../hero-prado.jpg";
 
 function Home() {
   const { t, lang, changeLang } = useLanguage();
+  const [user, setUser] = useState(null);
+  const [profile, setProfile] = useState(null);
+
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, async (u) => {
+      setUser(u);
+      if (u) {
+        const snap = await getDoc(doc(db, "members", u.uid));
+        if (snap.exists()) setProfile(snap.data());
+      }
+    });
+    return unsub;
+  }, []);
 
   return (
     <div className="hero">
@@ -35,7 +53,14 @@ function Home() {
       </div>
 
       <div className="hero-strip">
-        <div className="hero-strip-quote">{t.home.quote}</div>
+        <Link to="/feed" className="hero-strip-account">
+          <div className="hero-strip-avatar">
+            {profile?.name?.[0]?.toUpperCase() || "?"}
+          </div>
+          <span className="hero-strip-account-name">
+            {profile?.name || "Гость"}
+          </span>
+        </Link>
 
         <div className="hero-strip-cards">
           <div className="hero-strip-card">

@@ -154,16 +154,41 @@
   border-top: 1px solid rgba(242,237,227,0.1);
 }
 
-.hero-strip-quote {
+.hero-strip-account {
   flex: 0 0 220px;
   border-left: 2px solid #D4831C;
   padding-left: 16px;
-  font-family: 'Inter', sans-serif;
-  font-size: 13px;
-  line-height: 1.5;
-  color: #C9C4B8;
   display: flex;
   align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.hero-strip-account:hover {
+  opacity: 0.8;
+}
+
+.hero-strip-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #D4831C;
+  color: #0B0D0C;
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.hero-strip-account-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  letter-spacing: 1px;
+  color: #F2EDE3;
 }
 
 .hero-strip-cards {
