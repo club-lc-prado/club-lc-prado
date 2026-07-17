@@ -8,7 +8,7 @@ import {
 } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import "./Journeys.css";
-import journeysBg from "../journeys-bg.jpg";
+import journeyDetailBg from "../journey-detail-bg.jpg";
 
 function JourneyDetail() {
   const { id } = useParams();
@@ -93,8 +93,9 @@ function JourneyDetail() {
 
   return (
     <div className="journeys-page">
-      <div className="journeys-bg-fixed" style={{ backgroundImage: `url(${journeysBg})` }}></div>
+      <div className="journeys-bg-fixed" style={{ backgroundImage: `url(${journeyDetailBg})` }}></div>
       <div className="journeys-bg-overlay"></div>
+
       <Link to="/journeys" className="journey-back">← Все путешествия</Link>
 
       <h1 className="journeys-title" style={{ marginTop: 16 }}>{journey.title}</h1>
