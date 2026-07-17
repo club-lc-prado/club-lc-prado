@@ -18,6 +18,8 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import Feed from "./pages/Feed";
+import NewJourney from "./pages/NewJourney";
+import JourneyDetail from "./pages/JourneyDetail";
 
 function App() {
   const [entered, setEntered] = useState(false);
@@ -46,6 +48,8 @@ function App() {
             <Route path="/gallery" element={<Gallery />} />
             <Route path="/tech-info" element={<TechInfo />} />
             <Route path="/journeys" element={<Journeys />} />
+            <Route path="/journeys/new" element={<NewJourney />} />
+            <Route path="/journeys/:id" element={<JourneyDetail />} />
             <Route path="/shop" element={<Shop />} />
             <Route path="/contacts" element={<Contacts />} />
             <Route path="/register" element={<Register />} />
