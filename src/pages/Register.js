@@ -35,7 +35,7 @@ function Register() {
         createdAt: new Date().toISOString(),
       });
 
-      navigate("/profile");
+      navigate("/");
     } catch (err) {
       setError(err.message);
     } finally {

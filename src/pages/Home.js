@@ -53,7 +53,7 @@ function Home() {
       </div>
 
       <div className="hero-strip">
-        <Link to="/feed" className="hero-strip-account">
+        <Link to={user ? "/feed" : "/login"} className="hero-strip-account">
           <div className="hero-strip-avatar">
             {profile?.name?.[0]?.toUpperCase() || "?"}
           </div>

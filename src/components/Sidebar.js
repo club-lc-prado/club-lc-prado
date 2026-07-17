@@ -104,8 +104,7 @@ function Sidebar() {
               </NavLink>
             </li>
           ))}
-          <AccountLinks user={user} />
-        </ul>
+          </ul>
 
         <button className="sidebar-replay" onClick={replayIntro}>
           ▶ INTRO
@@ -151,8 +150,7 @@ function Sidebar() {
                 </NavLink>
               </li>
             ))}
-            <AccountLinks user={user} onClick={closeMenu} />
-          </ul>
+            </ul>
           <button className="sidebar-replay" onClick={replayIntro}>
             ▶ INTRO
           </button>
