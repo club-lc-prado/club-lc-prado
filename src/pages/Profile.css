@@ -123,3 +123,63 @@
   border-color: #c25c4a;
   color: #c25c4a;
 }
+
+.profile-delete {
+  margin-top: 24px;
+  background: transparent;
+  border: none;
+  color: #6b6558;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.profile-delete:hover {
+  color: #c25c4a;
+}
+
+.profile-delete-confirm {
+  margin-top: 24px;
+  width: 100%;
+  border: 1px solid rgba(194,92,74,0.4);
+  padding: 16px;
+  text-align: center;
+}
+
+.profile-delete-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: #C9C4B8;
+  margin-bottom: 12px;
+}
+
+.profile-delete-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.profile-delete-yes {
+  flex: 1;
+  background: #c25c4a;
+  border: none;
+  color: #0B0D0C;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 1px;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.profile-delete-no {
+  flex: 1;
+  background: transparent;
+  border: 1px solid rgba(242,237,227,0.25);
+  color: #C9C4B8;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 1px;
+  padding: 10px;
+  cursor: pointer;
+}

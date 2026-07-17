@@ -7,7 +7,7 @@ import bootSound from "../boot-sequence.mp3";
 
 const SEEN_KEY = "club_lc_prado_boot_seen";
 
-function BootScreen({ onEnter }) {
+function BootScreen({ onEnter, user }) {
   const { t } = useLanguage();
   const alreadySeen = localStorage.getItem(SEEN_KEY) === "true";
   const [stage, setStage] = useState("tap");
@@ -25,6 +25,7 @@ function BootScreen({ onEnter }) {
 
   const enterClub = () => {
     localStorage.setItem(SEEN_KEY, "true");
+    window.history.replaceState({}, "", user ? "/" : "/about");
     onEnter();
   };
 

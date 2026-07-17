@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { onAuthStateChanged, signOut } from "firebase/auth";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { onAuthStateChanged, signOut, deleteUser } from "firebase/auth";
+import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import "./Profile.css";
 
@@ -12,6 +12,8 @@ function Profile() {
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({ city: "", prado: "", bio: "" });
   const [loading, setLoading] = useState(true);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (u) => {
@@ -44,6 +46,21 @@ function Profile() {
   const handleLogout = async () => {
     await signOut(auth);
     navigate("/");
+  };
+
+  const handleDeleteAccount = async () => {
+    setDeleteError("");
+    try {
+      await deleteDoc(doc(db, "members", user.uid));
+      await deleteUser(user);
+      navigate("/");
+    } catch (err) {
+      if (err.code === "auth/requires-recent-login") {
+        setDeleteError("Нужно недавно войти заново, чтобы удалить аккаунт. Выйди и войди снова, затем повтори.");
+      } else {
+        setDeleteError(err.message);
+      }
+    }
   };
 
   if (loading) {
@@ -103,6 +120,28 @@ function Profile() {
         <button className="profile-logout" onClick={handleLogout}>
           Выйти
         </button>
+
+        {!confirmDelete ? (
+          <button className="profile-delete" onClick={() => setConfirmDelete(true)}>
+            Удалить аккаунт
+          </button>
+        ) : (
+          <div className="profile-delete-confirm">
+            <div className="profile-delete-text">
+              Это удалит аккаунт навсегда. Точно?
+            </div>
+            <div className="profile-delete-actions">
+              <button className="profile-delete-yes" onClick={handleDeleteAccount}>
+                Да, удалить
+              </button>
+              <button className="profile-delete-no" onClick={() => setConfirmDelete(false)}>
+                Отмена
+              </button>
+            </div>
+          </div>
+        )}
+
+        {deleteError && <div className="auth-error">{deleteError}</div>}
       </div>
     </div>
   );

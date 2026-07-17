@@ -17,6 +17,53 @@ const navItems = [
   { to: "/forum", key: "forum" },
 ];
 
+function AccountLinks({ user, onClick }) {
+  if (user) {
+    return (
+      <li>
+        <NavLink
+          to="/profile"
+          onClick={onClick}
+          className={({ isActive }) =>
+            "sidebar-link sidebar-link-account" + (isActive ? " active" : "")
+          }
+        >
+          <span className="sidebar-dot"></span>
+          {user.displayName || "Профиль"}
+        </NavLink>
+      </li>
+    );
+  }
+  return (
+    <>
+      <li>
+        <NavLink
+          to="/login"
+          onClick={onClick}
+          className={({ isActive }) =>
+            "sidebar-link sidebar-link-account" + (isActive ? " active" : "")
+          }
+        >
+          <span className="sidebar-dot"></span>
+          Войти
+        </NavLink>
+      </li>
+      <li>
+        <NavLink
+          to="/register"
+          onClick={onClick}
+          className={({ isActive }) =>
+            "sidebar-link sidebar-link-account" + (isActive ? " active" : "")
+          }
+        >
+          <span className="sidebar-dot"></span>
+          Регистрация
+        </NavLink>
+      </li>
+    </>
+  );
+}
+
 function Sidebar() {
   const { t } = useLanguage();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -33,9 +80,6 @@ function Sidebar() {
     localStorage.removeItem("club_lc_prado_boot_seen");
     window.location.reload();
   };
-
-  const accountLabel = user ? (user.displayName || "Профиль") : "Регистрация";
-  const accountTo = user ? "/profile" : "/register";
 
   return (
     <>
@@ -60,17 +104,7 @@ function Sidebar() {
               </NavLink>
             </li>
           ))}
-          <li>
-            <NavLink
-              to={accountTo}
-              className={({ isActive }) =>
-                "sidebar-link sidebar-link-account" + (isActive ? " active" : "")
-              }
-            >
-              <span className="sidebar-dot"></span>
-              {accountLabel}
-            </NavLink>
-          </li>
+          <AccountLinks user={user} />
         </ul>
 
         <button className="sidebar-replay" onClick={replayIntro}>
@@ -117,18 +151,7 @@ function Sidebar() {
                 </NavLink>
               </li>
             ))}
-            <li>
-              <NavLink
-                to={accountTo}
-                onClick={closeMenu}
-                className={({ isActive }) =>
-                  "sidebar-link sidebar-link-account" + (isActive ? " active" : "")
-                }
-              >
-                <span className="sidebar-dot"></span>
-                {accountLabel}
-              </NavLink>
-            </li>
+            <AccountLinks user={user} onClick={closeMenu} />
           </ul>
           <button className="sidebar-replay" onClick={replayIntro}>
             ▶ INTRO

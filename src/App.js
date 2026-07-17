@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "./firebase";
 import { LanguageProvider } from "./i18n/LanguageContext";
 import BootScreen from "./components/BootScreen";
 import Sidebar from "./components/Sidebar";
@@ -18,11 +20,21 @@ import Profile from "./pages/Profile";
 
 function App() {
   const [entered, setEntered] = useState(false);
+  const [user, setUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
+
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (u) => {
+      setUser(u);
+      setAuthLoading(false);
+    });
+    return unsub;
+  }, []);
 
   return (
     <LanguageProvider>
-      {!entered && <BootScreen onEnter={() => setEntered(true)} />}
-      {entered && (
+      {!entered && <BootScreen user={user} onEnter={() => setEntered(true)} />}
+      {entered && !authLoading && (
         <BrowserRouter>
           <Sidebar />
           <Routes>
