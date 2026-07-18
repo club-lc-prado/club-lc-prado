@@ -22,6 +22,8 @@ function Feed() {
   const [nextJourney, setNextJourney] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [qrOpen, setQrOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [burstFor, setBurstFor] = useState(null);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (u) => {
@@ -62,6 +64,17 @@ function Feed() {
     };
     loadSide();
   }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    const nq = query(
+      collection(db, "notifications"),
+      where("toUserId", "==", user.uid),
+      where("read", "==", false)
+    );
+    const unsub = onSnapshot(nq, (snap) => setUnreadCount(snap.size));
+    return unsub;
+  }, [user]);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -128,7 +141,52 @@ function Feed() {
     await updateDoc(ref, {
       likes: liked ? arrayRemove(user.uid) : arrayUnion(user.uid),
     });
+
+    if (!liked && post.authorId !== user.uid) {
+      await addDoc(collection(db, "notifications"), {
+        toUserId: post.authorId,
+        fromUserId: user.uid,
+        fromUserName: profile?.name || "Участник",
+        type: "like",
+        read: false,
+        createdAt: new Date().toISOString(),
+      });
+    }
   };
+
+  const handlePhotoTap = (post) => {
+    const liked = post.likes?.includes(user?.uid);
+    if (!liked) {
+      toggleLike(post);
+      const particles = [...Array(60)].map((_, i) => ({
+        id: i,
+        angle: Math.random() * 360,
+        dist: 60 + Math.random() * 90,
+        size: 10 + Math.random() * 16,
+        delay: Math.random() * 0.25,
+        duration: 0.6 + Math.random() * 0.5,
+      }));
+      setBurstFor({ postId: post.id, particles });
+      setTimeout(() => setBurstFor(null), 1200);
+    }
+  };
+
+  const HeartIcon = ({ filled, size = 26 }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24">
+      <defs>
+        <linearGradient id="heartGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#ff6b5e" />
+          <stop offset="100%" stopColor="#c0392b" />
+        </linearGradient>
+      </defs>
+      <path
+        d="M12,21.35 L10.55,20.03 C5.4,15.36 2,12.28 2,8.5 C2,5.42 4.42,3 7.5,3 C9.24,3 10.91,3.81 12,5.09 C13.09,3.81 14.76,3 16.5,3 C19.58,3 22,5.42 22,8.5 C22,12.28 18.6,15.36 13.45,20.04 L12,21.35 Z"
+        fill={filled ? "url(#heartGrad)" : "none"}
+        stroke={filled ? "#c0392b" : "#8a8578"}
+        strokeWidth="1.5"
+      />
+    </svg>
+  );
 
   const formatDate = (iso) => {
     const d = new Date(iso);
@@ -167,6 +225,7 @@ function Feed() {
               {user && (
                 <div className="feed-gear-wrap">
                   <button className="feed-gear-btn" onClick={() => setMenuOpen(!menuOpen)}>
+                    {unreadCount > 0 && <span className="feed-gear-badge">{unreadCount}</span>}
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <circle cx="12" cy="12" r="3"></circle>
                       <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
@@ -175,7 +234,7 @@ function Feed() {
                   {menuOpen && (
                     <div className="feed-gear-menu">
                       <button onClick={() => { setQrOpen(true); setMenuOpen(false); }}>QR-код</button>
-                      <button onClick={stub}>Уведомления</button>
+                      <Link to="/notifications" onClick={() => setMenuOpen(false)}>Уведомления</Link>
                       <Link to="/profile" onClick={() => setMenuOpen(false)}>Редактировать профиль</Link>
                       <Link to="/settings" onClick={() => setMenuOpen(false)}>Настройки и конфиденциальность</Link>
                       <button onClick={() => { alert("Дата регистрации: " + (profile?.createdAt ? new Date(profile.createdAt).toLocaleDateString("ru-RU") : "неизвестно")); setMenuOpen(false); }}>Входы в аккаунт</button>
@@ -248,14 +307,38 @@ function Feed() {
                   </div>
 
                   {post.text && <p className="feed-post-text">{post.text}</p>}
-                  {post.image && <img src={post.image} alt="post" className="feed-post-image" />}
+                  {post.image && (
+                    <div className="feed-post-image-wrap" onClick={() => handlePhotoTap(post)}>
+                      <img src={post.image} alt="post" className="feed-post-image" />
+                      {burstFor?.postId === post.id && (
+                        <div className="heart-burst">
+                          <div className="heart-burst-center"><HeartIcon filled={true} size={90} /></div>
+                          {burstFor.particles.map((p) => (
+                            <span
+                              key={p.id}
+                              className="heart-particle"
+                              style={{
+                                "--angle": `${p.angle}deg`,
+                                "--dist": `${p.dist}px`,
+                                animationDelay: `${0.45 + p.delay}s`,
+                                animationDuration: `${p.duration}s`,
+                              }}
+                            >
+                              <HeartIcon filled={true} size={p.size} />
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   <div className="feed-post-actions">
                     <button
                       className={"feed-like-btn" + (liked ? " liked" : "")}
                       onClick={() => toggleLike(post)}
                     >
-                      ♥ {post.likes?.length || 0}
+                      <HeartIcon filled={liked} />
+                      <span>{post.likes?.length || 0}</span>
                     </button>
                   </div>
                 </div>

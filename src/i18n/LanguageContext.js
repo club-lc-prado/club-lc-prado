@@ -3,10 +3,22 @@ import translations from "./translations";
 
 const LanguageContext = createContext();
 
+function detectBrowserLang() {
+  const saved = localStorage.getItem("club_lang");
+  if (saved) return saved;
+
+  const browserLang = (navigator.language || navigator.userLanguage || "").toLowerCase();
+
+  if (browserLang.startsWith("de")) return "de";
+  if (browserLang.startsWith("uk")) return "ua";
+  if (browserLang.startsWith("ru")) return "ru";
+  if (browserLang.startsWith("en")) return "en";
+
+  return "en";
+}
+
 export function LanguageProvider({ children }) {
-  const [lang, setLang] = useState(
-    localStorage.getItem("club_lang") || "ru"
-  );
+  const [lang, setLang] = useState(detectBrowserLang());
 
   const changeLang = (newLang) => {
     setLang(newLang);

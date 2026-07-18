@@ -23,6 +23,7 @@ import JourneyDetail from "./pages/JourneyDetail";
 import Members from "./pages/Members";
 import MemberProfile from "./pages/MemberProfile";
 import Settings from "./pages/Settings";
+import Notifications from "./pages/Notifications";
 
 function App() {
   const [entered, setEntered] = useState(false);
@@ -56,6 +57,7 @@ function App() {
             <Route path="/members" element={<Members />} />
             <Route path="/members/:id" element={<MemberProfile />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/notifications" element={<Notifications />} />
             <Route path="/shop" element={<Shop />} />
             <Route path="/contacts" element={<Contacts />} />
             <Route path="/register" element={<Register />} />
