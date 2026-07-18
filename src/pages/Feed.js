@@ -21,6 +21,7 @@ function Feed() {
   const [memberCount, setMemberCount] = useState(null);
   const [nextJourney, setNextJourney] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [qrOpen, setQrOpen] = useState(false);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (u) => {
@@ -173,11 +174,11 @@ function Feed() {
                   </button>
                   {menuOpen && (
                     <div className="feed-gear-menu">
-                      <button onClick={stub}>QR-код</button>
+                      <button onClick={() => { setQrOpen(true); setMenuOpen(false); }}>QR-код</button>
                       <button onClick={stub}>Уведомления</button>
                       <Link to="/profile" onClick={() => setMenuOpen(false)}>Редактировать профиль</Link>
-                      <button onClick={stub}>Настройки и конфиденциальность</button>
-                      <button onClick={stub}>Входы в аккаунт</button>
+                      <Link to="/settings" onClick={() => setMenuOpen(false)}>Настройки и конфиденциальность</Link>
+                      <button onClick={() => { alert("Дата регистрации: " + (profile?.createdAt ? new Date(profile.createdAt).toLocaleDateString("ru-RU") : "неизвестно")); setMenuOpen(false); }}>Входы в аккаунт</button>
                       <button onClick={handleLogout} className="feed-gear-logout">Выйти</button>
                     </div>
                   )}
@@ -282,6 +283,19 @@ function Feed() {
           </Link>
         </div>
       </div>
+
+      {qrOpen && user && (
+        <div className="qr-modal-overlay" onClick={() => setQrOpen(false)}>
+          <div className="qr-modal" onClick={(e) => e.stopPropagation()}>
+            <img
+              src={`https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(window.location.origin + "/members/" + user.uid)}`}
+              alt="QR код профиля"
+            />
+            <div className="qr-modal-text">Отсканируй, чтобы открыть мой профиль в клубе</div>
+            <button className="qr-modal-close" onClick={() => setQrOpen(false)}>Закрыть</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

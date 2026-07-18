@@ -1,0 +1,115 @@
+.settings-page {
+  min-height: 100vh;
+  background: #0B0D0C;
+  padding: 100px 60px 100px 232px;
+  font-family: 'Inter', sans-serif;
+  color: #F2EDE3;
+}
+
+@media (max-width: 900px) {
+  .settings-page {
+    padding: 80px 24px;
+  }
+}
+
+.settings-back {
+  color: #8FA37E;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  text-decoration: none;
+  display: inline-block;
+  margin-bottom: 32px;
+}
+
+.settings-title {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: clamp(26px, 4vw, 40px);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0 0 8px 0;
+}
+
+.settings-underline {
+  width: 100px;
+  height: 3px;
+  background: #D4831C;
+  margin-bottom: 40px;
+}
+
+.settings-section {
+  max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.settings-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(242,237,227,0.1);
+}
+
+.settings-row-label {
+  font-size: 15px;
+  color: #F2EDE3;
+  margin-bottom: 4px;
+}
+
+.settings-row-sub {
+  font-size: 12px;
+  color: #8a8578;
+}
+
+.settings-switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.settings-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.settings-switch span {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background: rgba(242,237,227,0.15);
+  transition: 0.2s;
+  border-radius: 24px;
+}
+
+.settings-switch span:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background: #F2EDE3;
+  transition: 0.2s;
+  border-radius: 50%;
+}
+
+.settings-switch input:checked + span {
+  background: #D4831C;
+}
+
+.settings-switch input:checked + span:before {
+  transform: translateX(20px);
+}
+
+.settings-saved {
+  margin-top: 24px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: #8FA37E;
+}
