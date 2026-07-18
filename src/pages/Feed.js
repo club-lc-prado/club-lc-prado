@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import {
   doc, getDoc, collection, addDoc, getDocs, query, orderBy, where, limit, onSnapshot,
   updateDoc, arrayUnion, arrayRemove,
@@ -11,6 +11,7 @@ import "./Feed.css";
 function Feed() {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
+  const menuRef = useRef(null);
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [posts, setPosts] = useState([]);
@@ -19,6 +20,7 @@ function Feed() {
   const [posting, setPosting] = useState(false);
   const [memberCount, setMemberCount] = useState(null);
   const [nextJourney, setNextJourney] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (u) => {
@@ -58,6 +60,16 @@ function Feed() {
       }
     };
     loadSide();
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleImageSelect = (e) => {
@@ -127,21 +139,48 @@ function Feed() {
     return d.toLocaleDateString("ru-RU", { day: "2-digit", month: "long" });
   };
 
+  const handleLogout = async () => {
+    await signOut(auth);
+    navigate("/");
+  };
+
+  const stub = () => alert("Скоро будет доступно");
+
   return (
     <div className="feed-page">
       <div className="feed-outer">
         <div className="feed-left">
           <div className="feed-header-sticky">
-            <Link to="/profile" className="feed-account">
-              <div className="feed-avatar">
-                {profile?.photoURL ? (
-                  <img src={profile.photoURL} alt="avatar" />
-                ) : (
-                  profile?.name?.[0]?.toUpperCase() || "?"
-                )}
-              </div>
-              <span className="feed-account-name">{profile?.name || "Гость"}</span>
-            </Link>
+            <div className="feed-account-row" ref={menuRef}>
+              <Link to="/profile" className="feed-account">
+                <div className="feed-avatar">
+                  {profile?.photoURL ? (
+                    <img src={profile.photoURL} alt="avatar" />
+                  ) : (
+                    profile?.name?.[0]?.toUpperCase() || "?"
+                  )}
+                </div>
+                <span className="feed-account-name">{profile?.name || "Гость"}</span>
+              </Link>
+
+              {user && (
+                <div className="feed-gear-wrap">
+                  <button className="feed-gear-btn" onClick={() => setMenuOpen(!menuOpen)}>
+                    ⚙
+                  </button>
+                  {menuOpen && (
+                    <div className="feed-gear-menu">
+                      <button onClick={stub}>QR-код</button>
+                      <button onClick={stub}>Уведомления</button>
+                      <Link to="/profile" onClick={() => setMenuOpen(false)}>Редактировать профиль</Link>
+                      <button onClick={stub}>Настройки и конфиденциальность</button>
+                      <button onClick={stub}>Входы в аккаунт</button>
+                      <button onClick={handleLogout} className="feed-gear-logout">Выйти</button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
 
             <h1 className="feed-title">Лента</h1>
             <div className="feed-underline"></div>
