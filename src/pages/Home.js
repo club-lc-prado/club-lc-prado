@@ -64,7 +64,11 @@ function Home() {
       <div className="hero-strip">
         <Link to={user ? "/feed" : "/login"} className="hero-strip-account">
           <div className="hero-strip-avatar">
-            {profile?.name?.[0]?.toUpperCase() || "?"}
+            {profile?.photoURL ? (
+              <img src={profile.photoURL} alt="avatar" />
+            ) : (
+              profile?.name?.[0]?.toUpperCase() || "?"
+            )}
           </div>
           <span className="hero-strip-account-name">
             {profile?.name || "Гость"}
