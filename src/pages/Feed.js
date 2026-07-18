@@ -7,6 +7,8 @@ import {
 } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import "./Feed.css";
+import likeSound from "../like-sound.mp3";
+import notifSound from "../notif-sound.mp3";
 
 function Feed() {
   const navigate = useNavigate();
@@ -153,6 +155,9 @@ function Feed() {
       return;
     }
     const liked = post.likes?.includes(user.uid);
+    if (!liked) {
+      new Audio(likeSound).play().catch(() => {});
+    }
     const ref = doc(db, "posts", post.id);
     await updateDoc(ref, {
       likes: liked ? arrayRemove(user.uid) : arrayUnion(user.uid),
@@ -234,6 +239,7 @@ function Feed() {
       setNotifOpen(false);
       return;
     }
+    new Audio(notifSound).play().catch(() => {});
     const rect = notifBtnRef.current.getBoundingClientRect();
     const targetX = rect.left + rect.width / 2;
     const targetY = rect.top + rect.height / 2;
