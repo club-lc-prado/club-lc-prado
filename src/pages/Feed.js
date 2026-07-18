@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import {
   doc, getDoc, collection, addDoc, getDocs, query, orderBy, where, limit, onSnapshot,
-  updateDoc, arrayUnion, arrayRemove,
+  updateDoc, arrayUnion, arrayRemove, writeBatch,
 } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import "./Feed.css";
@@ -12,6 +12,7 @@ function Feed() {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
   const menuRef = useRef(null);
+  const notifBtnRef = useRef(null);
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [posts, setPosts] = useState([]);
@@ -23,7 +24,10 @@ function Feed() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [qrOpen, setQrOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [notifications, setNotifications] = useState([]);
   const [burstFor, setBurstFor] = useState(null);
+  const [notifConverging, setNotifConverging] = useState(null);
+  const [notifOpen, setNotifOpen] = useState(false);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (u) => {
@@ -70,9 +74,14 @@ function Feed() {
     const nq = query(
       collection(db, "notifications"),
       where("toUserId", "==", user.uid),
-      where("read", "==", false)
+      orderBy("createdAt", "desc"),
+      limit(30)
     );
-    const unsub = onSnapshot(nq, (snap) => setUnreadCount(snap.size));
+    const unsub = onSnapshot(nq, (snap) => {
+      const items = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      setNotifications(items);
+      setUnreadCount(items.filter((i) => !i.read).length);
+    });
     return unsub;
   }, [user]);
 
@@ -80,6 +89,13 @@ function Feed() {
     const handleClickOutside = (e) => {
       if (menuRef.current && !menuRef.current.contains(e.target)) {
         setMenuOpen(false);
+      }
+      if (
+        notifBtnRef.current &&
+        !notifBtnRef.current.contains(e.target) &&
+        !e.target.closest(".notif-dropdown")
+      ) {
+        setNotifOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -205,6 +221,51 @@ function Feed() {
 
   const stub = () => alert("Скоро будет доступно");
 
+  const markAllRead = async () => {
+    const unread = notifications.filter((n) => !n.read);
+    if (unread.length === 0) return;
+    const batch = writeBatch(db);
+    unread.forEach((n) => batch.update(doc(db, "notifications", n.id), { read: true }));
+    await batch.commit();
+  };
+
+  const openNotifications = () => {
+    if (notifOpen) {
+      setNotifOpen(false);
+      return;
+    }
+    const rect = notifBtnRef.current.getBoundingClientRect();
+    const targetX = rect.left + rect.width / 2;
+    const targetY = rect.top + rect.height / 2;
+
+    const particles = [...Array(100)].map((_, i) => ({
+      id: i,
+      startX: Math.random() * window.innerWidth,
+      startY: Math.random() * window.innerHeight,
+      delay: Math.random() * 0.3,
+      size: 8 + Math.random() * 14,
+    }));
+
+    setNotifConverging({ targetX, targetY, particles });
+    setTimeout(() => {
+      setNotifConverging(null);
+      setNotifOpen(true);
+      markAllRead();
+    }, 800);
+  };
+
+  const textFor = (n) => {
+    if (n.type === "like") return `${n.fromUserName} оценил(а) твой пост`;
+    if (n.type === "comment") return `${n.fromUserName} прокомментировал(а) "${n.journeyTitle}"`;
+    if (n.type === "rsvp") return `${n.fromUserName} присоединился(лась) к "${n.journeyTitle}"`;
+    return n.fromUserName;
+  };
+
+  const linkFor = (n) => {
+    if (n.journeyId) return `/journeys/${n.journeyId}`;
+    return "/feed";
+  };
+
   return (
     <div className="feed-page">
       <div className="feed-outer">
@@ -223,24 +284,50 @@ function Feed() {
               </Link>
 
               {user && (
-                <div className="feed-gear-wrap">
-                  <button className="feed-gear-btn" onClick={() => setMenuOpen(!menuOpen)}>
-                    {unreadCount > 0 && <span className="feed-gear-badge">{unreadCount}</span>}
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="12" cy="12" r="3"></circle>
-                      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-                    </svg>
-                  </button>
-                  {menuOpen && (
-                    <div className="feed-gear-menu">
-                      <button onClick={() => { setQrOpen(true); setMenuOpen(false); }}>QR-код</button>
-                      <Link to="/notifications" onClick={() => setMenuOpen(false)}>Уведомления</Link>
-                      <Link to="/profile" onClick={() => setMenuOpen(false)}>Редактировать профиль</Link>
-                      <Link to="/settings" onClick={() => setMenuOpen(false)}>Настройки и конфиденциальность</Link>
-                      <button onClick={() => { alert("Дата регистрации: " + (profile?.createdAt ? new Date(profile.createdAt).toLocaleDateString("ru-RU") : "неизвестно")); setMenuOpen(false); }}>Входы в аккаунт</button>
-                      <button onClick={handleLogout} className="feed-gear-logout">Выйти</button>
-                    </div>
-                  )}
+                <div className="feed-header-icons">
+                  <div className="feed-notif-wrap">
+                    <button className="feed-notif-btn" ref={notifBtnRef} onClick={openNotifications}>
+                      <HeartIcon filled={unreadCount > 0} size={26} />
+                      {unreadCount > 0 && <span className="feed-gear-badge">{unreadCount}</span>}
+                    </button>
+
+                    {notifOpen && (
+                      <div className="notif-dropdown">
+                        {notifications.length === 0 && (
+                          <div className="notif-dropdown-empty">Пока пусто</div>
+                        )}
+                        {notifications.map((n) => (
+                          <Link
+                            key={n.id}
+                            to={linkFor(n)}
+                            className="notif-dropdown-item"
+                            onClick={() => setNotifOpen(false)}
+                          >
+                            <div className="notif-dropdown-text">{textFor(n)}</div>
+                            <div className="notif-dropdown-date">{formatDate(n.createdAt)}</div>
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="feed-gear-wrap">
+                    <button className="feed-gear-btn" onClick={() => setMenuOpen(!menuOpen)}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                      </svg>
+                    </button>
+                    {menuOpen && (
+                      <div className="feed-gear-menu">
+                        <button onClick={() => { setQrOpen(true); setMenuOpen(false); }}>QR-код</button>
+                        <Link to="/profile" onClick={() => setMenuOpen(false)}>Редактировать профиль</Link>
+                        <Link to="/settings" onClick={() => setMenuOpen(false)}>Настройки и конфиденциальность</Link>
+                        <button onClick={() => { alert("Дата регистрации: " + (profile?.createdAt ? new Date(profile.createdAt).toLocaleDateString("ru-RU") : "неизвестно")); setMenuOpen(false); }}>Входы в аккаунт</button>
+                        <button onClick={handleLogout} className="feed-gear-logout">Выйти</button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
@@ -377,6 +464,26 @@ function Feed() {
             <div className="qr-modal-text">Отсканируй, чтобы открыть мой профиль в клубе</div>
             <button className="qr-modal-close" onClick={() => setQrOpen(false)}>Закрыть</button>
           </div>
+        </div>
+      )}
+
+      {notifConverging && (
+        <div className="notif-converge-overlay">
+          {notifConverging.particles.map((p) => (
+            <span
+              key={p.id}
+              className="notif-converge-particle"
+              style={{
+                left: p.startX,
+                top: p.startY,
+                "--tx": `${notifConverging.targetX - p.startX}px`,
+                "--ty": `${notifConverging.targetY - p.startY}px`,
+                animationDelay: `${p.delay}s`,
+              }}
+            >
+              <HeartIcon filled={true} size={p.size} />
+            </span>
+          ))}
         </div>
       )}
     </div>
