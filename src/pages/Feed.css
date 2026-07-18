@@ -1,7 +1,7 @@
 .feed-page {
   min-height: 100vh;
   background: #0B0D0C;
-  padding: 100px 60px 100px 232px;
+  padding: 0 60px 100px 232px;
   font-family: 'Inter', sans-serif;
   color: #F2EDE3;
   box-sizing: border-box;
@@ -17,13 +17,34 @@
   }
 }
 
+.feed-outer {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+}
+
+.feed-left {
+  flex: 1;
+  min-width: 0;
+  max-width: 560px;
+}
+
+.feed-header-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: #0B0D0C;
+  padding-top: 24px;
+  padding-bottom: 20px;
+}
+
 .feed-account {
   display: flex;
   align-items: center;
   gap: 12px;
   text-decoration: none;
   color: #F2EDE3;
-  margin-bottom: 40px;
+  margin-bottom: 24px;
 }
 
 .feed-avatar {
@@ -56,7 +77,7 @@
 .feed-title {
   font-family: 'Oswald', sans-serif;
   font-weight: 700;
-  font-size: clamp(32px, 5vw, 48px);
+  font-size: clamp(28px, 4vw, 40px);
   text-transform: uppercase;
   letter-spacing: 2px;
   margin: 0 0 8px 0;
@@ -66,13 +87,71 @@
   width: 100px;
   height: 3px;
   background: #D4831C;
-  margin-bottom: 32px;
+}
+
+.feed-side {
+  display: none;
+  flex-direction: column;
+  gap: 16px;
+  width: 260px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  padding-top: 24px;
+}
+
+@media (min-width: 1300px) {
+  .feed-side {
+    display: flex;
+  }
+}
+
+.feed-side-card {
+  display: block;
+  border: 1px solid rgba(242,237,227,0.12);
+  padding: 20px;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.2s ease;
+}
+
+.feed-side-card:hover {
+  border-color: rgba(212,131,28,0.5);
+}
+
+.feed-side-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #8FA37E;
+  margin-bottom: 10px;
+}
+
+.feed-side-value {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: 28px;
+  color: #F2EDE3;
+}
+
+.feed-side-value.small {
+  font-size: 15px;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 600;
+}
+
+.feed-side-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: #8a8578;
+  margin-top: 6px;
 }
 
 .feed-composer,
 .feed-post {
   width: 100%;
-  max-width: 560px;
   border: 1px solid rgba(242,237,227,0.12);
   padding: 20px;
   box-sizing: border-box;
@@ -141,7 +220,6 @@
 }
 
 .feed-posts {
-  max-width: 560px;
   display: flex;
   flex-direction: column;
   gap: 24px;
