@@ -20,6 +20,7 @@ function MemberProfile() {
       load();
     });
     return unsub;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate]);
 
   const load = async () => {

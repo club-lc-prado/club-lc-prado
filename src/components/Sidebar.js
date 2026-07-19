@@ -1,7 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { NavLink } from "react-router-dom";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../firebase";
 import { useLanguage } from "../i18n/LanguageContext";
 import "./Sidebar.css";
 
@@ -17,62 +15,9 @@ const navItems = [
   { to: "/forum", key: "forum" },
 ];
 
-function AccountLinks({ user, onClick }) {
-  if (user) {
-    return (
-      <li>
-        <NavLink
-          to="/profile"
-          onClick={onClick}
-          className={({ isActive }) =>
-            "sidebar-link sidebar-link-account" + (isActive ? " active" : "")
-          }
-        >
-          <span className="sidebar-dot"></span>
-          {user.displayName || "Профиль"}
-        </NavLink>
-      </li>
-    );
-  }
-  return (
-    <>
-      <li>
-        <NavLink
-          to="/login"
-          onClick={onClick}
-          className={({ isActive }) =>
-            "sidebar-link sidebar-link-account" + (isActive ? " active" : "")
-          }
-        >
-          <span className="sidebar-dot"></span>
-          Войти
-        </NavLink>
-      </li>
-      <li>
-        <NavLink
-          to="/register"
-          onClick={onClick}
-          className={({ isActive }) =>
-            "sidebar-link sidebar-link-account" + (isActive ? " active" : "")
-          }
-        >
-          <span className="sidebar-dot"></span>
-          Регистрация
-        </NavLink>
-      </li>
-    </>
-  );
-}
-
 function Sidebar() {
   const { t } = useLanguage();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (u) => setUser(u));
-    return unsub;
-  }, []);
 
   const closeMenu = () => setMenuOpen(false);
 
@@ -104,16 +49,16 @@ function Sidebar() {
               </NavLink>
             </li>
           ))}
-          </ul>
+        </ul>
 
         <button className="sidebar-replay" onClick={replayIntro}>
           ▶ INTRO
         </button>
 
         <div className="sidebar-social">
-          <a href="#" aria-label="Instagram">IG</a>
-          <a href="#" aria-label="YouTube">YT</a>
-          <a href="#" aria-label="Telegram">TG</a>
+          <button aria-label="Instagram">IG</button>
+          <button aria-label="YouTube">YT</button>
+          <button aria-label="Telegram">TG</button>
         </div>
       </nav>
 
@@ -150,14 +95,14 @@ function Sidebar() {
                 </NavLink>
               </li>
             ))}
-            </ul>
+          </ul>
           <button className="sidebar-replay" onClick={replayIntro}>
             ▶ INTRO
           </button>
           <div className="sidebar-social">
-            <a href="#" aria-label="Instagram">IG</a>
-            <a href="#" aria-label="YouTube">YT</a>
-            <a href="#" aria-label="Telegram">TG</a>
+            <button aria-label="Instagram">IG</button>
+            <button aria-label="YouTube">YT</button>
+            <button aria-label="Telegram">TG</button>
           </div>
         </div>
       )}

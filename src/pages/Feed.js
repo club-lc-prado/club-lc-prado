@@ -224,8 +224,6 @@ function Feed() {
     navigate("/");
   };
 
-  const stub = () => alert("Скоро будет доступно");
-
   const markAllRead = async () => {
     const unread = notifications.filter((n) => !n.read);
     if (unread.length === 0) return;
