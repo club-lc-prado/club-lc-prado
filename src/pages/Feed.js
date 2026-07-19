@@ -30,6 +30,8 @@ function Feed() {
   const [burstFor, setBurstFor] = useState(null);
   const [notifConverging, setNotifConverging] = useState(null);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [journeysList, setJourneysList] = useState([]);
+  const [selectedJourney, setSelectedJourney] = useState("");
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (u) => {
@@ -48,6 +50,14 @@ function Feed() {
       setPosts(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
     });
     return unsub;
+  }, []);
+
+  useEffect(() => {
+    const loadJourneys = async () => {
+      const snap = await getDocs(collection(db, "journeys"));
+      setJourneysList(snap.docs.map((d) => ({ id: d.id, title: d.data().title })));
+    };
+    loadJourneys();
   }, []);
 
   useEffect(() => {
@@ -133,6 +143,7 @@ function Feed() {
     }
     setPosting(true);
     try {
+      const chosenJourney = journeysList.find((j) => j.id === selectedJourney);
       await addDoc(collection(db, "posts"), {
         authorId: user.uid,
         authorName: profile?.name || "Участник",
@@ -140,10 +151,13 @@ function Feed() {
         text: text.trim(),
         image: imagePreview || "",
         likes: [],
+        journeyId: chosenJourney?.id || null,
+        journeyTitle: chosenJourney?.title || null,
         createdAt: new Date().toISOString(),
       });
       setText("");
       setImagePreview(null);
+      setSelectedJourney("");
     } finally {
       setPosting(false);
     }
@@ -358,6 +372,17 @@ function Feed() {
                 >
                   {imagePreview ? "Заменить фото" : "+ Фото"}
                 </button>
+
+                <select
+                  className="feed-composer-journey-select"
+                  value={selectedJourney}
+                  onChange={(e) => setSelectedJourney(e.target.value)}
+                >
+                  <option value="">Без привязки к поездке</option>
+                  {journeysList.map((j) => (
+                    <option key={j.id} value={j.id}>{j.title}</option>
+                  ))}
+                </select>
                 <input
                   type="file"
                   accept="image/*"
@@ -455,7 +480,18 @@ function Feed() {
               <div className="feed-side-value small">Пока не запланировано</div>
             )}
           </Link>
-        </div>
+
+          </div>
+
+        <Link to="/album" className="feed-book">
+          <div className="feed-book-cover">
+            <div className="feed-book-spine"></div>
+            <div className="feed-book-title">
+              <span>МОЙ</span>
+              <span>АЛЬБОМ</span>
+            </div>
+          </div>
+        </Link>
       </div>
 
       {qrOpen && user && (

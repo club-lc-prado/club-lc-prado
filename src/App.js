@@ -24,6 +24,7 @@ import Members from "./pages/Members";
 import MemberProfile from "./pages/MemberProfile";
 import Settings from "./pages/Settings";
 import Notifications from "./pages/Notifications";
+import Album from "./pages/Album";
 
 function App() {
   const [entered, setEntered] = useState(false);
@@ -58,6 +59,8 @@ function App() {
             <Route path="/members/:id" element={<MemberProfile />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/notifications" element={<Notifications />} />
+            <Route path="/album" element={<Album />} />
+            <Route path="/album/:uid" element={<Album />} />
             <Route path="/shop" element={<Shop />} />
             <Route path="/contacts" element={<Contacts />} />
             <Route path="/register" element={<Register />} />
