@@ -78,7 +78,7 @@ function Profile() {
       setMyPosts(list);
       if (lightbox) {
         const updated = list.find((p) => p.id === lightbox.id);
-        if (updated) setLightbox(updated);
+        setLightbox(updated || null);
       }
     });
     return unsub;
@@ -211,6 +211,13 @@ function Profile() {
         createdAt: new Date().toISOString(),
       });
     }
+  };
+
+  const handleDeletePost = async () => {
+    if (!lightbox) return;
+    if (!window.confirm("Удалить этот пост навсегда?")) return;
+    await deleteDoc(doc(db, "posts", lightbox.id));
+    setLightbox(null);
   };
 
   const handleLightboxComment = async (e) => {
@@ -472,6 +479,9 @@ function Profile() {
                   )}
                 </div>
                 <span>{profile?.name}</span>
+                <button className="ig-delete-btn" onClick={handleDeletePost}>
+                  Удалить
+                </button>
               </div>
 
               <div className="ig-lightbox-comments">

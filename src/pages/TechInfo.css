@@ -115,3 +115,16 @@
   line-height: 1.6;
   color: #C9C4B8;
 }
+
+.news-date {
+  display: block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: #D4831C;
+  margin-bottom: 4px;
+}
+
+.news-title {
+  display: block;
+}
