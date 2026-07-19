@@ -70,9 +70,14 @@ function Home() {
               profile?.name?.[0]?.toUpperCase() || "?"
             )}
           </div>
-          <span className="hero-strip-account-name">
-            {profile?.name || "Гость"}
-          </span>
+          <div className="hero-strip-account-text">
+            <span className="hero-strip-account-name">
+              {profile?.name || "Гость"}
+            </span>
+            <span className="hero-strip-account-sub">
+              {user ? "→ Лента" : "→ Войти"}
+            </span>
+          </div>
         </Link>
 
         <div className="hero-strip-cards">

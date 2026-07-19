@@ -191,11 +191,24 @@
   object-fit: cover;
 }
 
+.hero-strip-account-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
 .hero-strip-account-name {
   font-family: 'JetBrains Mono', monospace;
   font-size: 13px;
   letter-spacing: 1px;
   color: #F2EDE3;
+}
+
+.hero-strip-account-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: #D4831C;
 }
 
 .hero-strip-cards {

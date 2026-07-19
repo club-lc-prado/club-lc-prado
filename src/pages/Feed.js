@@ -6,6 +6,7 @@ import {
   updateDoc, arrayUnion, arrayRemove, writeBatch,
 } from "firebase/firestore";
 import { auth, db } from "../firebase";
+import { Home } from "lucide-react";
 import "./Feed.css";
 import likeSound from "../like-sound.mp3";
 import notifSound from "../notif-sound.mp3";
@@ -30,10 +31,6 @@ function Feed() {
   const [burstFor, setBurstFor] = useState(null);
   const [notifConverging, setNotifConverging] = useState(null);
   const [notifOpen, setNotifOpen] = useState(false);
-  const [journeysList, setJourneysList] = useState([]);
-  const [selectedJourney, setSelectedJourney] = useState("");
-  const [avatarPreviewOpen, setAvatarPreviewOpen] = useState(false);
-  const [myPhotos, setMyPhotos] = useState([]);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (u) => {
@@ -52,25 +49,6 @@ function Feed() {
       setPosts(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
     });
     return unsub;
-  }, []);
-
-  useEffect(() => {
-    if (!user) return;
-    const q = query(collection(db, "posts"), where("authorId", "==", user.uid));
-    const unsub = onSnapshot(q, (snap) => {
-      const list = snap.docs.map((d) => ({ id: d.id, ...d.data() })).filter((p) => p.image);
-      list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-      setMyPhotos(list);
-    });
-    return unsub;
-  }, [user]);
-
-  useEffect(() => {
-    const loadJourneys = async () => {
-      const snap = await getDocs(collection(db, "journeys"));
-      setJourneysList(snap.docs.map((d) => ({ id: d.id, title: d.data().title })));
-    };
-    loadJourneys();
   }, []);
 
   useEffect(() => {
@@ -98,13 +76,12 @@ function Feed() {
     if (!user) return;
     const nq = query(
       collection(db, "notifications"),
-      where("toUserId", "==", user.uid),
-      orderBy("createdAt", "desc"),
-      limit(30)
+      where("toUserId", "==", user.uid)
     );
     const unsub = onSnapshot(nq, (snap) => {
       const items = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-      setNotifications(items);
+      items.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      setNotifications(items.slice(0, 30));
       setUnreadCount(items.filter((i) => !i.read).length);
     });
     return unsub;
@@ -156,7 +133,6 @@ function Feed() {
     }
     setPosting(true);
     try {
-      const chosenJourney = journeysList.find((j) => j.id === selectedJourney);
       await addDoc(collection(db, "posts"), {
         authorId: user.uid,
         authorName: profile?.name || "Участник",
@@ -164,13 +140,10 @@ function Feed() {
         text: text.trim(),
         image: imagePreview || "",
         likes: [],
-        journeyId: chosenJourney?.id || null,
-        journeyTitle: chosenJourney?.title || null,
         createdAt: new Date().toISOString(),
       });
       setText("");
       setImagePreview(null);
-      setSelectedJourney("");
     } finally {
       setPosting(false);
     }
@@ -288,13 +261,14 @@ function Feed() {
   const textFor = (n) => {
     if (n.type === "like") return `${n.fromUserName} оценил(а) твой пост`;
     if (n.type === "comment") return `${n.fromUserName} прокомментировал(а) "${n.journeyTitle}"`;
+    if (n.type === "postComment") return `${n.fromUserName} прокомментировал(а) твой пост`;
     if (n.type === "rsvp") return `${n.fromUserName} присоединился(лась) к "${n.journeyTitle}"`;
     return n.fromUserName;
   };
 
   const linkFor = (n) => {
     if (n.journeyId) return `/journeys/${n.journeyId}`;
-    return "/feed";
+    return "/profile";
   };
 
   return (
@@ -303,52 +277,23 @@ function Feed() {
         <div className="feed-left">
           <div className="feed-header-sticky">
             <div className="feed-account-row" ref={menuRef}>
-              <div
-                className="feed-avatar-preview-wrap"
-                onMouseEnter={() => setAvatarPreviewOpen(true)}
-                onMouseLeave={() => setAvatarPreviewOpen(false)}
-              >
-                <Link
-                  to="/profile"
-                  className="feed-account"
-                  onClick={(e) => {
-                    if (window.innerWidth < 900) {
-                      e.preventDefault();
-                      setAvatarPreviewOpen(!avatarPreviewOpen);
-                    }
-                  }}
-                >
-                  <div className="feed-avatar">
-                    {profile?.photoURL ? (
-                      <img src={profile.photoURL} alt="avatar" />
-                    ) : (
-                      profile?.name?.[0]?.toUpperCase() || "?"
-                    )}
-                  </div>
-                  <span className="feed-account-name">{profile?.name || "Гость"}</span>
-                </Link>
-
-                {avatarPreviewOpen && (
-                  <div className="avatar-preview-dropdown">
-                    <div className="avatar-preview-header">
-                      <span>{myPhotos.length} публикаций</span>
-                      <Link to="/profile" onClick={() => setAvatarPreviewOpen(false)}>Профиль →</Link>
-                    </div>
-                    {myPhotos.length === 0 ? (
-                      <div className="avatar-preview-empty">Пока нет фото</div>
-                    ) : (
-                      <div className="avatar-preview-grid">
-                        {myPhotos.slice(0, 9).map((p) => (
-                          <img key={p.id} src={p.image} alt="" />
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
+              <Link to="/profile" className="feed-account">
+                <div className="feed-avatar">
+                  {profile?.photoURL ? (
+                    <img src={profile.photoURL} alt="avatar" />
+                  ) : (
+                    profile?.name?.[0]?.toUpperCase() || "?"
+                  )}
+                </div>
+                <span className="feed-account-name">{profile?.name || "Гость"}</span>
+              </Link>
 
               {user && (
                 <div className="feed-header-icons">
+                  <Link to="/" className="feed-home-btn" aria-label="На главную">
+                    🏠
+                  </Link>
+
                   <div className="feed-notif-wrap">
                     <button className="feed-notif-btn" ref={notifBtnRef} onClick={openNotifications}>
                       <HeartIcon filled={unreadCount > 0} size={26} />
@@ -418,7 +363,6 @@ function Feed() {
                 >
                   {imagePreview ? "Заменить фото" : "+ Фото"}
                 </button>
-
                 <input
                   type="file"
                   accept="image/*"
@@ -516,8 +460,7 @@ function Feed() {
               <div className="feed-side-value small">Пока не запланировано</div>
             )}
           </Link>
-
-          </div>
+        </div>
       </div>
 
       {qrOpen && user && (

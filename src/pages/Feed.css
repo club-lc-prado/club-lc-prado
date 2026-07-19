@@ -576,6 +576,25 @@
   gap: 10px;
 }
 
+.feed-home-btn {
+  background: transparent;
+  border: 1px solid rgba(242,237,227,0.2);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #C9C4B8;
+  text-decoration: none;
+}
+
+.feed-home-btn:hover {
+  border-color: #D4831C;
+  color: #D4831C;
+}
+
 .feed-notif-btn {
   position: relative;
   background: transparent;
