@@ -373,16 +373,6 @@ function Feed() {
                   {imagePreview ? "Заменить фото" : "+ Фото"}
                 </button>
 
-                <select
-                  className="feed-composer-journey-select"
-                  value={selectedJourney}
-                  onChange={(e) => setSelectedJourney(e.target.value)}
-                >
-                  <option value="">Без привязки к поездке</option>
-                  {journeysList.map((j) => (
-                    <option key={j.id} value={j.id}>{j.title}</option>
-                  ))}
-                </select>
                 <input
                   type="file"
                   accept="image/*"
