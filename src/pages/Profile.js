@@ -346,7 +346,6 @@ function Profile() {
             {!editing ? (
               <>
                 <div className="profile-bio">
-                  {profile?.prado && <div><strong>Отношение к Prado:</strong> {profile.prado}</div>}
                   {profile?.bio && <div>{profile.bio}</div>}
                 </div>
                 <div className="profile-header-actions">
