@@ -308,7 +308,7 @@ function Profile() {
       <div className="profile-badge-overlay"></div>
 
       <div className="profile-scroll">
-        <div className="profile-card">
+        <div className="profile-header">
           <div className="profile-avatar" onClick={handleAvatarClick} style={{ cursor: "pointer" }}>
             {profile?.photoURL ? (
               <img src={profile.photoURL} alt="avatar" />
@@ -324,77 +324,91 @@ function Profile() {
             style={{ display: "none" }}
           />
 
-          <h1 className="profile-name">{profile?.name}</h1>
-          <div className="profile-city">{profile?.city}</div>
+          <div className="profile-header-info">
+            <h1 className="profile-name">{profile?.name}</h1>
+            <div className="profile-city">{profile?.city}</div>
 
-          {!editing ? (
-            <>
-              <div className="profile-field">
-                <span className="profile-label">Prado</span>
-                <span>{profile?.prado || "не указано"}</span>
+            <div className="profile-stats">
+              <div className="profile-stat">
+                <span className="profile-stat-num">{myPosts.length}</span>
+                <span className="profile-stat-label">публикаций</span>
               </div>
-              <div className="profile-field">
-                <span className="profile-label">О себе</span>
-                <span>{profile?.bio || "не указано"}</span>
+              <div className="profile-stat">
+                <span className="profile-stat-num">—</span>
+                <span className="profile-stat-label">подписчиков</span>
               </div>
-              <button className="profile-btn" onClick={() => setEditing(true)}>
-                Редактировать
-              </button>
-            </>
-          ) : (
-            <>
-              <input
-                type="text"
-                name="city"
-                placeholder="Город"
-                value={form.city}
-                onChange={handleChange}
-              />
-              <input
-                type="text"
-                name="prado"
-                placeholder="Модель Prado"
-                value={form.prado}
-                onChange={handleChange}
-              />
-              <textarea
-                name="bio"
-                placeholder="О себе"
-                value={form.bio}
-                onChange={handleChange}
-                rows={3}
-              />
-              <button className="profile-btn" onClick={handleSave}>
-                Сохранить
-              </button>
-            </>
-          )}
-
-          <button className="profile-logout" onClick={handleLogout}>
-            Выйти
-          </button>
-
-          {!confirmDelete ? (
-            <button className="profile-delete" onClick={() => setConfirmDelete(true)}>
-              Удалить аккаунт
-            </button>
-          ) : (
-            <div className="profile-delete-confirm">
-              <div className="profile-delete-text">
-                Это удалит аккаунт навсегда. Точно?
-              </div>
-              <div className="profile-delete-actions">
-                <button className="profile-delete-yes" onClick={handleDeleteAccount}>
-                  Да, удалить
-                </button>
-                <button className="profile-delete-no" onClick={() => setConfirmDelete(false)}>
-                  Отмена
-                </button>
+              <div className="profile-stat">
+                <span className="profile-stat-num">—</span>
+                <span className="profile-stat-label">подписок</span>
               </div>
             </div>
-          )}
 
-          {deleteError && <div className="auth-error">{deleteError}</div>}
+            {!editing ? (
+              <>
+                <div className="profile-bio">
+                  {profile?.prado && <div><strong>Отношение к Prado:</strong> {profile.prado}</div>}
+                  {profile?.bio && <div>{profile.bio}</div>}
+                </div>
+                <div className="profile-header-actions">
+                  <button className="profile-btn-small" onClick={() => setEditing(true)}>
+                    Редактировать
+                  </button>
+                  <button className="profile-logout-small" onClick={handleLogout}>
+                    Выйти
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="profile-edit-form">
+                <input
+                  type="text"
+                  name="city"
+                  placeholder="Город"
+                  value={form.city}
+                  onChange={handleChange}
+                />
+                <input
+                  type="text"
+                  name="prado"
+                  placeholder="Prado — есть, мечтаю, продаю..."
+                  value={form.prado}
+                  onChange={handleChange}
+                />
+                <textarea
+                  name="bio"
+                  placeholder="О себе"
+                  value={form.bio}
+                  onChange={handleChange}
+                  rows={3}
+                />
+                <button className="profile-btn-small" onClick={handleSave}>
+                  Сохранить
+                </button>
+              </div>
+            )}
+
+            {!confirmDelete ? (
+              <button className="profile-delete" onClick={() => setConfirmDelete(true)}>
+                Удалить аккаунт
+              </button>
+            ) : (
+              <div className="profile-delete-confirm">
+                <div className="profile-delete-text">
+                  Это удалит аккаунт навсегда. Точно?
+                </div>
+                <div className="profile-delete-actions">
+                  <button className="profile-delete-yes" onClick={handleDeleteAccount}>
+                    Да, удалить
+                  </button>
+                  <button className="profile-delete-no" onClick={() => setConfirmDelete(false)}>
+                    Отмена
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {deleteError && <div className="auth-error">{deleteError}</div>}
+          </div>
         </div>
 
         <div className="profile-posts-section">
