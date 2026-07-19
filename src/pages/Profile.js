@@ -1,10 +1,30 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged, signOut, deleteUser } from "firebase/auth";
-import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
+import {
+  doc, getDoc, updateDoc, deleteDoc, collection, addDoc, query, where, orderBy,
+  onSnapshot, arrayUnion, arrayRemove,
+} from "firebase/firestore";
 import { auth, db } from "../firebase";
 import "./Profile.css";
 import joinBg from "../join-bg.jpg";
+
+const HeartIcon = ({ filled, size = 24 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24">
+    <defs>
+      <linearGradient id="pgHeartGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stopColor="#ff6b5e" />
+        <stop offset="100%" stopColor="#c0392b" />
+      </linearGradient>
+    </defs>
+    <path
+      d="M12,21.35 L10.55,20.03 C5.4,15.36 2,12.28 2,8.5 C2,5.42 4.42,3 7.5,3 C9.24,3 10.91,3.81 12,5.09 C13.09,3.81 14.76,3 16.5,3 C19.58,3 22,5.42 22,8.5 C22,12.28 18.6,15.36 13.45,20.04 L12,21.35 Z"
+      fill={filled ? "url(#pgHeartGrad)" : "none"}
+      stroke={filled ? "#c0392b" : "#8a8578"}
+      strokeWidth="1.5"
+    />
+  </svg>
+);
 
 function Profile() {
   const navigate = useNavigate();
@@ -19,6 +39,10 @@ function Profile() {
   const [loading, setLoading] = useState(true);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleteError, setDeleteError] = useState("");
+  const [myPosts, setMyPosts] = useState([]);
+  const [lightbox, setLightbox] = useState(null);
+  const [lightboxComments, setLightboxComments] = useState([]);
+  const [commentText, setCommentText] = useState("");
 
   const [cropSrc, setCropSrc] = useState(null);
   const [imgSize, setImgSize] = useState({ w: 0, h: 0 });
@@ -44,6 +68,34 @@ function Profile() {
     });
     return unsub;
   }, [navigate]);
+
+  useEffect(() => {
+    if (!user) return;
+    const q = query(collection(db, "posts"), where("authorId", "==", user.uid));
+    const unsub = onSnapshot(q, (snap) => {
+      const list = snap.docs.map((d) => ({ id: d.id, ...d.data() })).filter((p) => p.image);
+      list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      setMyPosts(list);
+      if (lightbox) {
+        const updated = list.find((p) => p.id === lightbox.id);
+        if (updated) setLightbox(updated);
+      }
+    });
+    return unsub;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
+  useEffect(() => {
+    if (!lightbox) return;
+    const q = query(
+      collection(db, "posts", lightbox.id, "comments"),
+      orderBy("createdAt", "asc")
+    );
+    const unsub = onSnapshot(q, (snap) => {
+      setLightboxComments(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+    });
+    return unsub;
+  }, [lightbox?.id]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -142,6 +194,52 @@ function Profile() {
     }
   };
 
+  const toggleLightboxLike = async () => {
+    if (!lightbox) return;
+    const liked = lightbox.likes?.includes(user.uid);
+    const ref = doc(db, "posts", lightbox.id);
+    await updateDoc(ref, {
+      likes: liked ? arrayRemove(user.uid) : arrayUnion(user.uid),
+    });
+    if (!liked && lightbox.authorId !== user.uid) {
+      await addDoc(collection(db, "notifications"), {
+        toUserId: lightbox.authorId,
+        fromUserId: user.uid,
+        fromUserName: profile?.name || "Участник",
+        type: "like",
+        read: false,
+        createdAt: new Date().toISOString(),
+      });
+    }
+  };
+
+  const handleLightboxComment = async (e) => {
+    e.preventDefault();
+    if (!commentText.trim() || !lightbox) return;
+    await addDoc(collection(db, "posts", lightbox.id, "comments"), {
+      text: commentText,
+      authorName: profile?.name || "Участник",
+      authorPhoto: profile?.photoURL || "",
+      createdAt: new Date().toISOString(),
+    });
+    if (lightbox.authorId !== user.uid) {
+      await addDoc(collection(db, "notifications"), {
+        toUserId: lightbox.authorId,
+        fromUserId: user.uid,
+        fromUserName: profile?.name || "Участник",
+        type: "postComment",
+        read: false,
+        createdAt: new Date().toISOString(),
+      });
+    }
+    setCommentText("");
+  };
+
+  const formatDate = (iso) => {
+    const d = new Date(iso);
+    return d.toLocaleDateString("ru-RU", { day: "2-digit", month: "short" });
+  };
+
   if (loading) {
     return <div className="profile-page"></div>;
   }
@@ -202,99 +300,224 @@ function Profile() {
     );
   }
 
+  const liked = lightbox?.likes?.includes(user?.uid);
+
   return (
     <div className="profile-page">
       <div className="profile-badge-bg" style={{ backgroundImage: `url(${joinBg})` }}></div>
       <div className="profile-badge-overlay"></div>
 
-      <div className="profile-card">
-        <div className="profile-avatar" onClick={handleAvatarClick} style={{ cursor: "pointer" }}>
-          {profile?.photoURL ? (
-            <img src={profile.photoURL} alt="avatar" />
+      <div className="profile-scroll">
+        <div className="profile-card">
+          <div className="profile-avatar" onClick={handleAvatarClick} style={{ cursor: "pointer" }}>
+            {profile?.photoURL ? (
+              <img src={profile.photoURL} alt="avatar" />
+            ) : (
+              profile?.name?.[0]?.toUpperCase() || "?"
+            )}
+          </div>
+          <input
+            type="file"
+            accept="image/*"
+            ref={fileInputRef}
+            onChange={handleFileSelect}
+            style={{ display: "none" }}
+          />
+
+          <h1 className="profile-name">{profile?.name}</h1>
+          <div className="profile-city">{profile?.city}</div>
+
+          {!editing ? (
+            <>
+              <div className="profile-field">
+                <span className="profile-label">Prado</span>
+                <span>{profile?.prado || "не указано"}</span>
+              </div>
+              <div className="profile-field">
+                <span className="profile-label">О себе</span>
+                <span>{profile?.bio || "не указано"}</span>
+              </div>
+              <button className="profile-btn" onClick={() => setEditing(true)}>
+                Редактировать
+              </button>
+            </>
           ) : (
-            profile?.name?.[0]?.toUpperCase() || "?"
+            <>
+              <input
+                type="text"
+                name="city"
+                placeholder="Город"
+                value={form.city}
+                onChange={handleChange}
+              />
+              <input
+                type="text"
+                name="prado"
+                placeholder="Модель Prado"
+                value={form.prado}
+                onChange={handleChange}
+              />
+              <textarea
+                name="bio"
+                placeholder="О себе"
+                value={form.bio}
+                onChange={handleChange}
+                rows={3}
+              />
+              <button className="profile-btn" onClick={handleSave}>
+                Сохранить
+              </button>
+            </>
+          )}
+
+          <button className="profile-logout" onClick={handleLogout}>
+            Выйти
+          </button>
+
+          {!confirmDelete ? (
+            <button className="profile-delete" onClick={() => setConfirmDelete(true)}>
+              Удалить аккаунт
+            </button>
+          ) : (
+            <div className="profile-delete-confirm">
+              <div className="profile-delete-text">
+                Это удалит аккаунт навсегда. Точно?
+              </div>
+              <div className="profile-delete-actions">
+                <button className="profile-delete-yes" onClick={handleDeleteAccount}>
+                  Да, удалить
+                </button>
+                <button className="profile-delete-no" onClick={() => setConfirmDelete(false)}>
+                  Отмена
+                </button>
+              </div>
+            </div>
+          )}
+
+          {deleteError && <div className="auth-error">{deleteError}</div>}
+        </div>
+
+        <div className="profile-posts-section">
+          <div className="profile-posts-label">Мои публикации ({myPosts.length})</div>
+          {myPosts.length === 0 ? (
+            <div className="profile-posts-empty">Пока нет опубликованных постов.</div>
+          ) : (
+            <div className="profile-posts-grid">
+              {myPosts.map((p) => (
+                <button key={p.id} className="profile-posts-item" onClick={() => setLightbox(p)}>
+                  <img src={p.image} alt="" />
+                </button>
+              ))}
+            </div>
           )}
         </div>
-        <input
-          type="file"
-          accept="image/*"
-          ref={fileInputRef}
-          onChange={handleFileSelect}
-          style={{ display: "none" }}
-        />
+      </div>
 
-        <h1 className="profile-name">{profile?.name}</h1>
-        <div className="profile-city">{profile?.city}</div>
+      {lightbox && (
+        <div className="ig-lightbox-overlay" onClick={() => setLightbox(null)}>
+          <button className="ig-lightbox-close" onClick={() => setLightbox(null)}>✕</button>
 
-        {!editing ? (
-          <>
-            <div className="profile-field">
-              <span className="profile-label">Prado</span>
-              <span>{profile?.prado || "не указано"}</span>
-            </div>
-            <div className="profile-field">
-              <span className="profile-label">О себе</span>
-              <span>{profile?.bio || "не указано"}</span>
-            </div>
-            <button className="profile-btn" onClick={() => setEditing(true)}>
-              Редактировать
+          {myPosts.findIndex((p) => p.id === lightbox.id) > 0 && (
+            <button
+              className="ig-lightbox-nav ig-lightbox-nav-left"
+              onClick={(e) => {
+                e.stopPropagation();
+                const i = myPosts.findIndex((p) => p.id === lightbox.id);
+                setLightbox(myPosts[i - 1]);
+                setCommentText("");
+              }}
+            >
+              ‹
             </button>
-          </>
-        ) : (
-          <>
-            <input
-              type="text"
-              name="city"
-              placeholder="Город"
-              value={form.city}
-              onChange={handleChange}
-            />
-            <input
-              type="text"
-              name="prado"
-              placeholder="Модель Prado"
-              value={form.prado}
-              onChange={handleChange}
-            />
-            <textarea
-              name="bio"
-              placeholder="О себе"
-              value={form.bio}
-              onChange={handleChange}
-              rows={3}
-            />
-            <button className="profile-btn" onClick={handleSave}>
-              Сохранить
+          )}
+
+          {myPosts.findIndex((p) => p.id === lightbox.id) < myPosts.length - 1 && (
+            <button
+              className="ig-lightbox-nav ig-lightbox-nav-right"
+              onClick={(e) => {
+                e.stopPropagation();
+                const i = myPosts.findIndex((p) => p.id === lightbox.id);
+                setLightbox(myPosts[i + 1]);
+                setCommentText("");
+              }}
+            >
+              ›
             </button>
-          </>
-        )}
+          )}
 
-        <button className="profile-logout" onClick={handleLogout}>
-          Выйти
-        </button>
-
-        {!confirmDelete ? (
-          <button className="profile-delete" onClick={() => setConfirmDelete(true)}>
-            Удалить аккаунт
-          </button>
-        ) : (
-          <div className="profile-delete-confirm">
-            <div className="profile-delete-text">
-              Это удалит аккаунт навсегда. Точно?
+          <div className="ig-lightbox" onClick={(e) => e.stopPropagation()}>
+            <div className="ig-lightbox-image">
+              <img src={lightbox.image} alt="" />
             </div>
-            <div className="profile-delete-actions">
-              <button className="profile-delete-yes" onClick={handleDeleteAccount}>
-                Да, удалить
-              </button>
-              <button className="profile-delete-no" onClick={() => setConfirmDelete(false)}>
-                Отмена
-              </button>
+            <div className="ig-lightbox-side">
+              <div className="ig-lightbox-header">
+                <div className="ig-lightbox-avatar">
+                  {profile?.photoURL ? (
+                    <img src={profile.photoURL} alt="" />
+                  ) : (
+                    profile?.name?.[0]?.toUpperCase() || "?"
+                  )}
+                </div>
+                <span>{profile?.name}</span>
+              </div>
+
+              <div className="ig-lightbox-comments">
+                {lightbox.text && (
+                  <div className="ig-comment">
+                    <div className="ig-comment-avatar">
+                      {profile?.photoURL ? (
+                        <img src={profile.photoURL} alt="" />
+                      ) : (
+                        profile?.name?.[0]?.toUpperCase() || "?"
+                      )}
+                    </div>
+                    <div>
+                      <span className="ig-comment-author">{profile?.name}</span>{" "}
+                      <span className="ig-comment-text">{lightbox.text}</span>
+                    </div>
+                  </div>
+                )}
+                {lightboxComments.map((c) => (
+                  <div className="ig-comment" key={c.id}>
+                    <div className="ig-comment-avatar">
+                      {c.authorPhoto ? (
+                        <img src={c.authorPhoto} alt="" />
+                      ) : (
+                        c.authorName?.[0]?.toUpperCase() || "?"
+                      )}
+                    </div>
+                    <div>
+                      <span className="ig-comment-author">{c.authorName}</span>{" "}
+                      <span className="ig-comment-text">{c.text}</span>
+                      <div className="ig-comment-date">{formatDate(c.createdAt)}</div>
+                    </div>
+                  </div>
+                ))}
+                {lightboxComments.length === 0 && !lightbox.text && (
+                  <div className="ig-comment-empty">Комментариев пока нет</div>
+                )}
+              </div>
+
+              <div className="ig-lightbox-actions">
+                <button className="ig-like-btn" onClick={toggleLightboxLike}>
+                  <HeartIcon filled={liked} size={26} />
+                </button>
+                <span className="ig-likes-count">{lightbox.likes?.length || 0} отметок «Нравится»</span>
+              </div>
+
+              <form className="ig-comment-form" onSubmit={handleLightboxComment}>
+                <input
+                  type="text"
+                  placeholder="Добавьте комментарий..."
+                  value={commentText}
+                  onChange={(e) => setCommentText(e.target.value)}
+                />
+                <button type="submit" disabled={!commentText.trim()}>Опубликовать</button>
+              </form>
             </div>
           </div>
-        )}
-
-        {deleteError && <div className="auth-error">{deleteError}</div>}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

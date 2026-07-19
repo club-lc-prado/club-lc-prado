@@ -32,6 +32,8 @@ function Feed() {
   const [notifOpen, setNotifOpen] = useState(false);
   const [journeysList, setJourneysList] = useState([]);
   const [selectedJourney, setSelectedJourney] = useState("");
+  const [avatarPreviewOpen, setAvatarPreviewOpen] = useState(false);
+  const [myPhotos, setMyPhotos] = useState([]);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (u) => {
@@ -51,6 +53,17 @@ function Feed() {
     });
     return unsub;
   }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    const q = query(collection(db, "posts"), where("authorId", "==", user.uid));
+    const unsub = onSnapshot(q, (snap) => {
+      const list = snap.docs.map((d) => ({ id: d.id, ...d.data() })).filter((p) => p.image);
+      list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      setMyPhotos(list);
+    });
+    return unsub;
+  }, [user]);
 
   useEffect(() => {
     const loadJourneys = async () => {
@@ -290,16 +303,49 @@ function Feed() {
         <div className="feed-left">
           <div className="feed-header-sticky">
             <div className="feed-account-row" ref={menuRef}>
-              <Link to="/profile" className="feed-account">
-                <div className="feed-avatar">
-                  {profile?.photoURL ? (
-                    <img src={profile.photoURL} alt="avatar" />
-                  ) : (
-                    profile?.name?.[0]?.toUpperCase() || "?"
-                  )}
-                </div>
-                <span className="feed-account-name">{profile?.name || "Гость"}</span>
-              </Link>
+              <div
+                className="feed-avatar-preview-wrap"
+                onMouseEnter={() => setAvatarPreviewOpen(true)}
+                onMouseLeave={() => setAvatarPreviewOpen(false)}
+              >
+                <Link
+                  to="/profile"
+                  className="feed-account"
+                  onClick={(e) => {
+                    if (window.innerWidth < 900) {
+                      e.preventDefault();
+                      setAvatarPreviewOpen(!avatarPreviewOpen);
+                    }
+                  }}
+                >
+                  <div className="feed-avatar">
+                    {profile?.photoURL ? (
+                      <img src={profile.photoURL} alt="avatar" />
+                    ) : (
+                      profile?.name?.[0]?.toUpperCase() || "?"
+                    )}
+                  </div>
+                  <span className="feed-account-name">{profile?.name || "Гость"}</span>
+                </Link>
+
+                {avatarPreviewOpen && (
+                  <div className="avatar-preview-dropdown">
+                    <div className="avatar-preview-header">
+                      <span>{myPhotos.length} публикаций</span>
+                      <Link to="/profile" onClick={() => setAvatarPreviewOpen(false)}>Профиль →</Link>
+                    </div>
+                    {myPhotos.length === 0 ? (
+                      <div className="avatar-preview-empty">Пока нет фото</div>
+                    ) : (
+                      <div className="avatar-preview-grid">
+                        {myPhotos.slice(0, 9).map((p) => (
+                          <img key={p.id} src={p.image} alt="" />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
 
               {user && (
                 <div className="feed-header-icons">
@@ -472,16 +518,6 @@ function Feed() {
           </Link>
 
           </div>
-
-        <Link to="/album" className="feed-book">
-          <div className="feed-book-cover">
-            <div className="feed-book-spine"></div>
-            <div className="feed-book-title">
-              <span>МОЙ</span>
-              <span>АЛЬБОМ</span>
-            </div>
-          </div>
-        </Link>
       </div>
 
       {qrOpen && user && (
