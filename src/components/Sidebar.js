@@ -6,9 +6,8 @@ import "./Sidebar.css";
 const navItems = [
   { to: "/", key: "home" },
   { to: "/about", key: "about" },
-  { to: "/news", key: "news" },
+  { to: "/useful", key: "useful" },
   { to: "/gallery", key: "gallery" },
-  { to: "/tech-info", key: "techInfo" },
   { to: "/journeys", key: "journeys" },
   { to: "/shop", key: "shop" },
   { to: "/contacts", key: "contacts" },
