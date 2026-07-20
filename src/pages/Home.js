@@ -75,7 +75,7 @@ function Home() {
               {profile?.name || "Гость"}
             </span>
             <span className="hero-strip-account-sub">
-              {user ? "→ Лента" : "→ Войти"}
+              {user ? t.home.feedLink : t.home.loginLink}
             </span>
           </div>
         </Link>

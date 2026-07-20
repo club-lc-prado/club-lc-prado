@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import { useLanguage } from "../i18n/LanguageContext";
 import "./Sidebar.css";
 
@@ -29,10 +29,10 @@ function Sidebar() {
   return (
     <>
       <nav className="sidebar">
-        <div className="sidebar-logo">
+        <Link to="/" className="sidebar-logo">
           LC
           <span>PRADO CLUB</span>
-        </div>
+        </Link>
 
         <ul className="sidebar-nav">
           {navItems.map((item) => (
@@ -63,9 +63,9 @@ function Sidebar() {
       </nav>
 
       <div className="mobile-topbar">
-        <div className="mobile-topbar-logo">
+        <Link to="/" className="mobile-topbar-logo">
           LC <span>PRADO CLUB</span>
-        </div>
+        </Link>
         <button
           className={"hamburger" + (menuOpen ? " open" : "")}
           onClick={() => setMenuOpen(!menuOpen)}

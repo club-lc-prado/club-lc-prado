@@ -9,6 +9,8 @@ const translations = {
       cardMembers: "Участников в клубе",
       cardTrip: "Последний выезд",
       tagline: "LIVE. EXPLORE. PRADO.",
+      feedLink: "→ Лента",
+      loginLink: "→ Войти",
     },
     nav: {
       home: "Главная",
@@ -66,6 +68,8 @@ const translations = {
       cardMembers: "Mitglieder im Club",
       cardTrip: "Letzte Ausfahrt",
       tagline: "LIVE. EXPLORE. PRADO.",
+      feedLink: "→ Feed",
+      loginLink: "→ Anmelden",
     },
     nav: {
       home: "Startseite",
@@ -123,6 +127,8 @@ const translations = {
       cardMembers: "Members in club",
       cardTrip: "Last trip",
       tagline: "LIVE. EXPLORE. PRADO.",
+      feedLink: "→ Feed",
+      loginLink: "→ Log in",
     },
     nav: {
       home: "Home",
@@ -180,6 +186,8 @@ const translations = {
       cardMembers: "Учасників у клубі",
       cardTrip: "Останній виїзд",
       tagline: "LIVE. EXPLORE. PRADO.",
+      feedLink: "→ Стрічка",
+      loginLink: "→ Увійти",
     },
     nav: {
       home: "Головна",
