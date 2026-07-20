@@ -3,10 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { collection, addDoc, doc, getDoc } from "firebase/firestore";
 import { auth, db } from "../firebase";
+import { useLanguage } from "../i18n/LanguageContext";
 import "./Journeys.css";
-import journeysBg from "../journeys-bg.jpg";
 
 function NewJourney() {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
@@ -53,16 +54,14 @@ function NewJourney() {
 
   return (
     <div className="journeys-page">
-      <div className="journeys-bg-fixed" style={{ backgroundImage: `url(${journeysBg})` }}></div>
-      <div className="journeys-bg-overlay"></div>
-      <h1 className="journeys-title">Кинуть клич</h1>
+      <h1 className="journeys-title">{t.journeys.newTitle}</h1>
       <div className="journeys-underline"></div>
 
       <form className="journey-form" onSubmit={handleSubmit}>
         <input
           type="text"
           name="title"
-          placeholder="Название (например: Покатушки Circuit Meppen)"
+          placeholder={t.journeys.titlePlaceholder}
           value={form.title}
           onChange={handleChange}
           required
@@ -77,14 +76,14 @@ function NewJourney() {
         <input
           type="text"
           name="place"
-          placeholder="Место"
+          placeholder={t.journeys.placePlaceholder}
           value={form.place}
           onChange={handleChange}
           required
         />
         <textarea
           name="description"
-          placeholder="Опиши идею — куда едем, зачем, что брать с собой"
+          placeholder={t.journeys.descPlaceholder}
           value={form.description}
           onChange={handleChange}
           rows={5}
@@ -92,7 +91,7 @@ function NewJourney() {
         />
 
         <button type="submit" disabled={loading}>
-          {loading ? "Публикуем..." : "Опубликовать клич"}
+          {loading ? t.journeys.publishing : t.journeys.publishBtn}
         </button>
 
         {error && <div className="auth-error">{error}</div>}

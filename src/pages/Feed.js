@@ -7,11 +7,13 @@ import {
 } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import { Home } from "lucide-react";
+import { useLanguage } from "../i18n/LanguageContext";
 import "./Feed.css";
 import likeSound from "../like-sound.mp3";
 import notifSound from "../notif-sound.mp3";
 
 function Feed() {
+  const { t, lang } = useLanguage();
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
   const menuRef = useRef(null);
@@ -31,6 +33,8 @@ function Feed() {
   const [burstFor, setBurstFor] = useState(null);
   const [notifConverging, setNotifConverging] = useState(null);
   const [notifOpen, setNotifOpen] = useState(false);
+
+  const localeMap = { ru: "ru-RU", de: "de-DE", en: "en-US", ua: "uk-UA" };
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (u) => {
@@ -211,12 +215,12 @@ function Feed() {
 
   const formatDate = (iso) => {
     const d = new Date(iso);
-    return d.toLocaleDateString("ru-RU", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
+    return d.toLocaleDateString(localeMap[lang] || "ru-RU", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
   };
 
   const formatJourneyDate = (dateStr) => {
     const d = new Date(dateStr);
-    return d.toLocaleDateString("ru-RU", { day: "2-digit", month: "long" });
+    return d.toLocaleDateString(localeMap[lang] || "ru-RU", { day: "2-digit", month: "long" });
   };
 
   const handleLogout = async () => {
@@ -259,10 +263,10 @@ function Feed() {
   };
 
   const textFor = (n) => {
-    if (n.type === "like") return `${n.fromUserName} оценил(а) твой пост`;
-    if (n.type === "comment") return `${n.fromUserName} прокомментировал(а) "${n.journeyTitle}"`;
-    if (n.type === "postComment") return `${n.fromUserName} прокомментировал(а) твой пост`;
-    if (n.type === "rsvp") return `${n.fromUserName} присоединился(лась) к "${n.journeyTitle}"`;
+    if (n.type === "like") return `${n.fromUserName} ${t.feed.likedYourPost}`;
+    if (n.type === "comment") return `${n.fromUserName} ${t.feed.commentedTopic} "${n.journeyTitle}"`;
+    if (n.type === "postComment") return `${n.fromUserName} ${t.feed.commentedYourPost}`;
+    if (n.type === "rsvp") return `${n.fromUserName} ${t.feed.joinedCall} "${n.journeyTitle}"`;
     return n.fromUserName;
   };
 
@@ -277,21 +281,23 @@ function Feed() {
         <div className="feed-left">
           <div className="feed-header-sticky">
             <div className="feed-account-row" ref={menuRef}>
-              <Link to="/profile" className="feed-account">
-                <div className="feed-avatar">
-                  {profile?.photoURL ? (
-                    <img src={profile.photoURL} alt="avatar" />
-                  ) : (
-                    profile?.name?.[0]?.toUpperCase() || "?"
-                  )}
-                </div>
-                <span className="feed-account-name">{profile?.name || "Гость"}</span>
-              </Link>
+              <div className="feed-avatar-preview-wrap">
+                <Link to="/profile" className="feed-account">
+                  <div className="feed-avatar">
+                    {profile?.photoURL ? (
+                      <img src={profile.photoURL} alt="avatar" />
+                    ) : (
+                      profile?.name?.[0]?.toUpperCase() || "?"
+                    )}
+                  </div>
+                  <span className="feed-account-name">{profile?.name || t.feed.guest}</span>
+                </Link>
+              </div>
 
               {user && (
                 <div className="feed-header-icons">
-                  <Link to="/" className="feed-home-btn" aria-label="На главную">
-                    🏠
+                  <Link to="/" className="feed-home-btn" aria-label="Home">
+                    <Home size={18} />
                   </Link>
 
                   <div className="feed-notif-wrap">
@@ -303,7 +309,7 @@ function Feed() {
                     {notifOpen && (
                       <div className="notif-dropdown">
                         {notifications.length === 0 && (
-                          <div className="notif-dropdown-empty">Пока пусто</div>
+                          <div className="notif-dropdown-empty">{t.feed.notifEmpty}</div>
                         )}
                         {notifications.map((n) => (
                           <Link
@@ -329,11 +335,11 @@ function Feed() {
                     </button>
                     {menuOpen && (
                       <div className="feed-gear-menu">
-                        <button onClick={() => { setQrOpen(true); setMenuOpen(false); }}>QR-код</button>
-                        <Link to="/profile" onClick={() => setMenuOpen(false)}>Редактировать профиль</Link>
-                        <Link to="/settings" onClick={() => setMenuOpen(false)}>Настройки и конфиденциальность</Link>
-                        <button onClick={() => { alert("Дата регистрации: " + (profile?.createdAt ? new Date(profile.createdAt).toLocaleDateString("ru-RU") : "неизвестно")); setMenuOpen(false); }}>Входы в аккаунт</button>
-                        <button onClick={handleLogout} className="feed-gear-logout">Выйти</button>
+                        <button onClick={() => { setQrOpen(true); setMenuOpen(false); }}>{t.feed.qrCode}</button>
+                        <Link to="/profile" onClick={() => setMenuOpen(false)}>{t.feed.editProfile}</Link>
+                        <Link to="/settings" onClick={() => setMenuOpen(false)}>{t.feed.settingsPrivacy}</Link>
+                        <button onClick={() => { alert(t.feed.regDate + ": " + (profile?.createdAt ? new Date(profile.createdAt).toLocaleDateString(localeMap[lang] || "ru-RU") : t.feed.unknown)); setMenuOpen(false); }}>{t.feed.loginHistory}</button>
+                        <button onClick={handleLogout} className="feed-gear-logout">{t.feed.logout}</button>
                       </div>
                     )}
                   </div>
@@ -341,14 +347,14 @@ function Feed() {
               )}
             </div>
 
-            <h1 className="feed-title">Лента</h1>
+            <h1 className="feed-title">{t.feed.title}</h1>
             <div className="feed-underline"></div>
           </div>
 
           {user && (
             <div className="feed-composer">
               <textarea
-                placeholder="Поделись чем-то с клубом..."
+                placeholder={t.feed.composerPlaceholder}
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 rows={3}
@@ -361,7 +367,7 @@ function Feed() {
                   className="feed-composer-photo-btn"
                   onClick={() => fileInputRef.current?.click()}
                 >
-                  {imagePreview ? "Заменить фото" : "+ Фото"}
+                  {imagePreview ? t.feed.replacePhoto : t.feed.addPhoto}
                 </button>
                 <input
                   type="file"
@@ -375,7 +381,7 @@ function Feed() {
                   onClick={handlePost}
                   disabled={posting || (!text.trim() && !imagePreview)}
                 >
-                  {posting ? "Публикуем..." : "Опубликовать"}
+                  {posting ? t.feed.publishing : t.feed.publishBtn}
                 </button>
               </div>
             </div>
@@ -383,7 +389,7 @@ function Feed() {
 
           <div className="feed-posts">
             {posts.length === 0 && (
-              <div className="feed-empty">Пока пусто. Стань первым, кто поделится историей.</div>
+              <div className="feed-empty">{t.feed.empty}</div>
             )}
 
             {posts.map((post) => {
@@ -445,19 +451,19 @@ function Feed() {
 
         <div className="feed-side">
           <Link to="/members" className="feed-side-card">
-            <div className="feed-side-label">Участников в клубе</div>
+            <div className="feed-side-label">{t.feed.membersInClub}</div>
             <div className="feed-side-value">{memberCount ?? "—"}</div>
           </Link>
 
           <Link to={nextJourney ? `/journeys/${nextJourney.id}` : "/journeys"} className="feed-side-card">
-            <div className="feed-side-label">Ближайший клич</div>
+            <div className="feed-side-label">{t.feed.nearestCall}</div>
             {nextJourney ? (
               <>
                 <div className="feed-side-value small">{nextJourney.title}</div>
                 <div className="feed-side-sub">{formatJourneyDate(nextJourney.date)}</div>
               </>
             ) : (
-              <div className="feed-side-value small">Пока не запланировано</div>
+              <div className="feed-side-value small">{t.feed.notPlanned}</div>
             )}
           </Link>
         </div>
@@ -468,10 +474,10 @@ function Feed() {
           <div className="qr-modal" onClick={(e) => e.stopPropagation()}>
             <img
               src={`https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(window.location.origin + "/members/" + user.uid)}`}
-              alt="QR код профиля"
+              alt="QR"
             />
-            <div className="qr-modal-text">Отсканируй, чтобы открыть мой профиль в клубе</div>
-            <button className="qr-modal-close" onClick={() => setQrOpen(false)}>Закрыть</button>
+            <div className="qr-modal-text">{t.feed.scanToOpen}</div>
+            <button className="qr-modal-close" onClick={() => setQrOpen(false)}>{t.feed.close}</button>
           </div>
         </div>
       )}
