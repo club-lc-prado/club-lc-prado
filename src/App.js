@@ -8,17 +8,19 @@ import Sidebar from "./components/Sidebar";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Forum from "./pages/Forum";
+import NewTopic from "./pages/NewTopic";
+import TopicDetail from "./pages/TopicDetail";
 import Gallery from "./pages/Gallery";
 import Useful from "./pages/Useful";
 import Journeys from "./pages/Journeys";
+import NewJourney from "./pages/NewJourney";
+import JourneyDetail from "./pages/JourneyDetail";
 import Shop from "./pages/Shop";
 import Contacts from "./pages/Contacts";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import Feed from "./pages/Feed";
-import NewJourney from "./pages/NewJourney";
-import JourneyDetail from "./pages/JourneyDetail";
 import Members from "./pages/Members";
 import MemberProfile from "./pages/MemberProfile";
 import Settings from "./pages/Settings";
@@ -48,23 +50,25 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
             <Route path="/forum" element={<Forum />} />
+            <Route path="/forum/new" element={<NewTopic />} />
+            <Route path="/forum/:id" element={<TopicDetail />} />
             <Route path="/gallery" element={<Gallery />} />
             <Route path="/useful" element={<Useful />} />
             <Route path="/journeys" element={<Journeys />} />
             <Route path="/journeys/new" element={<NewJourney />} />
             <Route path="/journeys/:id" element={<JourneyDetail />} />
-            <Route path="/members" element={<Members />} />
-            <Route path="/members/:id" element={<MemberProfile />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/notifications" element={<Notifications />} />
-            <Route path="/album" element={<Album />} />
-            <Route path="/album/:uid" element={<Album />} />
             <Route path="/shop" element={<Shop />} />
             <Route path="/contacts" element={<Contacts />} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/feed" element={<Feed />} />
+            <Route path="/members" element={<Members />} />
+            <Route path="/members/:id" element={<MemberProfile />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/notifications" element={<Notifications />} />
+            <Route path="/album" element={<Album />} />
+            <Route path="/album/:uid" element={<Album />} />
           </Routes>
         </BrowserRouter>
       )}
