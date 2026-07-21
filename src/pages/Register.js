@@ -3,10 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import { auth, db } from "../firebase";
+import { useLanguage } from "../i18n/LanguageContext";
 import "./Register.css";
 import joinBg from "../auth-bg.jpg";
 
 function Register() {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [form, setForm] = useState({ name: "", city: "", email: "", password: "" });
   const [error, setError] = useState("");
@@ -50,15 +52,13 @@ function Register() {
       <div className="auth-bg-fixed" style={{ backgroundImage: `url(${joinBg})` }}></div>
       <div className="auth-bg-overlay"></div>
       <form className="auth-form" onSubmit={handleSubmit}>
-        <h1 className="auth-title">Регистрация</h1>
-        <p className="auth-notice">
-          Другие участники клуба смогут видеть твой профиль в каталоге. Это можно отключить в любой момент в настройках профиля.
-        </p>
+        <h1 className="auth-title">{t.auth.registerTitle}</h1>
+        <p className="auth-notice">{t.auth.notice}</p>
 
         <input
           type="text"
           name="name"
-          placeholder="Имя"
+          placeholder={t.auth.namePlaceholder}
           value={form.name}
           onChange={handleChange}
           required
@@ -66,7 +66,7 @@ function Register() {
         <input
           type="text"
           name="city"
-          placeholder="Город"
+          placeholder={t.auth.cityPlaceholder}
           value={form.city}
           onChange={handleChange}
           required
@@ -74,7 +74,7 @@ function Register() {
         <input
           type="email"
           name="email"
-          placeholder="Email"
+          placeholder={t.auth.emailPlaceholder}
           value={form.email}
           onChange={handleChange}
           required
@@ -82,7 +82,7 @@ function Register() {
         <input
           type="password"
           name="password"
-          placeholder="Пароль"
+          placeholder={t.auth.passwordPlaceholder}
           value={form.password}
           onChange={handleChange}
           required
@@ -90,7 +90,7 @@ function Register() {
         />
 
         <button type="submit" disabled={loading}>
-          {loading ? "Создаём..." : "Зарегистрироваться"}
+          {loading ? t.auth.creating : t.auth.registerBtn}
         </button>
 
         {error && <div className="auth-error">{error}</div>}

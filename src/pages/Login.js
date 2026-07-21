@@ -2,10 +2,12 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
+import { useLanguage } from "../i18n/LanguageContext";
 import "./Register.css";
 import joinBg from "../auth-bg.jpg";
 
 function Login() {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
@@ -35,12 +37,12 @@ function Login() {
       <div className="auth-bg-fixed" style={{ backgroundImage: `url(${joinBg})` }}></div>
       <div className="auth-bg-overlay"></div>
       <form className="auth-form" onSubmit={handleSubmit}>
-        <h1 className="auth-title">Вход</h1>
+        <h1 className="auth-title">{t.auth.loginTitle}</h1>
 
         <input
           type="email"
           name="email"
-          placeholder="Email"
+          placeholder={t.auth.emailPlaceholder}
           value={form.email}
           onChange={handleChange}
           required
@@ -48,14 +50,14 @@ function Login() {
         <input
           type="password"
           name="password"
-          placeholder="Пароль"
+          placeholder={t.auth.passwordPlaceholder}
           value={form.password}
           onChange={handleChange}
           required
         />
 
         <button type="submit" disabled={loading}>
-          {loading ? "Входим..." : "Войти"}
+          {loading ? t.auth.loggingIn : t.auth.loginBtn}
         </button>
 
         {error && <div className="auth-error">{error}</div>}
