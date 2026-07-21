@@ -145,6 +145,10 @@ const translations = {
       language: "Язык",
       languageSub: "Язык интерфейса сайта",
     },
+    notifications: {
+      title: "Уведомления",
+      empty: "Пока пусто.",
+    },
   },
   de: {
     home: {
@@ -291,6 +295,10 @@ const translations = {
       saved: "Gespeichert",
       language: "Sprache",
       languageSub: "Sprache der Benutzeroberfläche",
+    },
+    notifications: {
+      title: "Benachrichtigungen",
+      empty: "Noch nichts hier.",
     },
   },
   en: {
@@ -439,6 +447,10 @@ const translations = {
       language: "Language",
       languageSub: "Site interface language",
     },
+    notifications: {
+      title: "Notifications",
+      empty: "Nothing here yet.",
+    },
   },
   ua: {
     home: {
@@ -585,6 +597,10 @@ const translations = {
       saved: "Збережено",
       language: "Мова",
       languageSub: "Мова інтерфейсу сайту",
+    },
+    notifications: {
+      title: "Сповіщення",
+      empty: "Поки пусто.",
     },
   },
 };
