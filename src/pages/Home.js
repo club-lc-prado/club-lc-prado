@@ -72,7 +72,7 @@ function Home() {
           </div>
           <div className="hero-strip-account-text">
             <span className="hero-strip-account-name">
-              {profile?.name || "Гость"}
+              {profile?.name || t.feed.guest}
             </span>
             <span className="hero-strip-account-sub">
               {user ? t.home.feedLink : t.home.loginLink}
