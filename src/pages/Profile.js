@@ -6,6 +6,7 @@ import {
   onSnapshot, arrayUnion, arrayRemove,
 } from "firebase/firestore";
 import { auth, db } from "../firebase";
+import { useLanguage } from "../i18n/LanguageContext";
 import "./Profile.css";
 import joinBg from "../join-bg.jpg";
 
@@ -27,6 +28,7 @@ const HeartIcon = ({ filled, size = 24 }) => (
 );
 
 function Profile() {
+  const { t, lang } = useLanguage();
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
   const imgRef = useRef(null);
@@ -50,6 +52,7 @@ function Profile() {
   const [offset, setOffset] = useState({ x: 0, y: 0 });
 
   const CIRCLE = 260;
+  const localeMap = { ru: "ru-RU", de: "de-DE", en: "en-US", ua: "uk-UA" };
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (u) => {
@@ -187,7 +190,7 @@ function Profile() {
       navigate("/");
     } catch (err) {
       if (err.code === "auth/requires-recent-login") {
-        setDeleteError("Нужно недавно войти заново, чтобы удалить аккаунт. Выйди и войди снова, затем повтори.");
+        setDeleteError(t.profile.requiresRecentLogin);
       } else {
         setDeleteError(err.message);
       }
@@ -215,7 +218,7 @@ function Profile() {
 
   const handleDeletePost = async () => {
     if (!lightbox) return;
-    if (!window.confirm("Удалить этот пост навсегда?")) return;
+    if (!window.confirm(t.profile.deletePostConfirm)) return;
     await deleteDoc(doc(db, "posts", lightbox.id));
     setLightbox(null);
   };
@@ -244,7 +247,7 @@ function Profile() {
 
   const formatDate = (iso) => {
     const d = new Date(iso);
-    return d.toLocaleDateString("ru-RU", { day: "2-digit", month: "short" });
+    return d.toLocaleDateString(localeMap[lang] || "ru-RU", { day: "2-digit", month: "short" });
   };
 
   if (loading) {
@@ -296,10 +299,10 @@ function Profile() {
 
           <div className="crop-actions">
             <button className="profile-btn" onClick={handleSaveCrop}>
-              Сохранить фото
+              {t.profile.saveCropBtn}
             </button>
             <button className="profile-delete-no" onClick={() => setCropSrc(null)}>
-              Отмена
+              {t.profile.cancelBtn}
             </button>
           </div>
         </div>
@@ -338,15 +341,15 @@ function Profile() {
             <div className="profile-stats">
               <div className="profile-stat">
                 <span className="profile-stat-num">{myPosts.length}</span>
-                <span className="profile-stat-label">публикаций</span>
+                <span className="profile-stat-label">{t.profile.publications}</span>
               </div>
               <div className="profile-stat">
                 <span className="profile-stat-num">—</span>
-                <span className="profile-stat-label">подписчиков</span>
+                <span className="profile-stat-label">{t.profile.followers}</span>
               </div>
               <div className="profile-stat">
                 <span className="profile-stat-num">—</span>
-                <span className="profile-stat-label">подписок</span>
+                <span className="profile-stat-label">{t.profile.following}</span>
               </div>
             </div>
 
@@ -357,10 +360,10 @@ function Profile() {
                 </div>
                 <div className="profile-header-actions">
                   <button className="profile-btn-small" onClick={() => setEditing(true)}>
-                    Редактировать
+                    {t.profile.editBtn}
                   </button>
                   <button className="profile-logout-small" onClick={handleLogout}>
-                    Выйти
+                    {t.profile.logoutBtn}
                   </button>
                 </div>
               </>
@@ -369,45 +372,45 @@ function Profile() {
                 <input
                   type="text"
                   name="city"
-                  placeholder="Город"
+                  placeholder={t.profile.cityPlaceholder}
                   value={form.city}
                   onChange={handleChange}
                 />
                 <input
                   type="text"
                   name="prado"
-                  placeholder="Prado — есть, мечтаю, продаю..."
+                  placeholder={t.profile.pradoPlaceholder}
                   value={form.prado}
                   onChange={handleChange}
                 />
                 <textarea
                   name="bio"
-                  placeholder="О себе"
+                  placeholder={t.profile.bioPlaceholder}
                   value={form.bio}
                   onChange={handleChange}
                   rows={3}
                 />
                 <button className="profile-btn-small" onClick={handleSave}>
-                  Сохранить
+                  {t.profile.saveBtn}
                 </button>
               </div>
             )}
 
             {!confirmDelete ? (
               <button className="profile-delete" onClick={() => setConfirmDelete(true)}>
-                Удалить аккаунт
+                {t.profile.deleteAccountBtn}
               </button>
             ) : (
               <div className="profile-delete-confirm">
                 <div className="profile-delete-text">
-                  Это удалит аккаунт навсегда. Точно?
+                  {t.profile.deleteConfirmText}
                 </div>
                 <div className="profile-delete-actions">
                   <button className="profile-delete-yes" onClick={handleDeleteAccount}>
-                    Да, удалить
+                    {t.profile.deleteYesBtn}
                   </button>
                   <button className="profile-delete-no" onClick={() => setConfirmDelete(false)}>
-                    Отмена
+                    {t.profile.cancelBtn}
                   </button>
                 </div>
               </div>
@@ -418,9 +421,9 @@ function Profile() {
         </div>
 
         <div className="profile-posts-section">
-          <div className="profile-posts-label">Мои публикации ({myPosts.length})</div>
+          <div className="profile-posts-label">{t.profile.myPublications} ({myPosts.length})</div>
           {myPosts.length === 0 ? (
-            <div className="profile-posts-empty">Пока нет опубликованных постов.</div>
+            <div className="profile-posts-empty">{t.profile.noPostsYet}</div>
           ) : (
             <div className="profile-posts-grid">
               {myPosts.map((p) => (
@@ -480,7 +483,7 @@ function Profile() {
                 </div>
                 <span>{profile?.name}</span>
                 <button className="ig-delete-btn" onClick={handleDeletePost}>
-                  Удалить
+                  {t.profile.deletePostBtn}
                 </button>
               </div>
 
@@ -517,7 +520,7 @@ function Profile() {
                   </div>
                 ))}
                 {lightboxComments.length === 0 && !lightbox.text && (
-                  <div className="ig-comment-empty">Комментариев пока нет</div>
+                  <div className="ig-comment-empty">{t.profile.noComments}</div>
                 )}
               </div>
 
@@ -525,17 +528,17 @@ function Profile() {
                 <button className="ig-like-btn" onClick={toggleLightboxLike}>
                   <HeartIcon filled={liked} size={26} />
                 </button>
-                <span className="ig-likes-count">{lightbox.likes?.length || 0} отметок «Нравится»</span>
+                <span className="ig-likes-count">{lightbox.likes?.length || 0} {t.profile.likesLabel}</span>
               </div>
 
               <form className="ig-comment-form" onSubmit={handleLightboxComment}>
                 <input
                   type="text"
-                  placeholder="Добавьте комментарий..."
+                  placeholder={t.profile.addComment}
                   value={commentText}
                   onChange={(e) => setCommentText(e.target.value)}
                 />
-                <button type="submit" disabled={!commentText.trim()}>Опубликовать</button>
+                <button type="submit" disabled={!commentText.trim()}>{t.profile.publishComment}</button>
               </form>
             </div>
           </div>
