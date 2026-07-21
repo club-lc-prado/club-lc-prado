@@ -3,9 +3,18 @@ import { useNavigate, Link } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { auth, db } from "../firebase";
+import { useLanguage } from "../i18n/LanguageContext";
 import "./Settings.css";
 
+const languages = [
+  { code: "ru", label: "Русский" },
+  { code: "de", label: "Deutsch" },
+  { code: "en", label: "English" },
+  { code: "ua", label: "Українська" },
+];
+
 function Settings() {
+  const { t, lang, changeLang } = useLanguage();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [visibleInCatalog, setVisibleInCatalog] = useState(true);
@@ -41,16 +50,32 @@ function Settings() {
 
   return (
     <div className="settings-page">
-      <Link to="/feed" className="settings-back">← Назад в ленту</Link>
+      <Link to="/feed" className="settings-back">{t.settings.backToFeed}</Link>
 
-      <h1 className="settings-title">Настройки и конфиденциальность</h1>
+      <h1 className="settings-title">{t.settings.title}</h1>
       <div className="settings-underline"></div>
 
       <div className="settings-section">
         <div className="settings-row">
           <div>
-            <div className="settings-row-label">Показывать меня в каталоге участников</div>
-            <div className="settings-row-sub">Другие участники клуба смогут найти твой профиль</div>
+            <div className="settings-row-label">{t.settings.language}</div>
+            <div className="settings-row-sub">{t.settings.languageSub}</div>
+          </div>
+          <select
+            className="settings-lang-select"
+            value={lang}
+            onChange={(e) => changeLang(e.target.value)}
+          >
+            {languages.map((l) => (
+              <option key={l.code} value={l.code}>{l.label}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="settings-row">
+          <div>
+            <div className="settings-row-label">{t.settings.showInCatalog}</div>
+            <div className="settings-row-sub">{t.settings.showInCatalogSub}</div>
           </div>
           <label className="settings-switch">
             <input
@@ -68,8 +93,8 @@ function Settings() {
         {visibleInCatalog && (
           <div className="settings-row">
             <div>
-              <div className="settings-row-label">Показывать мой город</div>
-              <div className="settings-row-sub">Виден в каталоге и публичном профиле</div>
+              <div className="settings-row-label">{t.settings.showCity}</div>
+              <div className="settings-row-sub">{t.settings.showCitySub}</div>
             </div>
             <label className="settings-switch">
               <input
@@ -86,7 +111,7 @@ function Settings() {
         )}
       </div>
 
-      {saved && <div className="settings-saved">Сохранено</div>}
+      {saved && <div className="settings-saved">{t.settings.saved}</div>}
     </div>
   );
 }

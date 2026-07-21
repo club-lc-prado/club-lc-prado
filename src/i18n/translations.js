@@ -22,6 +22,7 @@ const translations = {
       clubs: "Клубы",
       shop: "Магазин",
       contacts: "Контакты",
+      settings: "Настройки",
     },
     about: {
       title: "О клубе",
@@ -133,6 +134,17 @@ const translations = {
       saveCropBtn: "Сохранить фото",
       requiresRecentLogin: "Нужно недавно войти заново, чтобы удалить аккаунт. Выйди и войди снова, затем повтори.",
     },
+    settings: {
+      backToFeed: "← Назад в ленту",
+      title: "Настройки и конфиденциальность",
+      showInCatalog: "Показывать меня в каталоге участников",
+      showInCatalogSub: "Другие участники клуба смогут найти твой профиль",
+      showCity: "Показывать мой город",
+      showCitySub: "Виден в каталоге и публичном профиле",
+      saved: "Сохранено",
+      language: "Язык",
+      languageSub: "Язык интерфейса сайта",
+    },
   },
   de: {
     home: {
@@ -157,6 +169,7 @@ const translations = {
       clubs: "Clubs",
       shop: "Shop",
       contacts: "Kontakt",
+      settings: "Einstellungen",
     },
     about: {
       title: "Über den Club",
@@ -168,7 +181,7 @@ const translations = {
         "Ein unterschaetztes eisernes Pferd. Ein Auto, das nicht mit seinen Faehigkeiten prahlt, weil es das nicht noetig hat.",
         "Er wurde nicht fuer den Parkplatz vor dem Einkaufszentrum mit makellosem Lack gebaut. Er wurde fuer die Orte gebaut, an denen der Asphalt endet, das Navi nervoes wird und der Fahrer sich erinnert, wofuer Allradantrieb ueberhaupt erfunden wurde.",
         "In Deutschland gibt es solche Orte kaum noch. Die Deutschen haben jahrzehntelang so gute Strassen gebaut, dass selbst der legendaere Prado seine eigentliche Bestimmung aufschieben musste.",
-        "Die Apokalypse will einfach nicht kommen. Der Schlamm ist alle. Die kaputten Strassen sind verschwunden. Eine Furt bis zur Motorhaube zu finden ist schwerer, als einen freien Parkplatz in Muenchen.",
+        "Die Apokalypse will einfach nicht kommen. Der Schlamm ist alle. Der kaputten Strassen sind verschwunden. Eine Furt bis zur Motorhaube zu finden ist schwerer, als einen freien Parkplatz in Muenchen.",
         "Aber wir kennen die Wahrheit.",
         "Wenn eines Tages der perfekte deutsche Asphalt endet, die Ladesaeulen verschwinden, die elektronischen Assistenten ein Software-Update verlangen und die Zivilisation vor einer echten Pruefung steht, wer bleibt dann uebrig?",
         "Richtig.",
@@ -268,6 +281,17 @@ const translations = {
       saveCropBtn: "Foto speichern",
       requiresRecentLogin: "Du musst dich kürzlich neu angemeldet haben, um das Konto zu löschen. Melde dich ab und wieder an, versuche es erneut.",
     },
+    settings: {
+      backToFeed: "← Zurück zum Feed",
+      title: "Einstellungen und Privatsphäre",
+      showInCatalog: "Mich im Mitgliederkatalog anzeigen",
+      showInCatalogSub: "Andere Clubmitglieder können dein Profil finden",
+      showCity: "Meine Stadt anzeigen",
+      showCitySub: "Sichtbar im Katalog und öffentlichen Profil",
+      saved: "Gespeichert",
+      language: "Sprache",
+      languageSub: "Sprache der Benutzeroberfläche",
+    },
   },
   en: {
     home: {
@@ -292,6 +316,7 @@ const translations = {
       clubs: "Clubs",
       shop: "Shop",
       contacts: "Contact",
+      settings: "Settings",
     },
     about: {
       title: "About the club",
@@ -403,6 +428,17 @@ const translations = {
       saveCropBtn: "Save photo",
       requiresRecentLogin: "You need to have logged in recently to delete the account. Log out and back in, then try again.",
     },
+    settings: {
+      backToFeed: "← Back to feed",
+      title: "Settings and privacy",
+      showInCatalog: "Show me in the members catalog",
+      showInCatalogSub: "Other club members will be able to find your profile",
+      showCity: "Show my city",
+      showCitySub: "Visible in the catalog and public profile",
+      saved: "Saved",
+      language: "Language",
+      languageSub: "Site interface language",
+    },
   },
   ua: {
     home: {
@@ -427,6 +463,7 @@ const translations = {
       clubs: "Клуби",
       shop: "Магазин",
       contacts: "Контакти",
+      settings: "Налаштування",
     },
     about: {
       title: "Про клуб",
@@ -537,6 +574,17 @@ const translations = {
       noComments: "Коментарів поки немає",
       saveCropBtn: "Зберегти фото",
       requiresRecentLogin: "Потрібно нещодавно увійти знову, щоб видалити акаунт. Вийди і увійди знову, потім повтори.",
+    },
+    settings: {
+      backToFeed: "← Назад до стрічки",
+      title: "Налаштування і конфіденційність",
+      showInCatalog: "Показувати мене в каталозі учасників",
+      showInCatalogSub: "Інші учасники клубу зможуть знайти твій профіль",
+      showCity: "Показувати моє місто",
+      showCitySub: "Видно в каталозі і публічному профілі",
+      saved: "Збережено",
+      language: "Мова",
+      languageSub: "Мова інтерфейсу сайту",
     },
   },
 };

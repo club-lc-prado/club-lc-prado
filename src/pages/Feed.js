@@ -338,7 +338,6 @@ function Feed() {
                         <button onClick={() => { setQrOpen(true); setMenuOpen(false); }}>{t.feed.qrCode}</button>
                         <Link to="/profile" onClick={() => setMenuOpen(false)}>{t.feed.editProfile}</Link>
                         <Link to="/settings" onClick={() => setMenuOpen(false)}>{t.feed.settingsPrivacy}</Link>
-                        <button onClick={() => { alert(t.feed.regDate + ": " + (profile?.createdAt ? new Date(profile.createdAt).toLocaleDateString(localeMap[lang] || "ru-RU") : t.feed.unknown)); setMenuOpen(false); }}>{t.feed.loginHistory}</button>
                         <button onClick={handleLogout} className="feed-gear-logout">{t.feed.logout}</button>
                       </div>
                     )}

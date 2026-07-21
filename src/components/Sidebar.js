@@ -12,6 +12,7 @@ const navItems = [
   { to: "/shop", key: "shop" },
   { to: "/contacts", key: "contacts" },
   { to: "/forum", key: "forum" },
+  { to: "/settings", key: "settings" },
 ];
 
 function Sidebar() {
