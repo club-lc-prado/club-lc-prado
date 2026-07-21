@@ -3,9 +3,11 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { auth, db } from "../firebase";
+import { useLanguage } from "../i18n/LanguageContext";
 import "./Members.css";
 
 function MemberProfile() {
+  const { t } = useLanguage();
   const { id } = useParams();
   const navigate = useNavigate();
   const [member, setMember] = useState(null);
@@ -30,11 +32,11 @@ function MemberProfile() {
   };
 
   if (loading) return <div className="members-page"></div>;
-  if (!member) return <div className="members-page">Участник не найден.</div>;
+  if (!member) return <div className="members-page">{t.members.notFound}</div>;
 
   return (
     <div className="members-page">
-      <Link to="/members" className="member-back">← Все участники</Link>
+      <Link to="/members" className="member-back">{t.members.backToAll}</Link>
 
       <div className="member-profile-card">
         <div className="member-avatar large">

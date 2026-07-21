@@ -149,6 +149,12 @@ const translations = {
       title: "Уведомления",
       empty: "Пока пусто.",
     },
+    members: {
+      pageTitle: "Участники клуба",
+      loading: "Загрузка...",
+      notFound: "Участник не найден.",
+      backToAll: "← Все участники",
+    },
   },
   de: {
     home: {
@@ -185,7 +191,7 @@ const translations = {
         "Ein unterschaetztes eisernes Pferd. Ein Auto, das nicht mit seinen Faehigkeiten prahlt, weil es das nicht noetig hat.",
         "Er wurde nicht fuer den Parkplatz vor dem Einkaufszentrum mit makellosem Lack gebaut. Er wurde fuer die Orte gebaut, an denen der Asphalt endet, das Navi nervoes wird und der Fahrer sich erinnert, wofuer Allradantrieb ueberhaupt erfunden wurde.",
         "In Deutschland gibt es solche Orte kaum noch. Die Deutschen haben jahrzehntelang so gute Strassen gebaut, dass selbst der legendaere Prado seine eigentliche Bestimmung aufschieben musste.",
-        "Die Apokalypse will einfach nicht kommen. Der Schlamm ist alle. Der kaputten Strassen sind verschwunden. Eine Furt bis zur Motorhaube zu finden ist schwerer, als einen freien Parkplatz in Muenchen.",
+        "Die Apokalypse will einfach nicht kommen. Der Schlamm ist alle. Die kaputten Strassen sind verschwunden. Eine Furt bis zur Motorhaube zu finden ist schwerer, als einen freien Parkplatz in Muenchen.",
         "Aber wir kennen die Wahrheit.",
         "Wenn eines Tages der perfekte deutsche Asphalt endet, die Ladesaeulen verschwinden, die elektronischen Assistenten ein Software-Update verlangen und die Zivilisation vor einer echten Pruefung steht, wer bleibt dann uebrig?",
         "Richtig.",
@@ -299,6 +305,12 @@ const translations = {
     notifications: {
       title: "Benachrichtigungen",
       empty: "Noch nichts hier.",
+    },
+    members: {
+      pageTitle: "Clubmitglieder",
+      loading: "Wird geladen...",
+      notFound: "Mitglied nicht gefunden.",
+      backToAll: "← Alle Mitglieder",
     },
   },
   en: {
@@ -451,6 +463,12 @@ const translations = {
       title: "Notifications",
       empty: "Nothing here yet.",
     },
+    members: {
+      pageTitle: "Club members",
+      loading: "Loading...",
+      notFound: "Member not found.",
+      backToAll: "← All members",
+    },
   },
   ua: {
     home: {
@@ -601,6 +619,12 @@ const translations = {
     notifications: {
       title: "Сповіщення",
       empty: "Поки пусто.",
+    },
+    members: {
+      pageTitle: "Учасники клубу",
+      loading: "Завантаження...",
+      notFound: "Учасника не знайдено.",
+      backToAll: "← Всі учасники",
     },
   },
 };

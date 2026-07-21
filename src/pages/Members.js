@@ -3,9 +3,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { auth, db } from "../firebase";
+import { useLanguage } from "../i18n/LanguageContext";
 import "./Members.css";
 
 function Members() {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -30,10 +32,10 @@ function Members() {
 
   return (
     <div className="members-page">
-      <h1 className="members-title">Участники клуба</h1>
+      <h1 className="members-title">{t.members.pageTitle}</h1>
       <div className="members-underline"></div>
 
-      {loading && <div className="members-empty">Загрузка...</div>}
+      {loading && <div className="members-empty">{t.members.loading}</div>}
 
       {!loading && (
         <div className="members-grid">
