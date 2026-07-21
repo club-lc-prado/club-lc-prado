@@ -5,9 +5,11 @@ import {
   doc, getDoc, deleteDoc, collection, addDoc, query, orderBy, onSnapshot,
 } from "firebase/firestore";
 import { auth, db } from "../firebase";
+import { useLanguage } from "../i18n/LanguageContext";
 import "./Forum.css";
 
 function TopicDetail() {
+  const { t, lang } = useLanguage();
   const { id } = useParams();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -16,6 +18,8 @@ function TopicDetail() {
   const [comments, setComments] = useState([]);
   const [commentText, setCommentText] = useState("");
   const [loading, setLoading] = useState(true);
+
+  const localeMap = { ru: "ru-RU", de: "de-DE", en: "en-US", ua: "uk-UA" };
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (u) => {
@@ -44,7 +48,7 @@ function TopicDetail() {
   }, [id]);
 
   const handleDelete = async () => {
-    if (!window.confirm("Удалить эту тему навсегда?")) return;
+    if (!window.confirm(t.forum.deleteConfirm)) return;
     await deleteDoc(doc(db, "topics", id));
     navigate("/forum");
   };
@@ -66,21 +70,21 @@ function TopicDetail() {
 
   const formatDate = (iso) => {
     const d = new Date(iso);
-    return d.toLocaleDateString("ru-RU", { day: "2-digit", month: "long", hour: "2-digit", minute: "2-digit" });
+    return d.toLocaleDateString(localeMap[lang] || "ru-RU", { day: "2-digit", month: "long", hour: "2-digit", minute: "2-digit" });
   };
 
   if (loading) return <div className="forum-page"></div>;
-  if (!topic) return <div className="forum-page">Тема не найдена.</div>;
+  if (!topic) return <div className="forum-page">{t.forum.notFound}</div>;
 
   return (
     <div className="forum-page">
-      <Link to="/forum" className="forum-back">← Все темы</Link>
+      <Link to="/forum" className="forum-back">{t.forum.backToAll}</Link>
 
       <h1 className="forum-title" style={{ marginTop: 16 }}>{topic.title}</h1>
       <div className="forum-underline"></div>
 
       <div className="forum-topic-detail-meta">
-        <span>Автор: {topic.authorName}</span>
+        <span>{t.forum.author}: {topic.authorName}</span>
         <span>{formatDate(topic.createdAt)}</span>
       </div>
 
@@ -88,12 +92,12 @@ function TopicDetail() {
 
       {user?.uid === topic.authorId && (
         <button className="forum-delete-btn" onClick={handleDelete}>
-          Удалить тему
+          {t.forum.deleteTopicBtn}
         </button>
       )}
 
       <div className="forum-comments">
-        <div className="forum-section-label">Обсуждение</div>
+        <div className="forum-section-label">{t.forum.discussionLabel}</div>
 
         {comments.map((c) => (
           <div key={c.id} className="forum-comment">
@@ -102,18 +106,18 @@ function TopicDetail() {
           </div>
         ))}
         {comments.length === 0 && (
-          <div className="forum-empty">Пока никто не ответил.</div>
+          <div className="forum-empty">{t.forum.noReplies}</div>
         )}
 
         <form onSubmit={handleComment} className="forum-comment-form">
           <input
             type="text"
-            placeholder={user ? "Написать сообщение..." : "Войди, чтобы написать"}
+            placeholder={user ? t.forum.writeMsg : t.forum.loginToWrite}
             value={commentText}
             onChange={(e) => setCommentText(e.target.value)}
             disabled={!user}
           />
-          <button type="submit" disabled={!user}>Отправить</button>
+          <button type="submit" disabled={!user}>{t.forum.send}</button>
         </form>
       </div>
     </div>

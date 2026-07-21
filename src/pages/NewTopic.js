@@ -3,9 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { collection, addDoc, doc, getDoc } from "firebase/firestore";
 import { auth, db } from "../firebase";
+import { useLanguage } from "../i18n/LanguageContext";
 import "./Forum.css";
 
 function NewTopic() {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
@@ -52,28 +54,28 @@ function NewTopic() {
 
   return (
     <div className="forum-page">
-      <h1 className="forum-title">Открыть тему</h1>
+      <h1 className="forum-title">{t.forum.newTopicTitle}</h1>
       <div className="forum-underline"></div>
 
       <form className="forum-form" onSubmit={handleSubmit}>
         <input
           type="text"
           name="title"
-          placeholder="О чём поговорим? (заголовок темы)"
+          placeholder={t.forum.titlePlaceholder}
           value={form.title}
           onChange={handleChange}
           required
         />
         <textarea
           name="description"
-          placeholder="Опиши подробнее, чтобы люди понимали, что обсуждаем"
+          placeholder={t.forum.descPlaceholder}
           value={form.description}
           onChange={handleChange}
           rows={5}
           required
         />
         <button type="submit" disabled={loading}>
-          {loading ? "Публикуем..." : "Открыть тему"}
+          {loading ? t.forum.publishing : t.forum.publishBtn}
         </button>
         {error && <div className="auth-error">{error}</div>}
       </form>

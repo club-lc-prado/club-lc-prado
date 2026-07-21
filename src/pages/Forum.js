@@ -3,13 +3,17 @@ import { Link } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { auth, db } from "../firebase";
+import { useLanguage } from "../i18n/LanguageContext";
 import "./Forum.css";
 import forumBg from "../forum-bg.jpg";
 
 function Forum() {
+  const { t, lang } = useLanguage();
   const [user, setUser] = useState(null);
   const [topics, setTopics] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const localeMap = { ru: "ru-RU", de: "de-DE", en: "en-US", ua: "uk-UA" };
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => setUser(u));
@@ -28,7 +32,7 @@ function Forum() {
 
   const formatDate = (iso) => {
     const d = new Date(iso);
-    return d.toLocaleDateString("ru-RU", { day: "2-digit", month: "short" });
+    return d.toLocaleDateString(localeMap[lang] || "ru-RU", { day: "2-digit", month: "short" });
   };
 
   return (
@@ -38,31 +42,29 @@ function Forum() {
 
       <div className="forum-header">
         <div>
-          <h1 className="forum-title">Форум</h1>
+          <h1 className="forum-title">{t.forum.pageTitle}</h1>
           <div className="forum-underline"></div>
-          <p className="forum-intro">
-            Открой тему — расскажи, что хочешь обсудить, и позови остальных присоединиться.
-          </p>
+          <p className="forum-intro">{t.forum.introText}</p>
         </div>
         <Link to={user ? "/forum/new" : "/login"} className="forum-new-btn">
-          + Открыть тему
+          {t.forum.newTopicBtn}
         </Link>
       </div>
 
-      {loading && <div className="forum-empty">Загрузка...</div>}
+      {loading && <div className="forum-empty">{t.forum.loading}</div>}
 
       {!loading && topics.length === 0 && (
-        <div className="forum-empty">Пока пусто. Стань первым, кто откроет тему.</div>
+        <div className="forum-empty">{t.forum.emptyList}</div>
       )}
 
       {!loading && topics.length > 0 && (
         <div className="forum-list">
-          {topics.map((t) => (
-            <Link to={`/forum/${t.id}`} key={t.id} className="forum-topic-card">
-              <div className="forum-topic-title">{t.title}</div>
+          {topics.map((tp) => (
+            <Link to={`/forum/${tp.id}`} key={tp.id} className="forum-topic-card">
+              <div className="forum-topic-title">{tp.title}</div>
               <div className="forum-topic-meta">
-                <span>{t.authorName}</span>
-                <span>{formatDate(t.createdAt)}</span>
+                <span>{tp.authorName}</span>
+                <span>{formatDate(tp.createdAt)}</span>
               </div>
             </Link>
           ))}
