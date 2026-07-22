@@ -1,7 +1,7 @@
 .feed-page {
   min-height: 100vh;
   background: #0B0D0C;
-  padding: 0 60px 100px 232px;
+  padding: 0 40px 100px 232px;
   font-family: 'Inter', sans-serif;
   color: #F2EDE3;
   box-sizing: border-box;
@@ -21,12 +21,14 @@
   display: flex;
   gap: 40px;
   align-items: flex-start;
+  max-width: 1160px;
+  margin: 0 auto;
 }
 
 .feed-left {
   flex: 1;
   min-width: 0;
-  max-width: 560px;
+  max-width: 780px;
 }
 
 .feed-header-sticky {
@@ -332,18 +334,32 @@
 }
 
 .feed-like-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   background: transparent;
   border: 1px solid rgba(242,237,227,0.2);
   color: #C9C4B8;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 12px;
-  padding: 6px 12px;
+  font-size: 13px;
+  padding: 8px 16px;
   cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.feed-like-btn:active {
+  transform: scale(0.92);
 }
 
 .feed-like-btn.liked {
-  border-color: #D4831C;
-  color: #D4831C;
+  border-color: #c0392b;
+  animation: likePop 0.35s ease;
+}
+
+@keyframes likePop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.25); }
+  100% { transform: scale(1); }
 }
 
 .feed-empty {
@@ -367,6 +383,7 @@
 }
 
 .feed-gear-btn {
+  position: relative;
   background: transparent;
   border: 1px solid rgba(242,237,227,0.2);
   color: #C9C4B8;
@@ -470,10 +487,6 @@
   cursor: pointer;
 }
 
-.feed-gear-btn {
-  position: relative;
-}
-
 .feed-gear-badge {
   position: absolute;
   top: -6px;
@@ -489,35 +502,6 @@
   align-items: center;
   justify-content: center;
   padding: 0 3px;
-}
-
-.feed-like-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: transparent;
-  border: 1px solid rgba(242,237,227,0.2);
-  color: #C9C4B8;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 13px;
-  padding: 8px 16px;
-  cursor: pointer;
-  transition: transform 0.15s ease;
-}
-
-.feed-like-btn:active {
-  transform: scale(0.92);
-}
-
-.feed-like-btn.liked {
-  border-color: #c0392b;
-  animation: likePop 0.35s ease;
-}
-
-@keyframes likePop {
-  0% { transform: scale(1); }
-  40% { transform: scale(1.25); }
-  100% { transform: scale(1); }
 }
 
 .feed-post-image-wrap {

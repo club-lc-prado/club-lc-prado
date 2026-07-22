@@ -14,6 +14,7 @@ const translations = {
     },
     nav: {
       home: "Главная",
+      feed: "Лента",
       about: "О клубе",
       useful: "Полезное",
       forum: "Форум",
@@ -196,6 +197,11 @@ const translations = {
       gallery: "Галерея",
       useful: "Полезное",
     },
+    contactsFooter: {
+      privacy: "Политика конфиденциальности",
+      terms: "Условия использования",
+      copyright: "© 2026 Club LC Prado. Все права защищены.",
+    },
   },
   de: {
     home: {
@@ -212,6 +218,7 @@ const translations = {
     },
     nav: {
       home: "Startseite",
+      feed: "Feed",
       about: "Über den Club",
       useful: "Nützliches",
       forum: "Forum",
@@ -394,6 +401,11 @@ const translations = {
       gallery: "Galerie",
       useful: "Nützliches",
     },
+    contactsFooter: {
+      privacy: "Datenschutzerklärung",
+      terms: "Nutzungsbedingungen",
+      copyright: "© 2026 Club LC Prado. Alle Rechte vorbehalten.",
+    },
   },
   en: {
     home: {
@@ -410,6 +422,7 @@ const translations = {
     },
     nav: {
       home: "Home",
+      feed: "Feed",
       about: "About",
       useful: "Useful",
       forum: "Forum",
@@ -592,6 +605,11 @@ const translations = {
       gallery: "Gallery",
       useful: "Useful",
     },
+    contactsFooter: {
+      privacy: "Privacy Policy",
+      terms: "Terms of Use",
+      copyright: "© 2026 Club LC Prado. All rights reserved.",
+    },
   },
   ua: {
     home: {
@@ -608,6 +626,7 @@ const translations = {
     },
     nav: {
       home: "Головна",
+      feed: "Стрічка",
       about: "Про клуб",
       useful: "Корисне",
       forum: "Форум",
@@ -789,6 +808,11 @@ const translations = {
       contacts: "Контакти",
       gallery: "Галерея",
       useful: "Корисне",
+    },
+    contactsFooter: {
+      privacy: "Політика конфіденційності",
+      terms: "Умови використання",
+      copyright: "© 2026 Club LC Prado. Всі права захищені.",
     },
   },
 };
