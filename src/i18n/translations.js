@@ -190,6 +190,12 @@ const translations = {
       loggingIn: "Входим...",
       loginBtn: "Войти",
     },
+    static: {
+      shop: "Магазин",
+      contacts: "Контакты",
+      gallery: "Галерея",
+      useful: "Полезное",
+    },
   },
   de: {
     home: {
@@ -381,6 +387,12 @@ const translations = {
       registerBtn: "Registrieren",
       loggingIn: "Anmeldung läuft...",
       loginBtn: "Anmelden",
+    },
+    static: {
+      shop: "Shop",
+      contacts: "Kontakt",
+      gallery: "Galerie",
+      useful: "Nützliches",
     },
   },
   en: {
@@ -574,6 +586,12 @@ const translations = {
       loggingIn: "Logging in...",
       loginBtn: "Log in",
     },
+    static: {
+      shop: "Shop",
+      contacts: "Contact",
+      gallery: "Gallery",
+      useful: "Useful",
+    },
   },
   ua: {
     home: {
@@ -765,6 +783,12 @@ const translations = {
       registerBtn: "Зареєструватися",
       loggingIn: "Входимо...",
       loginBtn: "Увійти",
+    },
+    static: {
+      shop: "Магазин",
+      contacts: "Контакти",
+      gallery: "Галерея",
+      useful: "Корисне",
     },
   },
 };
