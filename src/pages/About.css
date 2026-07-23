@@ -1,40 +1,51 @@
 .about-static {
   position: relative;
-  min-height: 100vh;
-  overflow-y: auto;
-  padding: 100px 60px 100px 232px;
+  height: 100vh;
+  overflow: hidden;
+  padding: 100px 60px 40px 232px;
   font-family: 'Inter', sans-serif;
   display: flex;
   flex-direction: column;
   align-items: center;
+  box-sizing: border-box;
 }
 
 .about-bg-fixed {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  position: absolute;
+  inset: 0;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  z-index: -2;
+  z-index: 0;
 }
 
 .about-bg-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  position: absolute;
+  inset: 0;
   background: rgba(11,13,12,0.4);
-  z-index: -1;
+  z-index: 0;
 }
 
 @media (max-width: 900px) {
   .about-static {
-    padding: 80px 24px;
+    padding: 80px 24px 0 24px;
   }
+}
+
+.about-scroll-wrap {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 900px;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.about-scroll-content {
+  will-change: transform;
+  padding-bottom: 120px;
 }
 
 .about-title {
@@ -52,12 +63,13 @@
   width: 100px;
   height: 3px;
   background: #D4831C;
-  margin: 0 0 48px 0;
+  margin: 0 auto 48px auto;
 }
 
 .about-text {
   max-width: 900px;
   text-align: center;
+  margin: 0 auto;
 }
 
 .about-paragraph {
