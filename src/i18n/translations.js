@@ -207,7 +207,7 @@ const translations = {
     home: {
       eyebrow: "CLUB LC PRADO",
       titleLines: ["Legenden veralten nicht.", "Sie warten nur", "auf ihre Zeit."],
-      subtitle: "Die Community der Toyota Land Cruiser Prado-Liebhaber in Deutschland.",
+      subtitle: "Die Community der Toyota Land Cruiser Prado-Liebhaber in Deutschland und darüber hinaus.",
       quote: "Legenden veralten nicht. Sie warten nur auf ihre Zeit.",
       cardMeeting: "Nächstes Treffen",
       cardMembers: "Mitglieder im Club",
@@ -411,7 +411,7 @@ const translations = {
     home: {
       eyebrow: "CLUB LC PRADO",
       titleLines: ["Legends don't age.", "They just wait", "for their time."],
-      subtitle: "The community of Toyota Land Cruiser Prado enthusiasts in Germany.",
+      subtitle: "The community of Toyota Land Cruiser Prado enthusiasts in Germany and beyond.",
       quote: "Legends don't age. They just wait for their time.",
       cardMeeting: "Next meeting",
       cardMembers: "Members in club",
@@ -615,7 +615,7 @@ const translations = {
     home: {
       eyebrow: "CLUB LC PRADO",
       titleLines: ["Легенди не старіють.", "Вони просто чекають", "свого часу."],
-      subtitle: "Спільнота шанувальників Toyota Land Cruiser Prado у Німеччині.",
+      subtitle: "Спільнота шанувальників Toyota Land Cruiser Prado у Німеччині та за її межами.",
       quote: "Легенди не старіють. Вони просто чекають свого часу.",
       cardMeeting: "Наступна зустріч",
       cardMembers: "Учасників у клубі",
