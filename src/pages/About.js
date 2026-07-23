@@ -17,12 +17,20 @@ function About() {
     const measure = () => {
       if (wrapRef.current && contentRef.current) {
         const diff = contentRef.current.scrollHeight - wrapRef.current.clientHeight;
-        setMaxScroll(Math.max(0, diff));
+        setMaxScroll(Math.max(0, diff) + 60);
       }
     };
     measure();
+    const t1 = setTimeout(measure, 500);
+    const t2 = setTimeout(measure, 1500);
     window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
+    window.addEventListener("load", measure);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      window.removeEventListener("resize", measure);
+      window.removeEventListener("load", measure);
+    };
   }, [t]);
 
   useEffect(() => {

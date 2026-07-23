@@ -4,28 +4,42 @@
   padding: 100px 60px 100px 232px;
   font-family: 'Inter', sans-serif;
   color: #F2EDE3;
+  overflow: hidden;
 }
 
 .journeys-bg-fixed {
-  position: fixed;
+  position: absolute;
   inset: 0;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  z-index: -2;
+  z-index: 0;
 }
 
 .journeys-bg-overlay {
-  position: fixed;
+  position: absolute;
   inset: 0;
   background: rgba(5,6,7,0.78);
-  z-index: -1;
+  z-index: 0;
 }
 
 @media (max-width: 900px) {
   .journeys-page {
     padding: 80px 24px;
   }
+}
+
+.journeys-header,
+.journeys-section,
+.journey-back,
+.journey-detail-meta,
+.journey-detail-description,
+.journey-participants,
+.journey-actions,
+.journey-comments,
+.journey-form {
+  position: relative;
+  z-index: 1;
 }
 
 .journeys-header {
