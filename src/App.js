@@ -26,6 +26,8 @@ import MemberProfile from "./pages/MemberProfile";
 import Settings from "./pages/Settings";
 import Notifications from "./pages/Notifications";
 import Album from "./pages/Album";
+import Messages from "./pages/Messages";
+import Conversation from "./pages/Conversation";
 
 function App() {
   const [entered, setEntered] = useState(false);
@@ -69,6 +71,8 @@ function App() {
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/album" element={<Album />} />
             <Route path="/album/:uid" element={<Album />} />
+            <Route path="/messages" element={<Messages />} />
+            <Route path="/messages/:userId" element={<Conversation />} />
           </Routes>
         </BrowserRouter>
       )}

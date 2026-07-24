@@ -33,6 +33,7 @@ function Feed() {
   const [burstFor, setBurstFor] = useState(null);
   const [notifConverging, setNotifConverging] = useState(null);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [conversations, setConversations] = useState([]);
 
   const localeMap = { ru: "ru-RU", de: "de-DE", en: "en-US", ua: "uk-UA" };
 
@@ -75,6 +76,22 @@ function Feed() {
     };
     loadSide();
   }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    const cq = query(collection(db, "conversations"), where("participants", "array-contains", user.uid));
+    const unsubC = onSnapshot(cq, (snap) => {
+      const list = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      list.sort((a, b) => {
+        const aUnread = a.lastMessageBy && a.lastMessageBy !== user.uid && !a.readBy?.includes(user.uid) ? 1 : 0;
+        const bUnread = b.lastMessageBy && b.lastMessageBy !== user.uid && !b.readBy?.includes(user.uid) ? 1 : 0;
+        if (aUnread !== bUnread) return bUnread - aUnread;
+        return new Date(b.lastMessageAt || 0) - new Date(a.lastMessageAt || 0);
+      });
+      setConversations(list.slice(0, 5));
+    });
+    return unsubC;
+  }, [user]);
 
   useEffect(() => {
     if (!user) return;
@@ -465,6 +482,29 @@ function Feed() {
               <div className="feed-side-value small">{t.feed.notPlanned}</div>
             )}
           </Link>
+
+          {conversations.length > 0 && (
+            <div className="feed-side-card feed-messages-card">
+              <div className="feed-side-label">{t.messages.pageTitle}</div>
+              {conversations.map((conv) => {
+                const otherId = conv.participants.find((p) => p !== user.uid);
+                const otherName = conv.participantNames?.[otherId] || "?";
+                const otherPhoto = conv.participantPhotos?.[otherId] || "";
+                const unread = conv.lastMessageBy && conv.lastMessageBy !== user.uid && !conv.readBy?.includes(user.uid);
+                return (
+                  <Link to={`/messages/${otherId}`} key={conv.id} className={"feed-msg-row" + (unread ? " unread" : "")}>
+                    <div className="feed-msg-avatar">
+                      {otherPhoto ? <img src={otherPhoto} alt={otherName} /> : otherName?.[0]?.toUpperCase()}
+                    </div>
+                    <div className="feed-msg-info">
+                      <div className="feed-msg-name">{otherName}</div>
+                      <div className="feed-msg-preview">{conv.lastMessage}</div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
 

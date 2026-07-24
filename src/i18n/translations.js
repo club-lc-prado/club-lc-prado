@@ -15,6 +15,7 @@ const translations = {
     nav: {
       home: "Главная",
       feed: "Лента",
+      messagesNav: "Сообщения",
       about: "О клубе",
       useful: "Полезное",
       forum: "Форум",
@@ -210,6 +211,15 @@ const translations = {
       terms: "Условия использования",
       copyright: "© 2026 Club LC Prado. Все права защищены.",
     },
+    messages: {
+      pageTitle: "Сообщения",
+      empty: "Пока нет диалогов.",
+      writeMsg: "Написать сообщение...",
+      send: "Отправить",
+      backToAll: "← Все сообщения",
+      sendMessageBtn: "Написать сообщение",
+      noMessagesYet: "Сообщений пока нет.",
+    },
   },
   de: {
     home: {
@@ -227,6 +237,7 @@ const translations = {
     nav: {
       home: "Startseite",
       feed: "Feed",
+      messagesNav: "Nachrichten",
       about: "Über den Club",
       useful: "Nützliches",
       forum: "Forum",
@@ -422,6 +433,15 @@ const translations = {
       terms: "Nutzungsbedingungen",
       copyright: "© 2026 Club LC Prado. Alle Rechte vorbehalten.",
     },
+    messages: {
+      pageTitle: "Nachrichten",
+      empty: "Noch keine Unterhaltungen.",
+      writeMsg: "Nachricht schreiben...",
+      send: "Senden",
+      backToAll: "← Alle Nachrichten",
+      sendMessageBtn: "Nachricht senden",
+      noMessagesYet: "Noch keine Nachrichten.",
+    },
   },
   en: {
     home: {
@@ -439,6 +459,7 @@ const translations = {
     nav: {
       home: "Home",
       feed: "Feed",
+      messagesNav: "Messages",
       about: "About",
       useful: "Useful",
       forum: "Forum",
@@ -634,6 +655,15 @@ const translations = {
       terms: "Terms of Use",
       copyright: "© 2026 Club LC Prado. All rights reserved.",
     },
+    messages: {
+      pageTitle: "Messages",
+      empty: "No conversations yet.",
+      writeMsg: "Write a message...",
+      send: "Send",
+      backToAll: "← All messages",
+      sendMessageBtn: "Send message",
+      noMessagesYet: "No messages yet.",
+    },
   },
   ua: {
     home: {
@@ -651,6 +681,7 @@ const translations = {
     nav: {
       home: "Головна",
       feed: "Стрічка",
+      messagesNav: "Повідомлення",
       about: "Про клуб",
       useful: "Корисне",
       forum: "Форум",
@@ -845,6 +876,15 @@ const translations = {
       privacy: "Політика конфіденційності",
       terms: "Умови використання",
       copyright: "© 2026 Club LC Prado. Всі права захищені.",
+    },
+    messages: {
+      pageTitle: "Повідомлення",
+      empty: "Поки немає діалогів.",
+      writeMsg: "Написати повідомлення...",
+      send: "Надіслати",
+      backToAll: "← Всі повідомлення",
+      sendMessageBtn: "Написати повідомлення",
+      noMessagesYet: "Повідомлень поки немає.",
     },
   },
 };

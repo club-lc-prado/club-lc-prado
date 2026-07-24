@@ -11,6 +11,7 @@ function MemberProfile() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [member, setMember] = useState(null);
+  const [currentUid, setCurrentUid] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -19,6 +20,7 @@ function MemberProfile() {
         navigate("/login");
         return;
       }
+      setCurrentUid(u.uid);
       load();
     });
     return unsub;
@@ -51,6 +53,12 @@ function MemberProfile() {
           <div className="member-city">{member.city}</div>
         )}
         {member.bio && <p className="member-profile-bio">{member.bio}</p>}
+
+        {currentUid && currentUid !== id && (
+          <Link to={`/messages/${id}`} className="member-message-btn">
+            {t.messages.sendMessageBtn}
+          </Link>
+        )}
       </div>
     </div>
   );

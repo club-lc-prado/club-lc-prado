@@ -197,6 +197,29 @@
   gap: 2px;
 }
 
+.hero-strip-avatar-wrap {
+  position: relative;
+}
+
+.hero-strip-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #c25c4a;
+  color: #F2EDE3;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  border: 2px solid #0B0D0C;
+}
+
 .hero-strip-account-name {
   font-family: 'JetBrains Mono', monospace;
   font-size: 13px;

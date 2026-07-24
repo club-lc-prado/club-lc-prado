@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc, collection, getDocs } from "firebase/firestore";
+import { doc, getDoc, collection, getDocs, query, where, onSnapshot } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import { useLanguage } from "../i18n/LanguageContext";
 import "./Home.css";
@@ -12,6 +12,7 @@ function Home() {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [memberCount, setMemberCount] = useState(null);
+  const [unreadChats, setUnreadChats] = useState(0);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (u) => {
@@ -31,6 +32,19 @@ function Home() {
     };
     loadCount();
   }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    const q = query(collection(db, "conversations"), where("participants", "array-contains", user.uid));
+    const unsub = onSnapshot(q, (snap) => {
+      const unread = snap.docs.filter((d) => {
+        const data = d.data();
+        return data.lastMessageBy && data.lastMessageBy !== user.uid && !data.readBy?.includes(user.uid);
+      });
+      setUnreadChats(unread.length);
+    });
+    return unsub;
+  }, [user]);
 
   return (
     <div className="hero">
@@ -63,11 +77,16 @@ function Home() {
 
       <div className="hero-strip">
         <Link to={user ? "/feed" : "/login"} className="hero-strip-account">
-          <div className="hero-strip-avatar">
-            {profile?.photoURL ? (
-              <img src={profile.photoURL} alt="avatar" />
-            ) : (
-              profile?.name?.[0]?.toUpperCase() || "?"
+          <div className="hero-strip-avatar-wrap">
+            <div className="hero-strip-avatar">
+              {profile?.photoURL ? (
+                <img src={profile.photoURL} alt="avatar" />
+              ) : (
+                profile?.name?.[0]?.toUpperCase() || "?"
+              )}
+            </div>
+            {unreadChats > 0 && (
+              <span className="hero-strip-badge">{unreadChats}</span>
             )}
           </div>
           <div className="hero-strip-account-text">

@@ -1,0 +1,205 @@
+.messages-page {
+  min-height: 100vh;
+  background: #0B0D0C;
+  padding: 100px 60px 100px 232px;
+  font-family: 'Inter', sans-serif;
+  color: #F2EDE3;
+  box-sizing: border-box;
+}
+
+@media (max-width: 900px) {
+  .messages-page {
+    padding: 80px 20px 40px;
+  }
+}
+
+.messages-title {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: clamp(32px, 5vw, 56px);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 0 0 8px 0;
+}
+
+.messages-underline {
+  width: 100px;
+  height: 3px;
+  background: #D4831C;
+  margin-bottom: 40px;
+}
+
+.messages-empty {
+  color: #8a8578;
+  font-size: 14px;
+}
+
+.messages-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 600px;
+}
+
+.messages-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  text-decoration: none;
+  color: inherit;
+  border-bottom: 1px solid rgba(242,237,227,0.08);
+}
+
+.messages-item:hover {
+  background: rgba(255,255,255,0.03);
+}
+
+.messages-item.unread .messages-item-name {
+  color: #D4831C;
+}
+
+.messages-item.unread .messages-item-last {
+  color: #F2EDE3;
+  font-weight: 600;
+}
+
+.messages-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #D4831C;
+  color: #0B0D0C;
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.messages-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.messages-item-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.messages-item-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  margin-bottom: 2px;
+}
+
+.messages-item-last {
+  font-size: 13px;
+  color: #8a8578;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.messages-item-date {
+  font-size: 11px;
+  color: #8a8578;
+  flex-shrink: 0;
+}
+
+.messages-back {
+  color: #A8D4B8;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.conversation-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  box-sizing: border-box;
+}
+
+.conversation-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.conversation-header-name {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  text-transform: uppercase;
+}
+
+.conversation-thread {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 0;
+  max-width: 600px;
+}
+
+.conversation-bubble {
+  align-self: flex-start;
+  max-width: 70%;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(242,237,227,0.12);
+  padding: 10px 14px;
+  border-radius: 14px 14px 14px 2px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.conversation-bubble.mine {
+  align-self: flex-end;
+  background: rgba(212,131,28,0.15);
+  border-color: rgba(212,131,28,0.35);
+  border-radius: 14px 14px 2px 14px;
+}
+
+.conversation-form {
+  display: flex;
+  gap: 10px;
+  padding: 16px 0;
+  max-width: 600px;
+}
+
+.conversation-form input {
+  flex: 1;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(242,237,227,0.25);
+  color: #F2EDE3;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  padding: 12px 14px;
+  outline: none;
+}
+
+.conversation-form input:focus {
+  border-color: #D4831C;
+}
+
+.conversation-form button {
+  background: #D4831C;
+  border: none;
+  color: #0B0D0C;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  padding: 0 20px;
+  cursor: pointer;
+}
+
+.conversation-form button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}

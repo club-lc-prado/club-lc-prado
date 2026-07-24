@@ -129,3 +129,17 @@
   line-height: 1.7;
   color: #C9C4B8;
 }
+
+.member-message-btn {
+  display: inline-block;
+  margin-top: 16px;
+  background: #D4831C;
+  color: #0B0D0C;
+  border: none;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: 1px;
+  padding: 10px 24px;
+  text-decoration: none;
+}
