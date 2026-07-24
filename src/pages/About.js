@@ -52,6 +52,36 @@ function About() {
   const pause = () => { pausedRef.current = true; };
   const resume = () => { pausedRef.current = false; };
 
+  const touchStartY = useRef(0);
+
+  const handleTouchStart = (e) => {
+    pausedRef.current = true;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchMove = (e) => {
+    e.preventDefault();
+    const currentY = e.touches[0].clientY;
+    const delta = touchStartY.current - currentY;
+    touchStartY.current = currentY;
+    offsetRef.current = Math.min(Math.max(offsetRef.current + delta, 0), maxScroll);
+    if (contentRef.current) {
+      contentRef.current.style.transform = `translateY(-${offsetRef.current}px)`;
+    }
+  };
+
+  const handleTouchEnd = () => {
+    pausedRef.current = false;
+  };
+
+  const handleWheel = (e) => {
+    e.preventDefault();
+    offsetRef.current = Math.min(Math.max(offsetRef.current + e.deltaY, 0), maxScroll);
+    if (contentRef.current) {
+      contentRef.current.style.transform = `translateY(-${offsetRef.current}px)`;
+    }
+  };
+
   return (
     <div className="about-static">
       <div className="about-bg-fixed" style={{ backgroundImage: `url(${aboutBg})` }}></div>
@@ -63,8 +93,10 @@ function About() {
         onMouseDown={pause}
         onMouseUp={resume}
         onMouseLeave={resume}
-        onTouchStart={pause}
-        onTouchEnd={resume}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onWheel={handleWheel}
       >
         <div className="about-scroll-content" ref={contentRef}>
           <h1 className="about-title">{t.about.title}</h1>
