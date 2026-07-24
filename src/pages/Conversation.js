@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import {
-  doc, getDoc, setDoc, updateDoc, collection, addDoc, query, orderBy, onSnapshot, arrayUnion,
+  doc, getDoc, setDoc, updateDoc, deleteDoc, collection, addDoc, query, orderBy, onSnapshot, arrayUnion,
 } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import { useLanguage } from "../i18n/LanguageContext";
@@ -151,8 +151,18 @@ function Conversation() {
               </div>
               <div className="conversation-bubble-col">
                 <div className="conversation-msg-name">{avatarName}</div>
-                <div className="conversation-bubble">
-                  {m.text}
+                <div className="conversation-bubble-row">
+                  <div className="conversation-bubble">
+                    {m.text}
+                  </div>
+                  {mine && (
+                    <button
+                      className="conversation-delete-btn"
+                      onClick={() => deleteDoc(doc(db, "conversations", convId, "messages", m.id))}
+                    >
+                      ✕
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
@@ -160,6 +170,8 @@ function Conversation() {
         })}
         <div ref={bottomRef}></div>
       </div>
+
+      <div className="conversation-security-notice">{t.messages.securityNotice}</div>
 
       <form onSubmit={handleSend} className="conversation-form">
         <input

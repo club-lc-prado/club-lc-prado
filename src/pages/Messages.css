@@ -145,6 +145,17 @@
   text-transform: uppercase;
 }
 
+.conversation-security-notice {
+  font-size: 11px;
+  color: #8FA37E;
+  background: rgba(143,163,126,0.08);
+  border: 1px solid rgba(143,163,126,0.2);
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  line-height: 1.5;
+  max-width: 600px;
+}
+
 .conversation-thread {
   flex: 1;
   overflow-y: auto;
@@ -208,6 +219,12 @@
   padding: 0 4px;
 }
 
+.conversation-bubble-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .conversation-bubble {
   background: rgba(255,255,255,0.06);
   border: 1px solid rgba(242,237,227,0.12);
@@ -221,6 +238,31 @@
   background: rgba(212,131,28,0.15);
   border-color: rgba(212,131,28,0.35);
   border-radius: 14px 14px 2px 14px;
+}
+
+.conversation-delete-btn {
+  background: transparent;
+  border: none;
+  color: #6b6558;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px 8px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+@media (max-width: 900px) {
+  .conversation-delete-btn {
+    opacity: 0.6;
+  }
+}
+
+.conversation-row:hover .conversation-delete-btn {
+  opacity: 1;
+}
+
+.conversation-delete-btn:hover {
+  color: #c25c4a;
 }
 
 .conversation-form {

@@ -219,6 +219,7 @@ const translations = {
       backToAll: "← Все сообщения",
       sendMessageBtn: "Написать сообщение",
       noMessagesYet: "Сообщений пока нет.",
+      securityNotice: "Переписка этого чата надёжно защищена — её видят только участники диалога. В любое время вы можете самостоятельно удалить свои сообщения.",
     },
   },
   de: {
@@ -441,6 +442,7 @@ const translations = {
       backToAll: "← Alle Nachrichten",
       sendMessageBtn: "Nachricht senden",
       noMessagesYet: "Noch keine Nachrichten.",
+      securityNotice: "Dieser Chat ist gut geschützt — nur die Gesprächsteilnehmer können ihn sehen. Du kannst deine Nachrichten jederzeit selbst löschen.",
     },
   },
   en: {
@@ -663,6 +665,7 @@ const translations = {
       backToAll: "← All messages",
       sendMessageBtn: "Send message",
       noMessagesYet: "No messages yet.",
+      securityNotice: "This chat is securely protected — only the participants can see it. You can delete your own messages at any time.",
     },
   },
   ua: {
@@ -885,6 +888,7 @@ const translations = {
       backToAll: "← Всі повідомлення",
       sendMessageBtn: "Написати повідомлення",
       noMessagesYet: "Повідомлень поки немає.",
+      securityNotice: "Це листування надійно захищене — його бачать лише учасники діалогу. У будь-який час ти можеш самостійно видалити свої повідомлення.",
     },
   },
 };
