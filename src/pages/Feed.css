@@ -575,6 +575,7 @@
 
 .feed-notif-btn {
   position: relative;
+  color: #C9C4B8;
   background: transparent;
   border: 1px solid rgba(242,237,227,0.2);
   width: 36px;
@@ -759,6 +760,19 @@
   .feed-post-image {
     width: 100%;
     margin-bottom: 0;
+  }
+}
+
+.feed-messages-mobile {
+  display: none;
+}
+
+@media (max-width: 1299px) {
+  .feed-messages-mobile {
+    display: block;
+    border: 1px solid rgba(242,237,227,0.12);
+    padding: 12px 16px;
+    margin-top: 16px;
   }
 }
 

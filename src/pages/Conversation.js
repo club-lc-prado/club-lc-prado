@@ -116,7 +116,10 @@ function Conversation() {
 
   return (
     <div className="messages-page conversation-page">
-      <Link to="/messages" className="messages-back">{t.messages.backToAll}</Link>
+      <div className="conversation-back-row">
+        <Link to="/messages" className="messages-back">{t.messages.backToAll}</Link>
+        <Link to="/feed" className="messages-back">{t.settings.backToFeed}</Link>
+      </div>
 
       <div className="conversation-header">
         <div className="messages-avatar">
@@ -133,11 +136,28 @@ function Conversation() {
         {messages.length === 0 && (
           <div className="messages-empty">{t.messages.noMessagesYet}</div>
         )}
-        {messages.map((m) => (
-          <div key={m.id} className={"conversation-bubble" + (m.senderId === user.uid ? " mine" : "")}>
-            {m.text}
-          </div>
-        ))}
+        {messages.map((m) => {
+          const mine = m.senderId === user.uid;
+          const avatarUrl = mine ? profile?.photoURL : otherUser?.photoURL;
+          const avatarName = mine ? profile?.name : otherUser?.name;
+          return (
+            <div key={m.id} className={"conversation-row" + (mine ? " mine" : "")}>
+              <div className="conversation-avatar">
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt={avatarName} />
+                ) : (
+                  avatarName?.[0]?.toUpperCase() || "?"
+                )}
+              </div>
+              <div className="conversation-bubble-col">
+                <div className="conversation-msg-name">{avatarName}</div>
+                <div className="conversation-bubble">
+                  {m.text}
+                </div>
+              </div>
+            </div>
+          );
+        })}
         <div ref={bottomRef}></div>
       </div>
 

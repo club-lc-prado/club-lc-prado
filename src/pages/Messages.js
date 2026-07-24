@@ -58,6 +58,7 @@ function Messages() {
 
   return (
     <div className="messages-page">
+      <Link to="/feed" className="messages-back">{t.settings.backToFeed}</Link>
       <h1 className="messages-title">{t.messages.pageTitle}</h1>
       <div className="messages-underline"></div>
 

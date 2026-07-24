@@ -6,7 +6,7 @@ import {
   updateDoc, arrayUnion, arrayRemove, writeBatch,
 } from "firebase/firestore";
 import { auth, db } from "../firebase";
-import { Home } from "lucide-react";
+import { Home, Send } from "lucide-react";
 import { useLanguage } from "../i18n/LanguageContext";
 import "./Feed.css";
 import likeSound from "../like-sound.mp3";
@@ -34,6 +34,7 @@ function Feed() {
   const [notifConverging, setNotifConverging] = useState(null);
   const [notifOpen, setNotifOpen] = useState(false);
   const [conversations, setConversations] = useState([]);
+  const [messagesOpen, setMessagesOpen] = useState(false);
 
   const localeMap = { ru: "ru-RU", de: "de-DE", en: "en-US", ua: "uk-UA" };
 
@@ -317,6 +318,15 @@ function Feed() {
                     <Home size={18} />
                   </Link>
 
+                  <Link to="/messages" className="feed-home-btn">
+                    <Send size={18} />
+                    {conversations.filter((c) => c.lastMessageBy && c.lastMessageBy !== user.uid && !c.readBy?.includes(user.uid)).length > 0 && (
+                      <span className="feed-gear-badge">
+                        {conversations.filter((c) => c.lastMessageBy && c.lastMessageBy !== user.uid && !c.readBy?.includes(user.uid)).length}
+                      </span>
+                    )}
+                  </Link>
+
                   <div className="feed-notif-wrap">
                     <button className="feed-notif-btn" ref={notifBtnRef} onClick={openNotifications}>
                       <HeartIcon filled={unreadCount > 0} size={26} />
@@ -365,7 +375,8 @@ function Feed() {
 
             <h1 className="feed-title">{t.feed.title}</h1>
             <div className="feed-underline"></div>
-          </div>
+
+            </div>
 
           {user && (
             <div className="feed-composer">
@@ -483,29 +494,7 @@ function Feed() {
             )}
           </Link>
 
-          {conversations.length > 0 && (
-            <div className="feed-side-card feed-messages-card">
-              <div className="feed-side-label">{t.messages.pageTitle}</div>
-              {conversations.map((conv) => {
-                const otherId = conv.participants.find((p) => p !== user.uid);
-                const otherName = conv.participantNames?.[otherId] || "?";
-                const otherPhoto = conv.participantPhotos?.[otherId] || "";
-                const unread = conv.lastMessageBy && conv.lastMessageBy !== user.uid && !conv.readBy?.includes(user.uid);
-                return (
-                  <Link to={`/messages/${otherId}`} key={conv.id} className={"feed-msg-row" + (unread ? " unread" : "")}>
-                    <div className="feed-msg-avatar">
-                      {otherPhoto ? <img src={otherPhoto} alt={otherName} /> : otherName?.[0]?.toUpperCase()}
-                    </div>
-                    <div className="feed-msg-info">
-                      <div className="feed-msg-name">{otherName}</div>
-                      <div className="feed-msg-preview">{conv.lastMessage}</div>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-          )}
-        </div>
+          </div>
       </div>
 
       {qrOpen && user && (

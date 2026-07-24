@@ -19,7 +19,7 @@
   font-size: clamp(32px, 5vw, 56px);
   text-transform: uppercase;
   letter-spacing: 2px;
-  margin: 0 0 8px 0;
+  margin: 16px 0 8px 0;
 }
 
 .messages-underline {
@@ -118,6 +118,12 @@
   text-decoration: none;
 }
 
+.conversation-back-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
 .conversation-page {
   display: flex;
   flex-direction: column;
@@ -144,14 +150,65 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
   padding: 8px 0;
   max-width: 600px;
 }
 
-.conversation-bubble {
+.conversation-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
   align-self: flex-start;
-  max-width: 70%;
+  max-width: 80%;
+}
+
+.conversation-row.mine {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.conversation-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #D4831C;
+  color: #0B0D0C;
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.conversation-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.conversation-bubble-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.conversation-row.mine .conversation-bubble-col {
+  align-items: flex-end;
+}
+
+.conversation-msg-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: #8a8578;
+  padding: 0 4px;
+}
+
+.conversation-bubble {
   background: rgba(255,255,255,0.06);
   border: 1px solid rgba(242,237,227,0.12);
   padding: 10px 14px;
@@ -160,8 +217,7 @@
   line-height: 1.5;
 }
 
-.conversation-bubble.mine {
-  align-self: flex-end;
+.conversation-row.mine .conversation-bubble {
   background: rgba(212,131,28,0.15);
   border-color: rgba(212,131,28,0.35);
   border-radius: 14px 14px 2px 14px;

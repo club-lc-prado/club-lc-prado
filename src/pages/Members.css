@@ -143,3 +143,9 @@
   padding: 10px 24px;
   text-decoration: none;
 }
+
+.conversation-back-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 8px;
+}
