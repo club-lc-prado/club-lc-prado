@@ -1,11 +1,11 @@
 .auth-page {
   position: relative;
-  height: 100vh;
+  min-height: 100vh;
   box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 32px 32px 32px 232px;
+  padding: 40px 32px 40px 232px;
   font-family: 'Inter', sans-serif;
   overflow: hidden;
 }
@@ -107,4 +107,74 @@
   line-height: 1.5;
   margin: -8px 0 4px 0;
   text-align: center;
+}
+
+.auth-photo-upload-wrap {
+  position: relative;
+  align-self: center;
+  margin-bottom: 4px;
+}
+
+.auth-photo-upload {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.auth-field {
+  position: relative;
+}
+
+.auth-field input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.auth-required-star {
+  position: absolute;
+  top: 8px;
+  right: -14px;
+  color: #c25c4a;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.auth-photo-upload-wrap .auth-required-star {
+  top: 0;
+  right: -4px;
+}
+
+.auth-photo-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.auth-photo-placeholder {
+  width: 100%;
+  height: 100%;
+  border: 2px dashed rgba(212,131,28,0.5);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #D4831C;
+  gap: 2px;
+}
+
+.auth-photo-placeholder span:first-child {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.auth-photo-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.5px;
+  text-align: center;
+  padding: 0 8px;
 }
