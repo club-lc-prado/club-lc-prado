@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { collection, addDoc, doc, getDoc } from "firebase/firestore";
 import { auth, db } from "../firebase";
@@ -11,7 +11,8 @@ function NewJourney() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
-  const [form, setForm] = useState({ title: "", date: "", place: "", description: "" });
+  const [searchParams] = useSearchParams();
+  const [form, setForm] = useState({ title: "", date: searchParams.get("date") || "", place: "", description: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 

@@ -5,6 +5,7 @@ import { doc, getDoc, collection, getDocs, query, where, onSnapshot } from "fire
 import { auth, db } from "../firebase";
 import { useLanguage } from "../i18n/LanguageContext";
 import "./Home.css";
+import HomeCalendar from "../components/HomeCalendar";
 import heroImage from "../hero-prado.jpg";
 import notifSound from "../notif-sound.mp3";
 
@@ -73,6 +74,10 @@ function Home() {
         <button className={lang === "de" ? "active" : ""} onClick={() => changeLang("de")}>DE</button>
         <button className={lang === "en" ? "active" : ""} onClick={() => changeLang("en")}>EN</button>
         <button className={lang === "ua" ? "active" : ""} onClick={() => changeLang("ua")}>UA</button>
+      </div>
+
+      <div className="home-calendar-standalone">
+        <HomeCalendar />
       </div>
 
       <div className="hero-title-block">

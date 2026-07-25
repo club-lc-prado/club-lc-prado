@@ -1,0 +1,114 @@
+.home-calendar-standalone {
+  position: fixed;
+  top: 70px;
+  right: 32px;
+  z-index: 5;
+}
+
+@media (max-width: 900px) {
+  .home-calendar-standalone {
+    display: none;
+  }
+}
+
+.home-calendar {
+  background: rgba(11,13,12,0.35);
+  backdrop-filter: blur(3px);
+  border: 1px solid rgba(242,237,227,0.15);
+  padding: 14px;
+  width: 260px;
+  font-family: 'Inter', sans-serif;
+}
+
+.home-calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.home-calendar-header button {
+  background: transparent;
+  border: 1px solid rgba(242,237,227,0.2);
+  color: #F2EDE3;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.home-calendar-header button:hover {
+  border-color: #D4831C;
+  color: #D4831C;
+}
+
+.home-calendar-month {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #F2EDE3;
+}
+
+.home-calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 4px;
+}
+
+.home-calendar-weekdays span {
+  text-align: center;
+  font-size: 10px;
+  color: #8a8578;
+  text-transform: uppercase;
+}
+
+.home-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.home-calendar-day {
+  position: relative;
+  aspect-ratio: 1;
+  background: transparent;
+  border: none;
+  color: #C9C4B8;
+  font-size: 11px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.home-calendar-day:hover:not(.empty) {
+  background: rgba(255,255,255,0.06);
+}
+
+.home-calendar-day.empty {
+  cursor: default;
+}
+
+.home-calendar-day.today {
+  border: 1px solid #D4831C;
+  color: #D4831C;
+}
+
+.home-calendar-day.has-event {
+  color: #F2EDE3;
+  font-weight: 600;
+}
+
+.home-calendar-dot {
+  position: absolute;
+  bottom: 3px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #D4831C;
+}
