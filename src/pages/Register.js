@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
-import { auth, db } from "../firebase";
+import { auth, db, enablePushForUser } from "../firebase";
 import { useLanguage } from "../i18n/LanguageContext";
 import "./Register.css";
 import joinBg from "../auth-bg.jpg";
@@ -70,6 +70,7 @@ function Register() {
         createdAt: new Date().toISOString(),
       });
 
+      enablePushForUser(cred.user.uid);
       navigate("/");
     } catch (err) {
       setError(err.message);

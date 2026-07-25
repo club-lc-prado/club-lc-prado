@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
-import { auth } from "../firebase";
+import { auth, enablePushForUser } from "../firebase";
 import { useLanguage } from "../i18n/LanguageContext";
 import "./Register.css";
 import joinBg from "../auth-bg.jpg";
@@ -25,7 +25,8 @@ function Login() {
     setLoading(true);
 
     try {
-      await signInWithEmailAndPassword(auth, form.email, form.password);
+      const cred = await signInWithEmailAndPassword(auth, form.email, form.password);
+      enablePushForUser(cred.user.uid);
       navigate("/profile");
     } catch (err) {
       setError(err.message);

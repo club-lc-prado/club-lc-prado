@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { auth, db } from "../firebase";
+import { getToken } from "firebase/messaging";
+import { auth, db, getMessagingInstance } from "../firebase";
 import { useLanguage } from "../i18n/LanguageContext";
 import "./Settings.css";
 
@@ -13,12 +14,16 @@ const languages = [
   { code: "ua", label: "Українська" },
 ];
 
+const VAPID_KEY = "BDtPjJHsBndCNCbpYiELiRbKoAfK39SxqJspZGpXRH1xr4X13ksKWkrdwBZsurC5th-y19Y3hwFMRYKynuzR0ww";
+
 function Settings() {
   const { t, lang, changeLang } = useLanguage();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [visibleInCatalog, setVisibleInCatalog] = useState(true);
   const [showCity, setShowCity] = useState(true);
+  const [pushEnabled, setPushEnabled] = useState(false);
+  const [pushLoading, setPushLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
 
@@ -34,6 +39,7 @@ function Settings() {
         const data = snap.data();
         setVisibleInCatalog(data.visibleInCatalog !== false);
         setShowCity(data.showCity !== false);
+        setPushEnabled(!!data.fcmToken);
       }
       setLoading(false);
     });
@@ -44,6 +50,39 @@ function Settings() {
     await updateDoc(doc(db, "members", user.uid), { [field]: value });
     setSaved(true);
     setTimeout(() => setSaved(false), 1500);
+  };
+
+  const enablePush = async () => {
+    setPushLoading(true);
+    try {
+      const permission = await Notification.requestPermission();
+      if (permission !== "granted") {
+        setPushLoading(false);
+        return;
+      }
+      const messaging = await getMessagingInstance();
+      if (!messaging) {
+        setPushLoading(false);
+        return;
+      }
+      const reg = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
+      const token = await getToken(messaging, {
+        vapidKey: VAPID_KEY,
+        serviceWorkerRegistration: reg,
+      });
+      if (token) {
+        await updateDoc(doc(db, "members", user.uid), { fcmToken: token });
+        setPushEnabled(true);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+    setPushLoading(false);
+  };
+
+  const disablePush = async () => {
+    await updateDoc(doc(db, "members", user.uid), { fcmToken: null });
+    setPushEnabled(false);
   };
 
   if (loading) return <div className="settings-page"></div>;
@@ -70,6 +109,25 @@ function Settings() {
               <option key={l.code} value={l.code}>{l.label}</option>
             ))}
           </select>
+        </div>
+
+        <div className="settings-row">
+          <div>
+            <div className="settings-row-label">Push-уведомления</div>
+            <div className="settings-row-sub">Звук и уведомление даже когда сайт закрыт</div>
+          </div>
+          <label className="settings-switch">
+            <input
+              type="checkbox"
+              checked={pushEnabled}
+              disabled={pushLoading}
+              onChange={(e) => {
+                if (e.target.checked) enablePush();
+                else disablePush();
+              }}
+            />
+            <span></span>
+          </label>
         </div>
 
         <div className="settings-row">

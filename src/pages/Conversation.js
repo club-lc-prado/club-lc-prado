@@ -108,6 +108,16 @@ function Conversation() {
       createdAt: now,
     });
 
+    fetch("/api/send-push", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        toUserId: userId,
+        title: profile?.name || "Club LC Prado",
+        body: text.trim(),
+      }),
+    }).catch(() => {});
+
     setText("");
   };
 
