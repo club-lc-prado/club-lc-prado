@@ -120,6 +120,11 @@
   font-family: 'JetBrains Mono', monospace;
   font-size: 13px;
   z-index: 10;
+  width: 260px;
+}
+
+.lang-switch button {
+  flex: 1;
 }
 
 .lang-switch button {
