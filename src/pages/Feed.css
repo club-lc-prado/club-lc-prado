@@ -158,15 +158,10 @@
 
 .feed-side-card {
   display: block;
-  border: 1px solid rgba(242,237,227,0.12);
-  padding: 20px;
+  border: none;
+  padding: 20px 0;
   text-decoration: none;
   color: inherit;
-  transition: border-color 0.2s ease;
-}
-
-.feed-side-card:hover {
-  border-color: rgba(212,131,28,0.5);
 }
 
 .feed-side-label {
