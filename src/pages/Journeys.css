@@ -111,13 +111,26 @@
 }
 
 .journeys-right {
-  display: none;
+  display: block;
+  width: 100%;
+  margin-top: 32px;
 }
 
 @media (min-width: 1100px) {
+  .journeys-body {
+    flex-wrap: nowrap;
+  }
+
   .journeys-right {
-    display: block;
     flex: 1;
+    margin-top: 0;
+    width: auto;
+  }
+}
+
+@media (max-width: 1099px) {
+  .journeys-body {
+    flex-wrap: wrap;
   }
 }
 
