@@ -76,6 +76,14 @@
   animation: yearCalPulse 1.6s ease-in-out infinite;
 }
 
+.year-cal-day.weekend {
+  color: #c0392b;
+}
+
+.year-cal-day.weekend.has-event {
+  color: #F2EDE3;
+}
+
 @keyframes yearCalPulse {
   0%, 100% { transform: scale(1); opacity: 1; }
   50% { transform: scale(1.15); opacity: 0.8; }
