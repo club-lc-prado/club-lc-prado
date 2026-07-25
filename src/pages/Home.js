@@ -6,6 +6,7 @@ import { auth, db } from "../firebase";
 import { useLanguage } from "../i18n/LanguageContext";
 import "./Home.css";
 import heroImage from "../hero-prado.jpg";
+import notifSound from "../notif-sound.mp3";
 
 function Home() {
   const { t, lang, changeLang } = useLanguage();
@@ -35,13 +36,29 @@ function Home() {
 
   useEffect(() => {
     if (!user) return;
+    let firstLoad = true;
     const q = query(collection(db, "conversations"), where("participants", "array-contains", user.uid));
     const unsub = onSnapshot(q, (snap) => {
       const unread = snap.docs.filter((d) => {
         const data = d.data();
         return data.lastMessageBy && data.lastMessageBy !== user.uid && !data.readBy?.includes(user.uid);
       });
-      setUnreadChats(unread.length);
+      const newCount = unread.length;
+
+      setUnreadChats((prevCount) => {
+        if (!firstLoad && newCount > prevCount) {
+          new Audio(notifSound).play().catch(() => {});
+          if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+        }
+        return newCount;
+      });
+
+      if ("setAppBadge" in navigator) {
+        if (newCount > 0) navigator.setAppBadge(newCount).catch(() => {});
+        else navigator.clearAppBadge().catch(() => {});
+      }
+
+      firstLoad = false;
     });
     return unsub;
   }, [user]);
