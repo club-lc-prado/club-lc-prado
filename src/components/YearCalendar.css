@@ -10,6 +10,12 @@
   }
 }
 
+@media (max-width: 1099px) {
+  .year-cal-day {
+    font-size: 15px !important;
+  }
+}
+
 @media (max-width: 600px) {
   .year-cal {
     grid-template-columns: repeat(2, 1fr);
