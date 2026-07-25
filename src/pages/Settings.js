@@ -113,8 +113,8 @@ function Settings() {
 
         <div className="settings-row">
           <div>
-            <div className="settings-row-label">Push-уведомления</div>
-            <div className="settings-row-sub">Звук и уведомление даже когда сайт закрыт</div>
+            <div className="settings-row-label">{t.settings.pushTitle}</div>
+            <div className="settings-row-sub">{t.settings.pushSub}</div>
           </div>
           <label className="settings-switch">
             <input

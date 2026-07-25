@@ -3,7 +3,7 @@ const translations = {
     home: {
       eyebrow: "CLUB LC PRADO",
       titleLines: ["Легенды не устаревают.", "Они просто ждут", "своего времени."],
-      subtitle: "Сообщество ценителей и поклонников Toyota Land Cruiser Prado в Германии и за ее пределами.",
+      subtitle: "Сообщество любителей внедорожных автомобилей в Германии и за ее пределами.",
       quote: "Легенды не устаревают. Они просто ждут своего времени.",
       cardMeeting: "Следующая встреча",
       cardMembers: "Участников в клубе",
@@ -146,6 +146,8 @@ const translations = {
       saved: "Сохранено",
       language: "Язык",
       languageSub: "Язык интерфейса сайта",
+      pushTitle: "Push-уведомления",
+      pushSub: "Звук и уведомление даже когда сайт закрыт",
     },
     notifications: {
       title: "Уведомления",
@@ -241,7 +243,7 @@ const translations = {
     home: {
       eyebrow: "CLUB LC PRADO",
       titleLines: ["Legenden veralten nicht.", "Sie warten nur", "auf ihre Zeit."],
-      subtitle: "Die Community der Toyota Land Cruiser Prado-Liebhaber in Deutschland und darüber hinaus.",
+      subtitle: "Die Community der Geländewagen-Liebhaber in Deutschland und darüber hinaus.",
       quote: "Legenden veralten nicht. Sie warten nur auf ihre Zeit.",
       cardMeeting: "Nächstes Treffen",
       cardMembers: "Mitglieder im Club",
@@ -384,6 +386,8 @@ const translations = {
       saved: "Gespeichert",
       language: "Sprache",
       languageSub: "Sprache der Benutzeroberfläche",
+      pushTitle: "Push-Benachrichtigungen",
+      pushSub: "Ton und Benachrichtigung auch wenn die Seite geschlossen ist",
     },
     notifications: {
       title: "Benachrichtigungen",
@@ -479,7 +483,7 @@ const translations = {
     home: {
       eyebrow: "CLUB LC PRADO",
       titleLines: ["Legends don't age.", "They just wait", "for their time."],
-      subtitle: "The community of Toyota Land Cruiser Prado enthusiasts in Germany and beyond.",
+      subtitle: "The community of off-road vehicle enthusiasts in Germany and beyond.",
       quote: "Legends don't age. They just wait for their time.",
       cardMeeting: "Next meeting",
       cardMembers: "Members in club",
@@ -622,6 +626,8 @@ const translations = {
       saved: "Saved",
       language: "Language",
       languageSub: "Site interface language",
+      pushTitle: "Push notifications",
+      pushSub: "Sound and notification even when the site is closed",
     },
     notifications: {
       title: "Notifications",
@@ -717,7 +723,7 @@ const translations = {
     home: {
       eyebrow: "CLUB LC PRADO",
       titleLines: ["Легенди не старіють.", "Вони просто чекають", "свого часу."],
-      subtitle: "Спільнота шанувальників Toyota Land Cruiser Prado у Німеччині та за її межами.",
+      subtitle: "Спільнота шанувальників позашляхових автомобілів у Німеччині та за її межами.",
       quote: "Легенди не старіють. Вони просто чекають свого часу.",
       cardMeeting: "Наступна зустріч",
       cardMembers: "Учасників у клубі",
@@ -860,6 +866,8 @@ const translations = {
       saved: "Збережено",
       language: "Мова",
       languageSub: "Мова інтерфейсу сайту",
+      pushTitle: "Push-сповіщення",
+      pushSub: "Звук і сповіщення навіть коли сайт закрито",
     },
     notifications: {
       title: "Сповіщення",
