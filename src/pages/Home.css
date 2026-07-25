@@ -294,9 +294,18 @@
   }
 
   .hero-strip {
-    flex-direction: column;
-    align-items: stretch;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
     padding: 20px 20px 20px 20px;
+    gap: 16px;
+  }
+
+  .hero-strip-left {
+    flex: 1 1 150px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
     gap: 16px;
   }
 
@@ -313,5 +322,22 @@
     flex: none;
     align-items: flex-start;
     text-align: left;
+  }
+
+  .hero-strip-calendar-mobile {
+    flex: 0 0 130px;
+  }
+
+  .hero-strip-calendar-mobile .home-calendar {
+    width: 100%;
+    padding: 8px;
+  }
+
+  .hero-strip-calendar-mobile .home-calendar-day {
+    font-size: 9px;
+  }
+
+  .hero-strip-calendar-mobile .home-calendar-month {
+    font-size: 10px;
   }
 }

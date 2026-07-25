@@ -11,6 +11,47 @@
   }
 }
 
+.hero-strip-calendar-mobile {
+  display: none;
+}
+
+@media (min-width: 901px) {
+  .hero-strip-left {
+    display: contents;
+  }
+}
+
+@media (max-width: 900px) {
+  .hero-strip-calendar-mobile {
+    display: block;
+    width: 140px;
+    box-sizing: border-box;
+  }
+
+  .hero-strip-calendar-mobile .home-calendar {
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  .hero-strip-calendar-mobile .home-calendar-grid,
+  .hero-strip-calendar-mobile .home-calendar-weekdays {
+    width: 100%;
+  }
+
+  .hero-strip-calendar-mobile .home-calendar-day,
+  .hero-strip-calendar-mobile .home-calendar-weekdays span {
+    min-width: 0;
+    padding: 0;
+    font-size: 8px;
+  }
+
+  .hero-strip-calendar-mobile .home-calendar-header button {
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+  }
+}
+
 .home-calendar {
   background: rgba(11,13,12,0.35);
   backdrop-filter: blur(3px);

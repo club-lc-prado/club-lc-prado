@@ -98,6 +98,7 @@ function Home() {
       </div>
 
       <div className="hero-strip">
+        <div className="hero-strip-left">
         <Link to={user ? "/feed" : "/login"} className="hero-strip-account">
           <div className="hero-strip-avatar-wrap">
             <div className="hero-strip-avatar">
@@ -137,6 +138,11 @@ function Home() {
         </div>
 
         <div className="hero-strip-tag">{t.home.tagline}</div>
+        </div>
+
+        <div className="hero-strip-calendar-mobile">
+          <HomeCalendar />
+        </div>
       </div>
     </div>
   );
