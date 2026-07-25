@@ -44,9 +44,10 @@
   background: transparent;
   border: none;
   color: #8a8578;
-  font-size: 10px;
+  font-size: 20px;
   cursor: pointer;
   padding: 0;
+  line-height: 1;
 }
 
 .year-cal-day:hover:not(.empty) {
