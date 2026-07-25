@@ -117,14 +117,25 @@
 .home-calendar-day {
   position: relative;
   aspect-ratio: 1;
+  min-width: 0;
+  padding: 0;
   background: transparent;
   border: none;
   color: #C9C4B8;
-  font-size: 11px;
+  font-size: 22px;
+  line-height: 1;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.home-calendar-day.weekend {
+  color: #c0392b;
+}
+
+.home-calendar-day.weekend.has-event {
+  color: #F2EDE3;
 }
 
 .home-calendar-day:hover:not(.empty) {
