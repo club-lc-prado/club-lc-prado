@@ -431,7 +431,16 @@ function Feed() {
                 rows={3}
               />
               {imagePreview && (
-                <img src={imagePreview} alt="preview" className="feed-composer-preview" />
+                <div className="feed-composer-preview-wrap">
+                  <img src={imagePreview} alt="preview" className="feed-composer-preview" />
+                  <button
+                    type="button"
+                    className="feed-composer-preview-clear"
+                    onClick={() => setImagePreview(null)}
+                  >
+                    ✕
+                  </button>
+                </div>
               )}
               <div className="feed-composer-actions">
                 <button

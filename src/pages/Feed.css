@@ -203,18 +203,19 @@
 }
 
 .feed-composer {
-  margin-bottom: 40px;
+  margin-bottom: 20px;
 }
 
 .feed-composer textarea {
   width: 100%;
   box-sizing: border-box;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(242,237,227,0.25);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(242,237,227,0.15);
   color: #F2EDE3;
   font-family: 'Inter', sans-serif;
   font-size: 14px;
-  padding: 12px 14px;
+  padding: 8px 0;
   outline: none;
   resize: none;
   margin-bottom: 12px;
@@ -224,12 +225,31 @@
   border-color: #D4831C;
 }
 
+.feed-composer-preview-wrap {
+  position: relative;
+  margin-bottom: 12px;
+}
+
 .feed-composer-preview {
   width: 100%;
-  max-height: 240px;
-  object-fit: cover;
-  margin-bottom: 12px;
+  max-height: 400px;
+  object-fit: contain;
+  background: rgba(255,255,255,0.03);
   display: block;
+}
+
+.feed-composer-preview-clear {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(11,13,12,0.8);
+  border: none;
+  color: #F2EDE3;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 13px;
 }
 
 .feed-composer-actions {
@@ -240,25 +260,14 @@
   gap: 10px;
 }
 
-.feed-composer-journey-select {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(242,237,227,0.25);
-  color: #C9C4B8;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 12px;
-  padding: 8px 10px;
-  outline: none;
-  flex: 1;
-  min-width: 140px;
-}
-
 .feed-composer-photo-btn {
   background: transparent;
   border: 1px solid rgba(242,237,227,0.25);
   color: #C9C4B8;
   font-family: 'JetBrains Mono', monospace;
   font-size: 12px;
-  padding: 8px 14px;
+  padding: 8px 16px;
+  border-radius: 20px;
   cursor: pointer;
 }
 
@@ -269,7 +278,8 @@
   font-family: 'JetBrains Mono', monospace;
   font-weight: 500;
   font-size: 13px;
-  padding: 10px 20px;
+  padding: 10px 22px;
+  border-radius: 20px;
   cursor: pointer;
 }
 
@@ -325,13 +335,13 @@
 .feed-like-btn {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   background: transparent;
-  border: 1px solid rgba(242,237,227,0.2);
+  border: none;
   color: #C9C4B8;
   font-family: 'JetBrains Mono', monospace;
   font-size: 13px;
-  padding: 8px 16px;
+  padding: 4px;
   cursor: pointer;
   transition: transform 0.15s ease;
 }
@@ -341,7 +351,6 @@
 }
 
 .feed-like-btn.liked {
-  border-color: #c0392b;
   animation: likePop 0.35s ease;
 }
 
@@ -661,6 +670,29 @@
   color: #8a8578;
 }
 
+.notif-friend-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.notif-friend-accept,
+.notif-friend-decline {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  padding: 5px 12px;
+  cursor: pointer;
+  border: 1px solid rgba(212,131,28,0.4);
+  background: transparent;
+  color: #D4831C;
+  border-radius: 14px;
+}
+
+.notif-friend-decline {
+  border-color: rgba(194,92,74,0.4);
+  color: #c25c4a;
+}
+
 .feed-avatar-preview-wrap {
   position: relative;
 }
@@ -730,8 +762,6 @@
     margin-left: 16px;
     margin-right: 16px;
     width: calc(100% - 32px);
-    border-left: none;
-    border-right: none;
   }
 
   .feed-posts {
@@ -756,88 +786,4 @@
     width: 100%;
     margin-bottom: 0;
   }
-}
-
-.feed-messages-mobile {
-  display: none;
-}
-
-@media (max-width: 1299px) {
-  .feed-messages-mobile {
-    display: block;
-    border: 1px solid rgba(242,237,227,0.12);
-    padding: 12px 16px;
-    margin-top: 16px;
-  }
-}
-
-.feed-messages-card {
-  cursor: default;
-}
-
-.feed-messages-card:hover {
-  border-color: rgba(242,237,227,0.12);
-}
-
-.feed-msg-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 0;
-  text-decoration: none;
-  color: inherit;
-  border-top: 1px solid rgba(242,237,227,0.08);
-}
-
-.feed-msg-row:first-of-type {
-  border-top: none;
-}
-
-.feed-msg-row.unread .feed-msg-name {
-  color: #D4831C;
-}
-
-.feed-msg-row.unread .feed-msg-preview {
-  color: #F2EDE3;
-  font-weight: 600;
-}
-
-.feed-msg-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: #D4831C;
-  color: #0B0D0C;
-  font-family: 'Oswald', sans-serif;
-  font-weight: 700;
-  font-size: 13px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-.feed-msg-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.feed-msg-info {
-  min-width: 0;
-  flex: 1;
-}
-
-.feed-msg-name {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 12px;
-}
-
-.feed-msg-preview {
-  font-size: 11px;
-  color: #8a8578;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
