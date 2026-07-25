@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import {
-  doc, getDoc, collection, addDoc, getDocs, query, orderBy, where, limit, onSnapshot,
+  doc, getDoc, setDoc, deleteDoc, collection, addDoc, getDocs, query, orderBy, where, limit, onSnapshot,
   updateDoc, arrayUnion, arrayRemove, writeBatch,
 } from "firebase/firestore";
 import { auth, db } from "../firebase";
@@ -34,7 +34,6 @@ function Feed() {
   const [notifConverging, setNotifConverging] = useState(null);
   const [notifOpen, setNotifOpen] = useState(false);
   const [conversations, setConversations] = useState([]);
-  const [messagesOpen, setMessagesOpen] = useState(false);
 
   const localeMap = { ru: "ru-RU", de: "de-DE", en: "en-US", ua: "uk-UA" };
 
@@ -285,12 +284,37 @@ function Feed() {
     if (n.type === "comment") return `${n.fromUserName} ${t.feed.commentedTopic} "${n.journeyTitle}"`;
     if (n.type === "postComment") return `${n.fromUserName} ${t.feed.commentedYourPost}`;
     if (n.type === "rsvp") return `${n.fromUserName} ${t.feed.joinedCall} "${n.journeyTitle}"`;
+    if (n.type === "message") return `${n.fromUserName}: ${t.messages.writeMsg.replace("...", "")}`;
+    if (n.type === "friendRequest") return `${n.fromUserName} ${t.friends.requestFrom}`;
+    if (n.type === "friendAccepted") return `${n.fromUserName} ${t.friends.accepted}`;
     return n.fromUserName;
   };
 
   const linkFor = (n) => {
+    if (n.type === "message") return `/messages/${n.fromUserId}`;
+    if (n.type === "friendAccepted") return `/members/${n.fromUserId}`;
     if (n.journeyId) return `/journeys/${n.journeyId}`;
     return "/profile";
+  };
+
+  const acceptFriendFromNotif = async (n) => {
+    const rId = [user.uid, n.fromUserId].sort().join("_");
+    await updateDoc(doc(db, "friendRequests", rId), { status: "accepted" });
+    await updateDoc(doc(db, "members", user.uid), { friends: arrayUnion(n.fromUserId) });
+    await updateDoc(doc(db, "members", n.fromUserId), { friends: arrayUnion(user.uid) });
+    await addDoc(collection(db, "notifications"), {
+      toUserId: n.fromUserId,
+      fromUserId: user.uid,
+      fromUserName: profile?.name || "Участник",
+      type: "friendAccepted",
+      read: false,
+      createdAt: new Date().toISOString(),
+    });
+  };
+
+  const declineFriendFromNotif = async (n) => {
+    const rId = [user.uid, n.fromUserId].sort().join("_");
+    await deleteDoc(doc(db, "friendRequests", rId));
   };
 
   return (
@@ -339,15 +363,36 @@ function Feed() {
                           <div className="notif-dropdown-empty">{t.feed.notifEmpty}</div>
                         )}
                         {notifications.map((n) => (
-                          <Link
-                            key={n.id}
-                            to={linkFor(n)}
-                            className="notif-dropdown-item"
-                            onClick={() => setNotifOpen(false)}
-                          >
-                            <div className="notif-dropdown-text">{textFor(n)}</div>
-                            <div className="notif-dropdown-date">{formatDate(n.createdAt)}</div>
-                          </Link>
+                          <div key={n.id} className="notif-dropdown-item" style={{ cursor: "default" }}>
+                            {n.type === "friendRequest" ? (
+                              <>
+                                <div className="notif-dropdown-text">{textFor(n)}</div>
+                                <div className="notif-friend-actions">
+                                  <button
+                                    className="notif-friend-accept"
+                                    onClick={() => acceptFriendFromNotif(n)}
+                                  >
+                                    {t.friends.acceptBtn}
+                                  </button>
+                                  <button
+                                    className="notif-friend-decline"
+                                    onClick={() => declineFriendFromNotif(n)}
+                                  >
+                                    {t.friends.declineBtn}
+                                  </button>
+                                </div>
+                              </>
+                            ) : (
+                              <Link
+                                to={linkFor(n)}
+                                onClick={() => setNotifOpen(false)}
+                                style={{ display: "block", color: "inherit", textDecoration: "none" }}
+                              >
+                                <div className="notif-dropdown-text">{textFor(n)}</div>
+                                <div className="notif-dropdown-date">{formatDate(n.createdAt)}</div>
+                              </Link>
+                            )}
+                          </div>
                         ))}
                       </div>
                     )}
@@ -375,8 +420,7 @@ function Feed() {
 
             <h1 className="feed-title">{t.feed.title}</h1>
             <div className="feed-underline"></div>
-
-            </div>
+          </div>
 
           {user && (
             <div className="feed-composer">
@@ -493,8 +537,7 @@ function Feed() {
               <div className="feed-side-value small">{t.feed.notPlanned}</div>
             )}
           </Link>
-
-          </div>
+        </div>
       </div>
 
       {qrOpen && user && (

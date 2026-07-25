@@ -137,9 +137,16 @@
   color: #C9C4B8;
 }
 
+.member-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+}
+
 .member-message-btn {
   display: inline-block;
-  margin-top: 16px;
   background: #D4831C;
   color: #0B0D0C;
   border: none;
@@ -149,4 +156,54 @@
   letter-spacing: 1px;
   padding: 10px 24px;
   text-decoration: none;
+}
+
+.member-friend-btn {
+  background: transparent;
+  border: 1px solid rgba(212,131,28,0.5);
+  color: #D4831C;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: 1px;
+  padding: 10px 24px;
+  cursor: pointer;
+}
+
+.member-friend-btn:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+.member-friend-btn.friends {
+  border-color: #8FA37E;
+  color: #8FA37E;
+}
+
+.member-friend-btn.sent {
+  border-color: rgba(242,237,227,0.25);
+  color: #8a8578;
+}
+
+.member-friend-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.member-friend-btn.decline {
+  border-color: rgba(194,92,74,0.5);
+  color: #c25c4a;
+}
+
+.friends-section {
+  margin-bottom: 40px;
+}
+
+.friends-section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #8FA37E;
+  margin-bottom: 16px;
 }

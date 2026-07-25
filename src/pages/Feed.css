@@ -202,8 +202,8 @@
 .feed-composer,
 .feed-post {
   width: 100%;
-  border: 1px solid rgba(242,237,227,0.12);
-  padding: 20px;
+  border: none;
+  padding: 20px 0;
   box-sizing: border-box;
 }
 

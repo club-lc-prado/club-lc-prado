@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { onAuthStateChanged, signOut, deleteUser } from "firebase/auth";
 import {
   doc, getDoc, updateDoc, deleteDoc, collection, addDoc, query, where, orderBy,
@@ -343,14 +343,10 @@ function Profile() {
                 <span className="profile-stat-num">{myPosts.length}</span>
                 <span className="profile-stat-label">{t.profile.publications}</span>
               </div>
-              <div className="profile-stat">
-                <span className="profile-stat-num">—</span>
-                <span className="profile-stat-label">{t.profile.followers}</span>
-              </div>
-              <div className="profile-stat">
-                <span className="profile-stat-num">—</span>
-                <span className="profile-stat-label">{t.profile.following}</span>
-              </div>
+              <Link to="/friends" className="profile-stat">
+                <span className="profile-stat-num">{profile?.friends?.length || 0}</span>
+                <span className="profile-stat-label">{t.friends.friendsCount}</span>
+              </Link>
             </div>
 
             {!editing ? (
