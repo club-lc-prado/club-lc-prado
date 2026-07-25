@@ -4,6 +4,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import { useLanguage } from "../i18n/LanguageContext";
+import YearCalendar from "../components/YearCalendar";
 import "./Journeys.css";
 import journeysBg from "../journeys-bg.jpg";
 
@@ -61,43 +62,51 @@ function Journeys() {
         </Link>
       </div>
 
-      {loading && <div className="journeys-empty">...</div>}
+      <div className="journeys-body">
+        <div className="journeys-left">
+          {loading && <div className="journeys-empty">...</div>}
 
-      {!loading && (
-        <>
-          <div className="journeys-section">
-            <div className="journeys-section-label">{t.journeys.upcoming}</div>
-            {upcoming.length === 0 ? (
-              <div className="journeys-empty">{t.journeys.emptyUpcoming}</div>
-            ) : (
-              upcoming.map((j, i) => (
-                <Link to={`/journeys/${j.id}`} key={j.id} className="journeys-card upcoming">
-                  {i === 0 && <span className="journeys-pulse">{getSeasonIcon()}</span>}
-                  <div className="journeys-card-date">{formatDate(j.date)}</div>
-                  <div className="journeys-card-title">{j.title}</div>
-                  <div className="journeys-card-place">{j.place}</div>
-                  <div className="journeys-card-participants">
-                    {t.journeys.going}: {j.participants?.length || 0}
-                  </div>
-                </Link>
-              ))
-            )}
-          </div>
+          {!loading && (
+            <>
+              <div className="journeys-section">
+                <div className="journeys-section-label">{t.journeys.upcoming}</div>
+                {upcoming.length === 0 ? (
+                  <div className="journeys-empty">{t.journeys.emptyUpcoming}</div>
+                ) : (
+                  upcoming.map((j, i) => (
+                    <Link to={`/journeys/${j.id}`} key={j.id} className="journeys-card upcoming">
+                      {i === 0 && <span className="journeys-pulse">{getSeasonIcon()}</span>}
+                      <div className="journeys-card-date">{formatDate(j.date)}</div>
+                      <div className="journeys-card-title">{j.title}</div>
+                      <div className="journeys-card-place">{j.place}</div>
+                      <div className="journeys-card-participants">
+                        {t.journeys.going}: {j.participants?.length || 0}
+                      </div>
+                    </Link>
+                  ))
+                )}
+              </div>
 
-          {past.length > 0 && (
-            <div className="journeys-section">
-              <div className="journeys-section-label">{t.journeys.past}</div>
-              {past.slice().reverse().map((j) => (
-                <Link to={`/journeys/${j.id}`} key={j.id} className="journeys-card past">
-                  <div className="journeys-card-date">{formatDate(j.date)}</div>
-                  <div className="journeys-card-title">{j.title}</div>
-                  <div className="journeys-card-place">{j.place}</div>
-                </Link>
-              ))}
-            </div>
+              {past.length > 0 && (
+                <div className="journeys-section">
+                  <div className="journeys-section-label">{t.journeys.past}</div>
+                  {past.slice().reverse().map((j) => (
+                    <Link to={`/journeys/${j.id}`} key={j.id} className="journeys-card past">
+                      <div className="journeys-card-date">{formatDate(j.date)}</div>
+                      <div className="journeys-card-title">{j.title}</div>
+                      <div className="journeys-card-place">{j.place}</div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </>
           )}
-        </>
-      )}
+        </div>
+
+        <div className="journeys-right">
+          <YearCalendar />
+        </div>
+      </div>
     </div>
   );
 }

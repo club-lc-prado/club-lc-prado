@@ -1,10 +1,11 @@
 .journeys-page {
   position: relative;
   min-height: 100vh;
-  padding: 100px 60px 100px 232px;
+  padding: 32px 60px 40px 232px;
   font-family: 'Inter', sans-serif;
   color: #F2EDE3;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .journeys-bg-fixed {
@@ -48,7 +49,7 @@
   align-items: flex-start;
   flex-wrap: wrap;
   gap: 16px;
-  margin-bottom: 48px;
+  margin-bottom: 14px;
 }
 
 .journeys-title {
@@ -64,6 +65,7 @@
   width: 100px;
   height: 3px;
   background: #D4831C;
+  margin-bottom: 0;
 }
 
 .journeys-btn {
@@ -94,9 +96,34 @@
   cursor: pointer;
 }
 
+.journeys-body {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+}
+
+.journeys-left {
+  flex: 1;
+  min-width: 0;
+  max-width: 420px;
+}
+
+.journeys-right {
+  display: none;
+}
+
+@media (min-width: 1100px) {
+  .journeys-right {
+    display: block;
+    flex: 1;
+  }
+}
+
 .journeys-section {
   margin-bottom: 48px;
-  max-width: 640px;
+  max-width: 420px;
 }
 
 .journeys-section-label {
@@ -118,8 +145,8 @@
   position: relative;
   display: block;
   border: 1px solid rgba(242,237,227,0.12);
-  padding: 20px;
-  margin-bottom: 12px;
+  padding: 14px;
+  margin-bottom: 10px;
   text-decoration: none;
   color: inherit;
   transition: border-color 0.2s ease;

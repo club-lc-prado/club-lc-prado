@@ -1,0 +1,63 @@
+.year-cal {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+@media (max-width: 700px) {
+  .year-cal {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.year-cal-month {
+  background: rgba(11,13,12,0.4);
+  border: 1px solid rgba(242,237,227,0.1);
+  padding: 8px;
+}
+
+.year-cal-month-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #D4831C;
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+.year-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+}
+
+.year-cal-day {
+  aspect-ratio: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  color: #8a8578;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.year-cal-day:hover:not(.empty) {
+  background: rgba(255,255,255,0.06);
+}
+
+.year-cal-day.empty {
+  cursor: default;
+}
+
+.year-cal-day.today {
+  color: #D4831C;
+  font-weight: 700;
+}
+
+.year-cal-day.has-event {
+  background: rgba(212,131,28,0.3);
+  color: #F2EDE3;
+  font-weight: 600;
+}
