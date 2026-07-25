@@ -22,6 +22,7 @@ function MiniMonth({ year, month, journeysByDate, onDayClick }) {
   const cells = [];
   for (let i = 0; i < startOffset; i++) cells.push(null);
   for (let d = 1; d <= daysInMonth; d++) cells.push(d);
+  while (cells.length < 42) cells.push(null);
 
   const pad = (n) => String(n).padStart(2, "0");
   const dateKey = (d) => `${year}-${pad(month + 1)}-${pad(d)}`;
@@ -62,8 +63,7 @@ function YearCalendar() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [journeysByDate, setJourneysByDate] = useState({});
-
-  const year = new Date().getFullYear();
+  const [year, setYear] = useState(new Date().getFullYear());
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => setUser(u));
@@ -99,8 +99,14 @@ function YearCalendar() {
   };
 
   return (
-    <div className="year-cal">
-      {[...Array(12)].map((_, m) => (
+    <div>
+      <div className="year-cal-nav">
+        <button onClick={() => setYear(year - 1)} aria-label="prev year">‹</button>
+        <span className="year-cal-year">{year}</span>
+        <button onClick={() => setYear(year + 1)} aria-label="next year">›</button>
+      </div>
+      <div className="year-cal">
+        {[...Array(12)].map((_, m) => (
         <MiniMonth
           key={m}
           year={year}
@@ -109,6 +115,7 @@ function YearCalendar() {
           onDayClick={handleDayClick}
         />
       ))}
+      </div>
     </div>
   );
 }

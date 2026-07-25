@@ -19,16 +19,16 @@
 .year-cal-month {
   background: rgba(11,13,12,0.4);
   border: 1px solid rgba(242,237,227,0.1);
-  padding: 8px;
+  padding: 5px;
 }
 
 .year-cal-month-label {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 12px;
+  font-size: 10px;
   letter-spacing: 1px;
   text-transform: uppercase;
   color: #D4831C;
-  margin-bottom: 5px;
+  margin-bottom: 3px;
   text-align: center;
 }
 
@@ -44,7 +44,7 @@
   background: transparent;
   border: none;
   color: #8a8578;
-  font-size: 12px;
+  font-size: 10px;
   cursor: pointer;
   padding: 0;
 }
@@ -63,7 +63,47 @@
 }
 
 .year-cal-day.has-event {
-  background: rgba(212,131,28,0.3);
+  background: rgba(79,155,94,0.75);
   color: #F2EDE3;
-  font-weight: 600;
+  font-weight: 700;
+  animation: yearCalPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes yearCalPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.15); opacity: 0.8; }
+}
+
+.year-cal-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 6px;
+}
+
+.year-cal-nav button {
+  background: transparent;
+  border: 1px solid rgba(242,237,227,0.2);
+  color: #F2EDE3;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.year-cal-nav button:hover {
+  border-color: #D4831C;
+  color: #D4831C;
+}
+
+.year-cal-year {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  color: #F2EDE3;
 }
