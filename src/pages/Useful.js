@@ -72,11 +72,6 @@ function Useful() {
   return (
     <div className="useful-page">
       <h1 className="useful-title">{t.static.useful}</h1>
-
-      <button className="useful-debug-toggle" onClick={() => setDebugMode(!debugMode)}>
-        {debugMode ? "Режим меток: ВКЛ" : "Режим меток: выкл"}
-      </button>
-
       <div
         className="useful-map-wrap"
         style={{
