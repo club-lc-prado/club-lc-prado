@@ -310,11 +310,13 @@ function Feed() {
       read: false,
       createdAt: new Date().toISOString(),
     });
+    await deleteDoc(doc(db, "notifications", n.id));
   };
 
   const declineFriendFromNotif = async (n) => {
     const rId = [user.uid, n.fromUserId].sort().join("_");
     await deleteDoc(doc(db, "friendRequests", rId));
+    await deleteDoc(doc(db, "notifications", n.id));
   };
 
   return (

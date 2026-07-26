@@ -730,6 +730,13 @@
   background: rgba(212,178,106,0.1);
 }
 
+.spec-form-directions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
 .spec-form-modal input[type="text"] {
   width: 100%;
   box-sizing: border-box;

@@ -55,9 +55,15 @@ function Profile() {
   const [specTooltip, setSpecTooltip] = useState(false);
   const [specFormOpen, setSpecFormOpen] = useState(false);
   const [specSubmitted, setSpecSubmitted] = useState(false);
+  const DIRECTION_OPTIONS = [
+    "Шиномонтаж", "Замена масел", "TÜV", "Ремонт ходовой части",
+    "Аккумуляторы", "Рулевое", "Сцепление", "Установка ГБО",
+    "Установка фаркопа", "Ремонт двигателей",
+  ];
+
   const [specForm, setSpecForm] = useState({
     languages: [],
-    directions: "",
+    directions: [],
     address: "",
     phone: "",
     whatsapp: false,
@@ -274,6 +280,15 @@ function Profile() {
     }));
   };
 
+  const toggleSpecDirection = (dir) => {
+    setSpecForm((f) => ({
+      ...f,
+      directions: f.directions.includes(dir)
+        ? f.directions.filter((d) => d !== dir)
+        : [...f.directions, dir],
+    }));
+  };
+
   const handleSpecSubmit = async (e) => {
     e.preventDefault();
     await addDoc(collection(db, "specialists"), {
@@ -281,7 +296,7 @@ function Profile() {
       name: profile?.name || "Участник",
       photoURL: profile?.photoURL || "",
       languages: specForm.languages,
-      directions: specForm.directions.split(",").map((d) => d.trim()).filter(Boolean),
+      directions: specForm.directions,
       address: specForm.address,
       phone: specForm.phone,
       whatsapp: specForm.whatsapp,
@@ -521,13 +536,19 @@ function Profile() {
                   ))}
                 </div>
 
-                <input
-                  type="text"
-                  placeholder="Направления работы (через запятую: Двигатель, Шины, ...)"
-                  value={specForm.directions}
-                  onChange={(e) => setSpecForm({ ...specForm, directions: e.target.value })}
-                  required
-                />
+                <div className="spec-form-label">Направления работы</div>
+                <div className="spec-form-directions">
+                  {DIRECTION_OPTIONS.map((dir) => (
+                    <button
+                      type="button"
+                      key={dir}
+                      className={"spec-lang-btn" + (specForm.directions.includes(dir) ? " active" : "")}
+                      onClick={() => toggleSpecDirection(dir)}
+                    >
+                      {dir}
+                    </button>
+                  ))}
+                </div>
                 <input
                   type="text"
                   placeholder="Адрес сервиса"
