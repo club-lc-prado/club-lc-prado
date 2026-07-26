@@ -25,7 +25,6 @@ function BootScreen({ onEnter, user }) {
 
   const enterClub = () => {
     localStorage.setItem(SEEN_KEY, "true");
-    window.history.replaceState({}, "", user ? "/" : "/about");
     onEnter();
   };
 

@@ -29,6 +29,7 @@ import Album from "./pages/Album";
 import Messages from "./pages/Messages";
 import Conversation from "./pages/Conversation";
 import Friends from "./pages/Friends";
+import MapTest from "./pages/MapTest";
 
 function App() {
   const [entered, setEntered] = useState(false);
@@ -75,6 +76,7 @@ function App() {
             <Route path="/messages" element={<Messages />} />
             <Route path="/messages/:userId" element={<Conversation />} />
             <Route path="/friends" element={<Friends />} />
+            <Route path="/maptest" element={<MapTest />} />
           </Routes>
         </BrowserRouter>
       )}
