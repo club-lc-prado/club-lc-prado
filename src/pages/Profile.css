@@ -40,6 +40,7 @@
 }
 
 .profile-header {
+  position: relative;
   width: 100%;
   max-width: 700px;
   display: flex;
@@ -637,4 +638,122 @@
   .ig-lightbox-nav-right {
     right: 8px;
   }
+}
+
+.profile-spec-wrap {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 5;
+}
+
+.profile-spec-icon {
+  width: 84px;
+  height: 84px;
+  cursor: pointer;
+  object-fit: contain;
+  mix-blend-mode: lighten;
+}
+
+.profile-spec-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 8px;
+  background: #16130c;
+  border: 1px solid rgba(212,178,106,0.4);
+  color: #F2EDE3;
+  font-size: 12px;
+  padding: 8px 12px;
+  white-space: nowrap;
+  border-radius: 8px;
+  z-index: 20;
+}
+
+.spec-form-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.spec-form-modal {
+  position: relative;
+  background: #16130c;
+  border: 1.5px solid #D4B26A;
+  border-radius: 14px;
+  padding: 24px;
+  max-width: 360px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.spec-form-title {
+  font-family: 'Oswald', sans-serif;
+  color: #D4B26A;
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.spec-form-label {
+  font-size: 12px;
+  color: #8FA37E;
+  margin: 12px 0 6px 0;
+}
+
+.spec-form-langs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.spec-lang-btn {
+  background: transparent;
+  border: 1px solid rgba(242,237,227,0.25);
+  color: #C9C4B8;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  padding: 6px 12px;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.spec-lang-btn.active {
+  border-color: #D4B26A;
+  color: #D4B26A;
+  background: rgba(212,178,106,0.1);
+}
+
+.spec-form-modal input[type="text"] {
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(242,237,227,0.25);
+  color: #F2EDE3;
+  font-size: 14px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+}
+
+.spec-form-msgrs {
+  display: flex;
+  gap: 14px;
+  font-size: 13px;
+  color: #C9C4B8;
+  margin-bottom: 16px;
+}
+
+.spec-form-success {
+  color: #8FA37E;
+  font-size: 14px;
+  text-align: center;
+  padding: 20px 0;
 }

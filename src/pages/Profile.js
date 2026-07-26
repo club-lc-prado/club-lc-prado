@@ -9,6 +9,7 @@ import { auth, db } from "../firebase";
 import { useLanguage } from "../i18n/LanguageContext";
 import "./Profile.css";
 import joinBg from "../join-bg.jpg";
+import specialistEmblem from "../specialist-emblem.jpg";
 
 const HeartIcon = ({ filled, size = 24 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24">
@@ -50,6 +51,19 @@ function Profile() {
   const [imgSize, setImgSize] = useState({ w: 0, h: 0 });
   const [zoom, setZoom] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
+
+  const [specTooltip, setSpecTooltip] = useState(false);
+  const [specFormOpen, setSpecFormOpen] = useState(false);
+  const [specSubmitted, setSpecSubmitted] = useState(false);
+  const [specForm, setSpecForm] = useState({
+    languages: [],
+    directions: "",
+    address: "",
+    phone: "",
+    whatsapp: false,
+    telegram: false,
+    viber: false,
+  });
 
   const CIRCLE = 260;
   const localeMap = { ru: "ru-RU", de: "de-DE", en: "en-US", ua: "uk-UA" };
@@ -250,6 +264,36 @@ function Profile() {
     return d.toLocaleDateString(localeMap[lang] || "ru-RU", { day: "2-digit", month: "short" });
   };
 
+  const toggleSpecLang = (code) => {
+    setSpecForm((f) => ({
+      ...f,
+      languages: f.languages.includes(code)
+        ? f.languages.filter((l) => l !== code)
+        : [...f.languages, code],
+    }));
+  };
+
+  const handleSpecSubmit = async (e) => {
+    e.preventDefault();
+    await addDoc(collection(db, "specialists"), {
+      userId: user.uid,
+      name: profile?.name || "Участник",
+      photoURL: profile?.photoURL || "",
+      languages: specForm.languages,
+      directions: specForm.directions.split(",").map((d) => d.trim()).filter(Boolean),
+      address: specForm.address,
+      phone: specForm.phone,
+      whatsapp: specForm.whatsapp,
+      telegram: specForm.telegram,
+      viber: specForm.viber,
+      approved: false,
+      x: null,
+      y: null,
+      createdAt: new Date().toISOString(),
+    });
+    setSpecSubmitted(true);
+  };
+
   if (loading) {
     return <div className="profile-page"></div>;
   }
@@ -319,6 +363,21 @@ function Profile() {
 
       <div className="profile-scroll">
         <div className="profile-header">
+          <div className="profile-spec-wrap">
+            <img
+              src={specialistEmblem}
+              alt="Стать специалистом"
+              className="profile-spec-icon"
+              onMouseEnter={() => setSpecTooltip(true)}
+              onMouseLeave={() => setSpecTooltip(false)}
+              onClick={() => setSpecFormOpen(true)}
+            />
+            {specTooltip && (
+              <div className="profile-spec-tooltip">
+                Появиться на карте как специалист автосервиса
+              </div>
+            )}
+          </div>
           <div className="profile-avatar" onClick={handleAvatarClick} style={{ cursor: "pointer" }}>
             {profile?.photoURL ? (
               <img src={profile.photoURL} alt="avatar" />
@@ -431,6 +490,87 @@ function Profile() {
           )}
         </div>
       </div>
+
+      {specFormOpen && (
+        <div className="spec-form-overlay" onClick={() => { setSpecFormOpen(false); setSpecSubmitted(false); }}>
+          <div className="spec-form-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="useful-card-close" onClick={() => { setSpecFormOpen(false); setSpecSubmitted(false); }}>✕</button>
+
+            {specSubmitted ? (
+              <div className="spec-form-success">
+                Заявка отправлена на рассмотрение администратору сайта.
+              </div>
+            ) : (
+              <form onSubmit={handleSpecSubmit}>
+                <div className="spec-form-title">Стать специалистом-консультантом</div>
+
+                <div className="spec-form-label">Языки общения</div>
+                <div className="spec-form-langs">
+                  {["ru", "de", "en", "ua"].map((code) => (
+                    <button
+                      type="button"
+                      key={code}
+                      className={"spec-lang-btn" + (specForm.languages.includes(code) ? " active" : "")}
+                      onClick={() => toggleSpecLang(code)}
+                    >
+                      {code.toUpperCase()}
+                    </button>
+                  ))}
+                </div>
+
+                <input
+                  type="text"
+                  placeholder="Направления работы (через запятую: Двигатель, Шины, ...)"
+                  value={specForm.directions}
+                  onChange={(e) => setSpecForm({ ...specForm, directions: e.target.value })}
+                  required
+                />
+                <input
+                  type="text"
+                  placeholder="Адрес сервиса"
+                  value={specForm.address}
+                  onChange={(e) => setSpecForm({ ...specForm, address: e.target.value })}
+                  required
+                />
+                <input
+                  type="text"
+                  placeholder="Телефон"
+                  value={specForm.phone}
+                  onChange={(e) => setSpecForm({ ...specForm, phone: e.target.value })}
+                  required
+                />
+
+                <div className="spec-form-label">Доступно на этом номере</div>
+                <div className="spec-form-msgrs">
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={specForm.whatsapp}
+                      onChange={(e) => setSpecForm({ ...specForm, whatsapp: e.target.checked })}
+                    /> WhatsApp
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={specForm.telegram}
+                      onChange={(e) => setSpecForm({ ...specForm, telegram: e.target.checked })}
+                    /> Telegram
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={specForm.viber}
+                      onChange={(e) => setSpecForm({ ...specForm, viber: e.target.checked })}
+                    /> Viber
+                  </label>
+                </div>
+
+                <button type="submit" className="profile-btn-small">Отправить на рассмотрение</button>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
 
       {lightbox && (
         <div className="ig-lightbox-overlay" onClick={() => setLightbox(null)}>
