@@ -363,21 +363,6 @@ function Profile() {
 
       <div className="profile-scroll">
         <div className="profile-header">
-          <div className="profile-spec-wrap">
-            <img
-              src={specialistEmblem}
-              alt="Стать специалистом"
-              className="profile-spec-icon"
-              onMouseEnter={() => setSpecTooltip(true)}
-              onMouseLeave={() => setSpecTooltip(false)}
-              onClick={() => setSpecFormOpen(true)}
-            />
-            {specTooltip && (
-              <div className="profile-spec-tooltip">
-                Появиться на карте как специалист автосервиса
-              </div>
-            )}
-          </div>
           <div className="profile-avatar" onClick={handleAvatarClick} style={{ cursor: "pointer" }}>
             {profile?.photoURL ? (
               <img src={profile.photoURL} alt="avatar" />
@@ -406,6 +391,22 @@ function Profile() {
                 <span className="profile-stat-num">{profile?.friends?.length || 0}</span>
                 <span className="profile-stat-label">{t.friends.friendsCount}</span>
               </Link>
+
+              <div className="profile-spec-wrap">
+                <img
+                  src={specialistEmblem}
+                  alt="Стать специалистом"
+                  className="profile-spec-icon"
+                  onMouseEnter={() => setSpecTooltip(true)}
+                  onMouseLeave={() => setSpecTooltip(false)}
+                  onClick={() => setSpecFormOpen(true)}
+                />
+                {specTooltip && (
+                  <div className="profile-spec-tooltip">
+                    Появиться на карте как специалист автосервиса
+                  </div>
+                )}
+              </div>
             </div>
 
             {!editing ? (

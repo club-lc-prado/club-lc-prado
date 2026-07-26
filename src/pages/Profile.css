@@ -641,15 +641,14 @@
 }
 
 .profile-spec-wrap {
-  position: absolute;
-  top: 0;
-  right: 0;
-  z-index: 5;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
 }
 
 .profile-spec-icon {
-  width: 84px;
-  height: 84px;
+  width: 40px;
+  height: 40px;
   cursor: pointer;
   object-fit: contain;
   mix-blend-mode: lighten;
