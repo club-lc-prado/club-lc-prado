@@ -141,6 +141,16 @@
   font-size: 13px;
 }
 
+.useful-card-emblem {
+  position: absolute;
+  top: 26px;
+  right: 10px;
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  mix-blend-mode: lighten;
+}
+
 .useful-card-name {
   font-family: 'Oswald', sans-serif;
   color: #FFFFFF;

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useLanguage } from "../i18n/LanguageContext";
 import "./Useful.css";
 import germanyMapBg from "../germany-map-bg.jpg";
+import specialistEmblem from "../specialist-emblem.jpg";
 
 const SPECIALISTS = [
   {
@@ -104,6 +105,7 @@ function Useful() {
                 onClick={(e) => e.stopPropagation()}
               >
                 <button className="useful-card-close" onClick={() => setSelected(null)}>✕</button>
+                <img src={specialistEmblem} alt="Специалист" className="useful-card-emblem" />
                 <div className="useful-card-name">{s.name}</div>
                 <div className="useful-card-langs">
                   {s.languages.map((l, i) => (
