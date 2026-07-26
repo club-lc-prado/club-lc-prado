@@ -196,6 +196,7 @@
   flex-direction: column;
   padding: 20px 0;
   overflow-y: auto;
+  font-family: 'JetBrains Mono', monospace;
 }
 
 .mobile-menu .sidebar-nav {
