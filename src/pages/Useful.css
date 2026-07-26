@@ -24,6 +24,18 @@
   text-align: center;
 }
 
+.useful-debug-toggle {
+  display: block;
+  margin: 0 auto 16px auto;
+  background: transparent;
+  border: 1px solid rgba(212,178,106,0.3);
+  color: #8a8578;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
 .useful-map-wrap {
   position: relative;
   max-width: 620px;
@@ -33,6 +45,47 @@
   background-position: center;
   background-repeat: no-repeat;
   cursor: crosshair;
+}
+
+.useful-dot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.useful-dot-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid #D4B26A;
+  animation: usefulBreathe 3.5s ease-in-out infinite;
+}
+
+.useful-dot-core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #D4B26A;
+  transform: translate(-50%, -50%);
+  animation: usefulFlash 3.5s ease-in-out infinite;
+  box-shadow: 0 0 8px 2px rgba(212,178,106,0.8);
+}
+
+@keyframes usefulBreathe {
+  0%, 100% { opacity: 0.2; transform: scale(0.5); }
+  50% { opacity: 0.9; transform: scale(1.8); }
+}
+
+@keyframes usefulFlash {
+  0%, 100% { opacity: 0.5; }
+  45% { opacity: 1; }
+  55% { opacity: 1; }
+  100% { opacity: 0.5; }
 }
 
 .useful-click-marker {
@@ -55,4 +108,56 @@
   font-family: 'JetBrains Mono', monospace;
   font-size: 13px;
   color: #8FA37E;
+}
+
+.useful-card-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.useful-card {
+  position: relative;
+  background: rgba(15,15,15,0.9);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(212,178,106,0.3);
+  padding: 28px;
+  max-width: 360px;
+  width: 90%;
+}
+
+.useful-card-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  color: #8a8578;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.useful-card-name {
+  font-family: 'Oswald', sans-serif;
+  color: #D4B26A;
+  font-size: 20px;
+  margin: 0 0 6px 0;
+}
+
+.useful-card-city {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: #8FA37E;
+  margin-bottom: 14px;
+}
+
+.useful-card-row {
+  font-size: 14px;
+  color: #C9C4B8;
+  margin-bottom: 8px;
+  line-height: 1.5;
 }
