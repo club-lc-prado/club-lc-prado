@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { FaWhatsapp, FaTelegramPlane, FaViber } from "react-icons/fa";
+import { SiSignal } from "react-icons/si";
 import { useLanguage } from "../i18n/LanguageContext";
 import "./Useful.css";
 import germanyMapBg from "../germany-map-bg.jpg";
@@ -124,9 +126,44 @@ function Useful() {
                   <div className="useful-card-phone-row">
                     <a href={`tel:${s.phone}`} className="useful-card-phone">{s.phone}</a>
                     <div className="useful-card-messengers">
-                      {s.whatsapp && <span className="useful-msg-icon useful-msg-wa">W</span>}
-                      {s.telegram && <span className="useful-msg-icon useful-msg-tg">T</span>}
-                      {s.viber && <span className="useful-msg-icon useful-msg-vb">V</span>}
+                      {s.whatsapp && (
+                        <a
+                          href={`https://wa.me/${s.phone.replace(/[^0-9]/g, "")}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="useful-msg-icon useful-msg-wa"
+                        >
+                          <FaWhatsapp size={11} />
+                        </a>
+                      )}
+                      {s.telegram && (
+                        <a
+                          href={`https://t.me/+${s.phone.replace(/[^0-9]/g, "")}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="useful-msg-icon useful-msg-tg"
+                        >
+                          <FaTelegramPlane size={11} />
+                        </a>
+                      )}
+                      {s.viber && (
+                        <a
+                          href={`viber://chat?number=%2B${s.phone.replace(/[^0-9]/g, "")}`}
+                          className="useful-msg-icon useful-msg-vb"
+                        >
+                          <FaViber size={11} />
+                        </a>
+                      )}
+                      {s.signal && (
+                        <a
+                          href={`https://signal.me/#p/+${s.phone.replace(/[^0-9]/g, "")}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="useful-msg-icon useful-msg-sig"
+                        >
+                          <SiSignal size={11} />
+                        </a>
+                      )}
                     </div>
                   </div>
                 </div>

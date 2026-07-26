@@ -244,8 +244,11 @@
   font-size: 10px;
   font-weight: 700;
   color: #fff;
+  cursor: pointer;
+  text-decoration: none;
 }
 
 .useful-msg-wa { background: #25D366; }
 .useful-msg-tg { background: #2AABEE; }
 .useful-msg-vb { background: #7360F2; }
+.useful-msg-sig { background: #3A76F0; }

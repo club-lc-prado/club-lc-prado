@@ -63,6 +63,7 @@ function Profile() {
     whatsapp: false,
     telegram: false,
     viber: false,
+    signal: false,
   });
 
   const CIRCLE = 260;
@@ -286,6 +287,7 @@ function Profile() {
       whatsapp: specForm.whatsapp,
       telegram: specForm.telegram,
       viber: specForm.viber,
+      signal: specForm.signal,
       approved: false,
       x: null,
       y: null,
@@ -563,6 +565,13 @@ function Profile() {
                       checked={specForm.viber}
                       onChange={(e) => setSpecForm({ ...specForm, viber: e.target.checked })}
                     /> Viber
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={specForm.signal}
+                      onChange={(e) => setSpecForm({ ...specForm, signal: e.target.checked })}
+                    /> Signal
                   </label>
                 </div>
 
