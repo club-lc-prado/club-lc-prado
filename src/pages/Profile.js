@@ -55,11 +55,7 @@ function Profile() {
   const [specTooltip, setSpecTooltip] = useState(false);
   const [specFormOpen, setSpecFormOpen] = useState(false);
   const [specSubmitted, setSpecSubmitted] = useState(false);
-  const DIRECTION_OPTIONS = [
-    "Шиномонтаж", "Замена масел", "TÜV", "Ремонт ходовой части",
-    "Аккумуляторы", "Рулевое", "Сцепление", "Установка ГБО",
-    "Установка фаркопа", "Ремонт двигателей",
-  ];
+  const DIRECTION_OPTIONS = t.specialist.directions;
 
   const [specForm, setSpecForm] = useState({
     languages: [],
@@ -412,7 +408,7 @@ function Profile() {
               <div className="profile-spec-wrap">
                 <img
                   src={specialistEmblem}
-                  alt="Стать специалистом"
+                  alt={t.specialist.tooltip}
                   className="profile-spec-icon"
                   onMouseEnter={() => setSpecTooltip(true)}
                   onMouseLeave={() => setSpecTooltip(false)}
@@ -420,7 +416,7 @@ function Profile() {
                 />
                 {specTooltip && (
                   <div className="profile-spec-tooltip">
-                    Появиться на карте как специалист автосервиса
+                    {t.specialist.tooltip}
                   </div>
                 )}
               </div>
@@ -516,13 +512,13 @@ function Profile() {
 
             {specSubmitted ? (
               <div className="spec-form-success">
-                Заявка отправлена на рассмотрение администратору сайта.
+                {t.specialist.successMsg}
               </div>
             ) : (
               <form onSubmit={handleSpecSubmit}>
-                <div className="spec-form-title">Стать специалистом-консультантом</div>
+                <div className="spec-form-title">{t.specialist.formTitle}</div>
 
-                <div className="spec-form-label">Языки общения</div>
+                <div className="spec-form-label">{t.specialist.languagesLabel}</div>
                 <div className="spec-form-langs">
                   {["ru", "de", "en", "ua"].map((code) => (
                     <button
@@ -536,7 +532,7 @@ function Profile() {
                   ))}
                 </div>
 
-                <div className="spec-form-label">Направления работы</div>
+                <div className="spec-form-label">{t.specialist.directionsLabel}</div>
                 <div className="spec-form-directions">
                   {DIRECTION_OPTIONS.map((dir) => (
                     <button
@@ -551,20 +547,20 @@ function Profile() {
                 </div>
                 <input
                   type="text"
-                  placeholder="Адрес сервиса"
+                  placeholder={t.specialist.addressPlaceholder}
                   value={specForm.address}
                   onChange={(e) => setSpecForm({ ...specForm, address: e.target.value })}
                   required
                 />
                 <input
                   type="text"
-                  placeholder="Телефон"
+                  placeholder={t.specialist.phonePlaceholder}
                   value={specForm.phone}
                   onChange={(e) => setSpecForm({ ...specForm, phone: e.target.value })}
                   required
                 />
 
-                <div className="spec-form-label">Доступно на этом номере</div>
+                <div className="spec-form-label">{t.specialist.availableOnLabel}</div>
                 <div className="spec-form-msgrs">
                   <label>
                     <input
@@ -596,7 +592,7 @@ function Profile() {
                   </label>
                 </div>
 
-                <button type="submit" className="profile-btn-small">Отправить на рассмотрение</button>
+                <button type="submit" className="profile-btn-small">{t.specialist.submitBtn}</button>
               </form>
             )}
           </div>
