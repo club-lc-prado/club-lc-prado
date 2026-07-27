@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { db } from "../firebase";
 import { FaWhatsapp, FaTelegramPlane, FaViber } from "react-icons/fa";
 import { SiSignal } from "react-icons/si";
 import { useLanguage } from "../i18n/LanguageContext";
@@ -39,11 +41,27 @@ const FLAG_LABELS = { ru: "RU", de: "DE", en: "EN", ua: "UA" };
 
 function Useful() {
   const { t } = useLanguage();
+  const [realSpecialists, setRealSpecialists] = useState([]);
   const [clickPos, setClickPos] = useState(null);
   const [selected, setSelected] = useState(null);
   const [debugMode, setDebugMode] = useState(false);
   const [zoom, setZoom] = useState(1);
   const [origin, setOrigin] = useState({ x: 50, y: 50 });
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const q = query(collection(db, "specialists"), where("approved", "==", true));
+        const snap = await getDocs(q);
+        setRealSpecialists(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+      } catch (e) {
+        setRealSpecialists([]);
+      }
+    };
+    load();
+  }, []);
+
+  const allSpecialists = [...SPECIALISTS, ...realSpecialists];
 
   const handleWheel = (e) => {
     e.preventDefault();
@@ -84,7 +102,9 @@ function Useful() {
         onClick={handleMapClick}
         onWheel={handleWheel}
       >
-        {SPECIALISTS.map((s) => (
+        {allSpecialists.map((s) => {
+          if (s.x == null || s.y == null) return null;
+          return (
           <div key={s.id}>
             <div
               className="useful-dot"
@@ -170,7 +190,8 @@ function Useful() {
               </div>
             )}
           </div>
-        ))}
+          );
+        })}
 
         {debugMode && clickPos && (
           <div

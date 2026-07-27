@@ -1,0 +1,152 @@
+.admin-page {
+  min-height: 100vh;
+  background: #0B0D0C;
+  padding: 40px 40px 40px 232px;
+  box-sizing: border-box;
+  color: #F2EDE3;
+  font-family: 'Inter', sans-serif;
+}
+
+@media (max-width: 900px) {
+  .admin-page {
+    padding: 90px 20px 40px;
+  }
+}
+
+.admin-title {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: clamp(26px, 4vw, 36px);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #D4831C;
+  margin: 0 0 24px 0;
+}
+
+.admin-section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #8FA37E;
+  margin-bottom: 16px;
+}
+
+.admin-empty {
+  color: #8a8578;
+  font-size: 14px;
+}
+
+.admin-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 500px;
+}
+
+.admin-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(242,237,227,0.12);
+  padding: 18px;
+}
+
+.admin-card-name {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: 17px;
+  color: #F2EDE3;
+  margin-bottom: 8px;
+}
+
+.admin-card-row {
+  font-size: 13px;
+  color: #C9C4B8;
+  margin-bottom: 4px;
+}
+
+.admin-card-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+.admin-btn-approve {
+  background: #D4831C;
+  border: none;
+  color: #0B0D0C;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 500;
+  font-size: 12px;
+  padding: 10px 16px;
+  cursor: pointer;
+}
+
+.admin-btn-approve:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.admin-btn-reject {
+  background: transparent;
+  border: 1px solid rgba(194,92,74,0.5);
+  color: #c25c4a;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  padding: 10px 16px;
+  cursor: pointer;
+}
+
+.admin-map-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.admin-map-modal {
+  background: #16130c;
+  border: 1px solid rgba(212,131,28,0.4);
+  padding: 20px;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.admin-map-title {
+  font-size: 13px;
+  color: #D4831C;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.admin-map-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1207 / 1303;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  cursor: crosshair;
+}
+
+.admin-map-marker {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #c0392b;
+  border: 2px solid #F2EDE3;
+}
+
+.admin-map-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}

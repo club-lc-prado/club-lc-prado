@@ -30,6 +30,7 @@ import Messages from "./pages/Messages";
 import Conversation from "./pages/Conversation";
 import Friends from "./pages/Friends";
 import MapTest from "./pages/MapTest";
+import AdminPanel from "./pages/AdminPanel";
 
 function App() {
   const [entered, setEntered] = useState(false);
@@ -77,6 +78,7 @@ function App() {
             <Route path="/messages/:userId" element={<Conversation />} />
             <Route path="/friends" element={<Friends />} />
             <Route path="/maptest" element={<MapTest />} />
+            <Route path="/admin" element={<AdminPanel />} />
           </Routes>
         </BrowserRouter>
       )}
