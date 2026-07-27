@@ -12,6 +12,7 @@ function AdminPanel() {
   const navigate = useNavigate();
   const [allowed, setAllowed] = useState(null);
   const [pending, setPending] = useState([]);
+  const [stats, setStats] = useState({ members: 0, posts: 0, journeys: 0 });
   const [editing, setEditing] = useState(null);
   const [pickedPos, setPickedPos] = useState(null);
 
@@ -33,6 +34,20 @@ function AdminPanel() {
     const q = query(collection(db, "specialists"), where("approved", "==", false));
     const snap = await getDocs(q);
     setPending(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+    loadStats();
+  };
+
+  const loadStats = async () => {
+    const [membersSnap, postsSnap, journeysSnap] = await Promise.all([
+      getDocs(collection(db, "members")),
+      getDocs(collection(db, "posts")),
+      getDocs(collection(db, "journeys")),
+    ]);
+    setStats({
+      members: membersSnap.size,
+      posts: postsSnap.size,
+      journeys: journeysSnap.size,
+    });
   };
 
   const openMapFor = (req) => {
@@ -71,6 +86,22 @@ function AdminPanel() {
   return (
     <div className="admin-page">
       <h1 className="admin-title">Админ-панель</h1>
+
+      <div className="admin-stats-row">
+        <div className="admin-stat-card">
+          <div className="admin-stat-num">{stats.members}</div>
+          <div className="admin-stat-label">Участников</div>
+        </div>
+        <div className="admin-stat-card">
+          <div className="admin-stat-num">{stats.posts}</div>
+          <div className="admin-stat-label">Постов</div>
+        </div>
+        <div className="admin-stat-card">
+          <div className="admin-stat-num">{stats.journeys}</div>
+          <div className="admin-stat-label">Кличей</div>
+        </div>
+      </div>
+
       <div className="admin-section-label">Заявки специалистов ({pending.length})</div>
 
       {pending.length === 0 && <div className="admin-empty">Новых заявок нет.</div>}

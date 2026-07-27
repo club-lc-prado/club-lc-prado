@@ -23,6 +23,36 @@
   margin: 0 0 24px 0;
 }
 
+.admin-stats-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+
+.admin-stat-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(242,237,227,0.12);
+  padding: 16px 24px;
+  min-width: 100px;
+}
+
+.admin-stat-num {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: 28px;
+  color: #D4831C;
+}
+
+.admin-stat-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #8FA37E;
+  margin-top: 4px;
+}
+
 .admin-section-label {
   font-family: 'JetBrains Mono', monospace;
   font-size: 12px;
