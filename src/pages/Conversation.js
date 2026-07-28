@@ -6,6 +6,7 @@ import {
 } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import { useLanguage } from "../i18n/LanguageContext";
+import { Check, CheckCheck } from "lucide-react";
 import "./Messages.css";
 
 function getConversationId(uid1, uid2) {
@@ -21,7 +22,9 @@ function Conversation() {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [otherUser, setOtherUser] = useState(null);
+  const [nowTick, setNowTick] = useState(Date.now());
   const [messages, setMessages] = useState([]);
+  const [convData, setConvData] = useState(null);
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -59,13 +62,29 @@ function Conversation() {
   }, [convId]);
 
   useEffect(() => {
+    if (!convId) return;
+    const unsub = onSnapshot(doc(db, "conversations", convId), (snap) => {
+      if (snap.exists()) setConvData(snap.data());
+    });
+    return unsub;
+  }, [convId]);
+
+  useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  useEffect(() => {
+    const interval = setInterval(() => setNowTick(Date.now()), 15000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const isOtherOnline = otherUser?.lastActive && (nowTick - new Date(otherUser.lastActive).getTime()) < 120000;
 
   useEffect(() => {
     if (!convId || !user) return;
     updateDoc(doc(db, "conversations", convId), {
       readBy: arrayUnion(user.uid),
+      [`lastReadAt.${user.uid}`]: new Date().toISOString(),
     }).catch(() => {});
   }, [convId, user, messages.length]);
 
@@ -132,14 +151,20 @@ function Conversation() {
       </div>
 
       <div className="conversation-header">
-        <div className="messages-avatar">
-          {otherUser.photoURL ? (
-            <img src={otherUser.photoURL} alt={otherUser.name} />
-          ) : (
-            otherUser.name?.[0]?.toUpperCase() || "?"
-          )}
+        <div className="messages-avatar-wrap">
+          <div className="messages-avatar">
+            {otherUser.photoURL ? (
+              <img src={otherUser.photoURL} alt={otherUser.name} />
+            ) : (
+              otherUser.name?.[0]?.toUpperCase() || "?"
+            )}
+          </div>
+          {isOtherOnline && <span className="online-dot"></span>}
         </div>
-        <div className="conversation-header-name">{otherUser.name}</div>
+        <div className="conversation-header-name">
+          {otherUser.name}
+          {isOtherOnline && <span className="online-text">в сети</span>}
+        </div>
       </div>
 
       <div className="conversation-thread">
@@ -174,6 +199,15 @@ function Conversation() {
                     </button>
                   )}
                 </div>
+                {mine && (() => {
+                  const theirReadAt = convData?.lastReadAt?.[userId];
+                  const isRead = theirReadAt && new Date(theirReadAt) >= new Date(m.createdAt);
+                  return (
+                    <div className={"read-receipt" + (isRead ? " read" : "")}>
+                      {isRead ? <CheckCheck size={13} /> : <Check size={13} />}
+                    </div>
+                  );
+                })()}
               </div>
             </div>
           );

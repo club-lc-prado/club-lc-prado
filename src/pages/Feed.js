@@ -49,6 +49,14 @@ function Feed() {
   }, []);
 
   useEffect(() => {
+    if (!user) return;
+    const ping = () => updateDoc(doc(db, "members", user.uid), { lastActive: new Date().toISOString() }).catch(() => {});
+    ping();
+    const interval = setInterval(ping, 60000);
+    return () => clearInterval(interval);
+  }, [user]);
+
+  useEffect(() => {
     const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
     const unsub = onSnapshot(q, (snap) => {
       setPosts(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
@@ -371,14 +379,24 @@ function Feed() {
                                 <div className="notif-dropdown-text">{textFor(n)}</div>
                                 <div className="notif-friend-actions">
                                   <button
+                                    type="button"
                                     className="notif-friend-accept"
-                                    onClick={() => acceptFriendFromNotif(n)}
+                                    onMouseDown={(e) => e.stopPropagation()}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      acceptFriendFromNotif(n);
+                                    }}
                                   >
                                     {t.friends.acceptBtn}
                                   </button>
                                   <button
+                                    type="button"
                                     className="notif-friend-decline"
-                                    onClick={() => declineFriendFromNotif(n)}
+                                    onMouseDown={(e) => e.stopPropagation()}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      declineFriendFromNotif(n);
+                                    }}
                                   >
                                     {t.friends.declineBtn}
                                   </button>

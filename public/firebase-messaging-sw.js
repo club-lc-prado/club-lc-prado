@@ -19,4 +19,8 @@ messaging.onBackgroundMessage((payload) => {
     icon: "/logo192.png",
   };
   self.registration.showNotification(title, options);
+
+  if ("setAppBadge" in self.navigator) {
+    self.navigator.setAppBadge(1).catch(() => {});
+  }
 });

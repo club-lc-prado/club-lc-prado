@@ -146,14 +146,15 @@
 }
 
 .conversation-security-notice {
-  font-size: 11px;
+  font-size: 9px;
   color: #8FA37E;
-  background: rgba(143,163,126,0.08);
-  border: 1px solid rgba(143,163,126,0.2);
-  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  padding: 0;
   margin-bottom: 8px;
-  line-height: 1.5;
+  line-height: 1.4;
   max-width: 600px;
+  text-align: center;
 }
 
 .conversation-thread {
@@ -278,7 +279,7 @@
   border: 1px solid rgba(242,237,227,0.25);
   color: #F2EDE3;
   font-family: 'Inter', sans-serif;
-  font-size: 14px;
+  font-size: 16px;
   padding: 12px 14px;
   outline: none;
 }
@@ -300,4 +301,40 @@
 .conversation-form button:disabled {
   opacity: 0.5;
   cursor: default;
+}
+
+.messages-avatar-wrap {
+  position: relative;
+}
+
+.online-dot {
+  position: absolute;
+  bottom: 1px;
+  right: 1px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #4CAF50;
+  border: 2px solid #0B0D0C;
+}
+
+.online-text {
+  display: block;
+  font-size: 10px;
+  font-weight: 400;
+  color: #4CAF50;
+  text-transform: none;
+  margin-top: 2px;
+}
+
+.read-receipt {
+  align-self: flex-end;
+  font-size: 11px;
+  color: #6b6558;
+  margin-top: 1px;
+  margin-right: 4px;
+}
+
+.read-receipt.read {
+  color: #4CAF50;
 }
