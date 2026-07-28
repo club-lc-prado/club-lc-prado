@@ -434,6 +434,9 @@ function Profile() {
                   <button className="profile-logout-small" onClick={handleLogout}>
                     {t.profile.logoutBtn}
                   </button>
+                  {user?.email === "pp.stela.ua@gmail.com" && (
+                    <Link to="/admin" className="profile-admin-link">🏛️</Link>
+                  )}
                 </div>
               </>
             ) : (
