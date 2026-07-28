@@ -121,8 +121,11 @@ function Conversation() {
       });
     }
 
+    const sentText = text.trim();
+    setMessages((prev) => [...prev, { id: "temp-" + now, text: sentText, senderId: user.uid, createdAt: now }]);
+
     await addDoc(collection(db, "conversations", convId, "messages"), {
-      text: text.trim(),
+      text: sentText,
       senderId: user.uid,
       createdAt: now,
     });
