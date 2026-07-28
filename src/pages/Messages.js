@@ -75,12 +75,15 @@ function Messages() {
             const unread = conv.lastMessageBy && conv.lastMessageBy !== user.uid && !conv.readBy?.includes(user.uid);
             return (
               <Link to={`/messages/${other.id}`} key={conv.id} className={"messages-item" + (unread ? " unread" : "")}>
-                <div className="messages-avatar">
-                  {other.photo ? (
-                    <img src={other.photo} alt={other.name} />
-                  ) : (
-                    other.name?.[0]?.toUpperCase() || "?"
-                  )}
+                <div className="messages-avatar-wrap">
+                  <div className="messages-avatar">
+                    {other.photo ? (
+                      <img src={other.photo} alt={other.name} />
+                    ) : (
+                      other.name?.[0]?.toUpperCase() || "?"
+                    )}
+                  </div>
+                  {unread && <span className="messages-unread-dot"></span>}
                 </div>
                 <div className="messages-item-body">
                   <div className="messages-item-name">{other.name}</div>
