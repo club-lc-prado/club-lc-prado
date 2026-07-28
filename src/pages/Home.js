@@ -15,6 +15,7 @@ function Home() {
   const [profile, setProfile] = useState(null);
   const [memberCount, setMemberCount] = useState(null);
   const [unreadChats, setUnreadChats] = useState(0);
+  const [unreadNotifs, setUnreadNotifs] = useState(0);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (u) => {
@@ -54,15 +55,27 @@ function Home() {
         return newCount;
       });
 
-      if ("setAppBadge" in navigator) {
-        if (newCount > 0) navigator.setAppBadge(newCount).catch(() => {});
-        else navigator.clearAppBadge().catch(() => {});
-      }
-
       firstLoad = false;
     });
     return unsub;
   }, [user]);
+
+  useEffect(() => {
+    if (!user) return;
+    const nq = query(collection(db, "notifications"), where("toUserId", "==", user.uid), where("read", "==", false));
+    const unsub = onSnapshot(nq, (snap) => {
+      setUnreadNotifs(snap.size);
+    });
+    return unsub;
+  }, [user]);
+
+  useEffect(() => {
+    const total = unreadChats + unreadNotifs;
+    if ("setAppBadge" in navigator) {
+      if (total > 0) navigator.setAppBadge(total).catch(() => {});
+      else navigator.clearAppBadge().catch(() => {});
+    }
+  }, [unreadChats, unreadNotifs]);
 
   return (
     <div className="hero">
@@ -108,8 +121,8 @@ function Home() {
                 profile?.name?.[0]?.toUpperCase() || "?"
               )}
             </div>
-            {unreadChats > 0 && (
-              <span className="hero-strip-badge">{unreadChats}</span>
+            {(unreadChats + unreadNotifs) > 0 && (
+              <span className="hero-strip-badge">{unreadChats + unreadNotifs}</span>
             )}
           </div>
           <div className="hero-strip-account-text">

@@ -72,22 +72,29 @@ function Profile() {
   const localeMap = { ru: "ru-RU", de: "de-DE", en: "en-US", ua: "uk-UA" };
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, async (u) => {
+    const unsub = onAuthStateChanged(auth, (u) => {
       if (!u) {
         navigate("/login");
         return;
       }
       setUser(u);
-      const snap = await getDoc(doc(db, "members", u.uid));
+    });
+    return unsub;
+  }, [navigate]);
+
+  useEffect(() => {
+    if (!user) return;
+    const unsub = onSnapshot(doc(db, "members", user.uid), (snap) => {
       if (snap.exists()) {
         const data = snap.data();
         setProfile(data);
-        setForm({ city: data.city || "", prado: data.prado || "", bio: data.bio || "" });
+        setForm((f) => (editing ? f : { city: data.city || "", prado: data.prado || "", bio: data.bio || "" }));
       }
       setLoading(false);
     });
     return unsub;
-  }, [navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   useEffect(() => {
     if (!user) return;

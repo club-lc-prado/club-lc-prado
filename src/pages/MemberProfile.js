@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import {
-  doc, getDoc, collection, addDoc, query, where, getDocs, updateDoc, deleteDoc, arrayUnion,
+  doc, getDoc, setDoc, collection, addDoc, updateDoc, deleteDoc, arrayUnion, onSnapshot,
 } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import { useLanguage } from "../i18n/LanguageContext";
@@ -32,34 +32,41 @@ function MemberProfile() {
       setCurrentUid(u.uid);
       const meSnap = await getDoc(doc(db, "members", u.uid));
       if (meSnap.exists()) setCurrentProfile(meSnap.data());
-      load(u.uid);
     });
     return unsub;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate]);
 
-  const load = async (myUid) => {
-    const snap = await getDoc(doc(db, "members", id));
-    if (snap.exists()) setMember(snap.data());
-    setLoading(false);
+  useEffect(() => {
+    const load = async () => {
+      const snap = await getDoc(doc(db, "members", id));
+      if (snap.exists()) setMember(snap.data());
+      setLoading(false);
+    };
+    load();
+  }, [id]);
 
-    if (myUid && myUid !== id) {
-      const rId = getReqId(myUid, id);
-      const reqSnap = await getDoc(doc(db, "friendRequests", rId));
-      if (reqSnap.exists()) {
-        const data = reqSnap.data();
-        setReqDocId(rId);
-        if (data.status === "accepted") setFriendStatus("friends");
-        else if (data.fromUid === myUid) setFriendStatus("sent");
-        else setFriendStatus("received");
+  useEffect(() => {
+    if (!currentUid || currentUid === id) return;
+    const rId = getReqId(currentUid, id);
+    setReqDocId(rId);
+    const unsub = onSnapshot(doc(db, "friendRequests", rId), (snap) => {
+      if (!snap.exists()) {
+        setFriendStatus("none");
+        return;
       }
-    }
-  };
+      const data = snap.data();
+      if (data.status === "accepted") setFriendStatus("friends");
+      else if (data.fromUid === currentUid) setFriendStatus("sent");
+      else setFriendStatus("received");
+    });
+    return unsub;
+  }, [currentUid, id]);
 
   const sendRequest = async () => {
+    if (friendStatus !== "none") return;
+    setFriendStatus("sent");
     const rId = getReqId(currentUid, id);
-    await doc(db, "friendRequests", rId);
-    const { setDoc } = await import("firebase/firestore");
     await setDoc(doc(db, "friendRequests", rId), {
       fromUid: currentUid,
       toUid: id,
@@ -74,8 +81,6 @@ function MemberProfile() {
       read: false,
       createdAt: new Date().toISOString(),
     });
-    setFriendStatus("sent");
-    setReqDocId(rId);
   };
 
   const acceptRequest = async () => {
@@ -90,13 +95,18 @@ function MemberProfile() {
       read: false,
       createdAt: new Date().toISOString(),
     });
-    setFriendStatus("friends");
   };
 
   const declineRequest = async () => {
     await deleteDoc(doc(db, "friendRequests", reqDocId));
-    setFriendStatus("none");
-    setReqDocId(null);
+  };
+
+  const removeFriend = async () => {
+    if (!window.confirm(`Удалить ${member.name} из друзей?`)) return;
+    const { arrayRemove } = await import("firebase/firestore");
+    await deleteDoc(doc(db, "friendRequests", reqDocId));
+    await updateDoc(doc(db, "members", currentUid), { friends: arrayRemove(id) });
+    await updateDoc(doc(db, "members", id), { friends: arrayRemove(currentUid) });
   };
 
   if (loading) return <div className="members-page"></div>;
@@ -147,8 +157,8 @@ function MemberProfile() {
               </div>
             )}
             {friendStatus === "friends" && (
-              <button className="member-friend-btn friends" disabled>
-                ✓ {t.friends.friendsLabel}
+              <button className="member-friend-btn friends" onClick={removeFriend}>
+                ✓ {t.friends.friendsLabel} (удалить)
               </button>
             )}
           </div>
