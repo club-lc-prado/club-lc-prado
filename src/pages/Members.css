@@ -207,3 +207,22 @@
   color: #8FA37E;
   margin-bottom: 16px;
 }
+
+.member-block-link {
+  background: transparent;
+  border: none;
+  color: #6b6558;
+  font-size: 11px;
+  text-decoration: underline;
+  cursor: pointer;
+  margin-top: 4px;
+}
+
+.member-block-link:hover {
+  color: #c25c4a;
+}
+
+.member-blocked-note {
+  color: #c25c4a;
+  font-size: 13px;
+}

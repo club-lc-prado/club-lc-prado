@@ -22,6 +22,7 @@ function MemberProfile() {
   const [loading, setLoading] = useState(true);
   const [friendStatus, setFriendStatus] = useState("none");
   const [reqDocId, setReqDocId] = useState(null);
+  const [blockedByMe, setBlockedByMe] = useState(false);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (u) => {
@@ -32,6 +33,7 @@ function MemberProfile() {
       setCurrentUid(u.uid);
       const meSnap = await getDoc(doc(db, "members", u.uid));
       if (meSnap.exists()) setCurrentProfile(meSnap.data());
+      setBlockedByMe((meSnap.data()?.blockedUsers || []).includes(id));
     });
     return unsub;
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -109,6 +111,24 @@ function MemberProfile() {
     await updateDoc(doc(db, "members", id), { friends: arrayRemove(currentUid) });
   };
 
+  const blockUser = async () => {
+    if (!window.confirm(`Заблокировать ${member.name}? Он не сможет писать тебе, а вы перестанете быть друзьями.`)) return;
+    const { arrayRemove, arrayUnion } = await import("firebase/firestore");
+    if (reqDocId) {
+      await deleteDoc(doc(db, "friendRequests", reqDocId)).catch(() => {});
+    }
+    await updateDoc(doc(db, "members", currentUid), {
+      friends: arrayRemove(id),
+      blockedUsers: arrayUnion(id),
+    });
+    await updateDoc(doc(db, "members", id), { friends: arrayRemove(currentUid) });
+  };
+
+  const unblockUser = async () => {
+    const { arrayRemove } = await import("firebase/firestore");
+    await updateDoc(doc(db, "members", currentUid), { blockedUsers: arrayRemove(id) });
+  };
+
   if (loading) return <div className="members-page"></div>;
   if (!member) return <div className="members-page">{t.members.notFound}</div>;
 
@@ -130,7 +150,16 @@ function MemberProfile() {
         )}
         {member.bio && <p className="member-profile-bio">{member.bio}</p>}
 
-        {currentUid && currentUid !== id && (
+        {currentUid && currentUid !== id && blockedByMe && (
+          <div className="member-actions">
+            <div className="member-blocked-note">Вы заблокировали этого пользователя</div>
+            <button className="member-friend-btn" onClick={unblockUser}>
+              Разблокировать
+            </button>
+          </div>
+        )}
+
+        {currentUid && currentUid !== id && !blockedByMe && (
           <div className="member-actions">
             <Link to={`/messages/${id}`} className="member-message-btn">
               {t.messages.sendMessageBtn}
@@ -161,6 +190,10 @@ function MemberProfile() {
                 ✓ {t.friends.friendsLabel} (удалить)
               </button>
             )}
+
+            <button className="member-block-link" onClick={blockUser}>
+              Заблокировать
+            </button>
           </div>
         )}
       </div>
