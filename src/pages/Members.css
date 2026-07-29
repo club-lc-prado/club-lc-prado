@@ -226,3 +226,31 @@
   color: #c25c4a;
   font-size: 13px;
 }
+
+.member-avatar-wrap,
+.member-avatar-wrap-large {
+  position: relative;
+  display: inline-block;
+}
+
+.member-avatar-wrap .online-dot {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #4CAF50;
+  border: 2px solid #0B0D0C;
+}
+
+.member-avatar-wrap-large .online-dot.large {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #4CAF50;
+  border: 3px solid #0B0D0C;
+}

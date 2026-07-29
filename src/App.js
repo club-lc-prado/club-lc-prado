@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "./firebase";
+import { doc, updateDoc } from "firebase/firestore";
+import { auth, db } from "./firebase";
 import { LanguageProvider } from "./i18n/LanguageContext";
 import BootScreen from "./components/BootScreen";
 import Sidebar from "./components/Sidebar";
@@ -44,6 +45,14 @@ function App() {
     });
     return unsub;
   }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    const ping = () => updateDoc(doc(db, "members", user.uid), { lastActive: new Date().toISOString() }).catch(() => {});
+    ping();
+    const interval = setInterval(ping, 60000);
+    return () => clearInterval(interval);
+  }, [user]);
 
   return (
     <LanguageProvider>

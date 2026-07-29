@@ -77,6 +77,8 @@ function Home() {
     }
   }, [unreadChats, unreadNotifs]);
 
+  const isMeOnline = profile?.lastActive && (Date.now() - new Date(profile.lastActive).getTime()) < 120000;
+
   return (
     <div className="hero">
       <div className="hero-bg" style={{ backgroundImage: `url(${heroImage})` }}></div>
@@ -121,6 +123,7 @@ function Home() {
                 profile?.name?.[0]?.toUpperCase() || "?"
               )}
             </div>
+            {isMeOnline && <span className="online-dot"></span>}
             {(unreadChats + unreadNotifs) > 0 && (
               <span className="hero-strip-badge">{unreadChats + unreadNotifs}</span>
             )}

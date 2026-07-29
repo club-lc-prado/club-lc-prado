@@ -137,11 +137,16 @@ function MemberProfile() {
       <Link to="/members" className="member-back">{t.members.backToAll}</Link>
 
       <div className="member-profile-card">
-        <div className="member-avatar large">
-          {member.photoURL ? (
-            <img src={member.photoURL} alt={member.name} />
-          ) : (
-            member.name?.[0]?.toUpperCase() || "?"
+        <div className="member-avatar-wrap-large">
+          <div className="member-avatar large">
+            {member.photoURL ? (
+              <img src={member.photoURL} alt={member.name} />
+            ) : (
+              member.name?.[0]?.toUpperCase() || "?"
+            )}
+          </div>
+          {member.lastActive && (Date.now() - new Date(member.lastActive).getTime()) < 120000 && (
+            <span className="online-dot large"></span>
           )}
         </div>
         <h1 className="member-profile-name">{member.name}</h1>

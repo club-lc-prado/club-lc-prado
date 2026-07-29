@@ -50,7 +50,7 @@ function Feed() {
 
   useEffect(() => {
     if (!user) return;
-    const ping = () => updateDoc(doc(db, "members", user.uid), { lastActive: new Date().toISOString() }).catch(() => {});
+    const ping = () => updateDoc(doc(db, "members", user.uid), { lastActive: new Date().toISOString() }).catch((err) => console.error("PING ERROR:", err));
     ping();
     const interval = setInterval(ping, 60000);
     return () => clearInterval(interval);
@@ -335,11 +335,16 @@ function Feed() {
             <div className="feed-account-row" ref={menuRef}>
               <div className="feed-avatar-preview-wrap">
                 <Link to="/profile" className="feed-account">
-                  <div className="feed-avatar">
-                    {profile?.photoURL ? (
-                      <img src={profile.photoURL} alt="avatar" />
-                    ) : (
-                      profile?.name?.[0]?.toUpperCase() || "?"
+                  <div className="feed-avatar-wrap-online">
+                    <div className="feed-avatar">
+                      {profile?.photoURL ? (
+                        <img src={profile.photoURL} alt="avatar" />
+                      ) : (
+                        profile?.name?.[0]?.toUpperCase() || "?"
+                      )}
+                    </div>
+                    {profile?.lastActive && (Date.now() - new Date(profile.lastActive).getTime()) < 120000 && (
+                      <span className="online-dot"></span>
                     )}
                   </div>
                   <span className="feed-account-name">{profile?.name || t.feed.guest}</span>

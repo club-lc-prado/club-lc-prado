@@ -41,11 +41,16 @@ function Members() {
         <div className="members-grid">
           {members.map((m) => (
             <Link to={`/members/${m.id}`} key={m.id} className="member-card">
-              <div className="member-avatar">
-                {m.photoURL ? (
-                  <img src={m.photoURL} alt={m.name} />
-                ) : (
-                  m.name?.[0]?.toUpperCase() || "?"
+              <div className="member-avatar-wrap">
+                <div className="member-avatar">
+                  {m.photoURL ? (
+                    <img src={m.photoURL} alt={m.name} />
+                  ) : (
+                    m.name?.[0]?.toUpperCase() || "?"
+                  )}
+                </div>
+                {m.lastActive && (Date.now() - new Date(m.lastActive).getTime()) < 120000 && (
+                  <span className="online-dot"></span>
                 )}
               </div>
               <div className="member-name">{m.name}</div>

@@ -186,12 +186,15 @@ function Conversation() {
           const avatarName = mine ? profile?.name : otherUser?.name;
           return (
             <div key={m.id} className={"conversation-row" + (mine ? " mine" : "")}>
-              <div className="conversation-avatar">
-                {avatarUrl ? (
-                  <img src={avatarUrl} alt={avatarName} />
-                ) : (
-                  avatarName?.[0]?.toUpperCase() || "?"
-                )}
+              <div className="conversation-avatar-outer">
+                <div className="conversation-avatar">
+                  {avatarUrl ? (
+                    <img src={avatarUrl} alt={avatarName} />
+                  ) : (
+                    avatarName?.[0]?.toUpperCase() || "?"
+                  )}
+                </div>
+                {(mine || isOtherOnline) && <span className="online-dot msg"></span>}
               </div>
               <div className="conversation-bubble-col">
                 <div className="conversation-msg-name">{avatarName}</div>

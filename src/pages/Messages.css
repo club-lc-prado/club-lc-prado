@@ -180,6 +180,11 @@
   flex-direction: row-reverse;
 }
 
+.conversation-avatar-outer {
+  position: relative;
+  flex-shrink: 0;
+}
+
 .conversation-avatar {
   width: 28px;
   height: 28px;
@@ -193,7 +198,18 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  flex-shrink: 0;
+}
+
+.conversation-avatar-outer .online-dot.msg {
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #4CAF50;
+  border: 2px solid #0B0D0C;
+  z-index: 2;
 }
 
 .conversation-avatar img {
