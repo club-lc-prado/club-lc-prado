@@ -56,7 +56,13 @@ function Conversation() {
     if (!convId) return;
     const q = query(collection(db, "conversations", convId, "messages"), orderBy("createdAt", "asc"));
     const unsub = onSnapshot(q, (snap) => {
-      setMessages(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
+      const real = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      setMessages((prev) => {
+        const stillPending = prev.filter(
+          (m) => m.id.startsWith("temp-") && !real.some((r) => r.text === m.text && r.senderId === m.senderId)
+        );
+        return [...real, ...stillPending].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+      });
     });
     return unsub;
   }, [convId]);
