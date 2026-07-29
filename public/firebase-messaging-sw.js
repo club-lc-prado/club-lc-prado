@@ -12,6 +12,8 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
+self.addEventListener("fetch", () => {});
+
 messaging.onBackgroundMessage((payload) => {
   const title = payload.notification?.title || "Club LC Prado";
   const options = {

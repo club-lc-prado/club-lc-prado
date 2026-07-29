@@ -27,6 +27,43 @@ function Settings() {
   const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
 
+  const [installPrompt, setInstallPrompt] = useState(null);
+  const [isInstalled, setIsInstalled] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
+
+  useEffect(() => {
+    const standalone =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      window.navigator.standalone === true;
+    setIsInstalled(standalone);
+
+    const ios = /iphone|ipad|ipod/i.test(window.navigator.userAgent) && !window.MSStream;
+    setIsIOS(ios);
+
+    const handleBeforeInstall = (e) => {
+      e.preventDefault();
+      setInstallPrompt(e);
+    };
+    const handleInstalled = () => {
+      setIsInstalled(true);
+      setInstallPrompt(null);
+    };
+
+    window.addEventListener("beforeinstallprompt", handleBeforeInstall);
+    window.addEventListener("appinstalled", handleInstalled);
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstall);
+      window.removeEventListener("appinstalled", handleInstalled);
+    };
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!installPrompt) return;
+    installPrompt.prompt();
+    await installPrompt.userChoice;
+    setInstallPrompt(null);
+  };
+
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (u) => {
       if (!u) {
@@ -95,6 +132,19 @@ function Settings() {
       <div className="settings-underline"></div>
 
       <div className="settings-section">
+        {!isInstalled && installPrompt && (
+          <div className="settings-row">
+            <div>
+              <div className="settings-row-label">Установить ярлык на экран</div>
+              <div className="settings-row-sub">Быстрый доступ к клубу прямо с главного экрана</div>
+            </div>
+            <button className="settings-install-btn" onClick={handleInstallClick}>
+              <img src="/logo192.png" alt="" className="settings-install-icon" />
+              Установить
+            </button>
+          </div>
+        )}
+
         <div className="settings-row">
           <div>
             <div className="settings-row-label">{t.settings.language}</div>
