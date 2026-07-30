@@ -804,10 +804,12 @@
   border: 2px solid #0B0D0C;
 }
 
-.card-modal {
-  background: transparent;
-  border: none;
-  padding: 0;
+.qr-modal.card-modal {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  max-width: none !important;
+  width: auto !important;
 }
 
 .flip-card {
@@ -815,6 +817,20 @@
   aspect-ratio: 1536 / 1024;
   perspective: 1200px;
   cursor: pointer;
+}
+
+@media (max-width: 700px) {
+  .qr-modal-overlay {
+    padding: 0;
+  }
+
+  .qr-modal.card-modal {
+    width: 100% !important;
+  }
+
+  .flip-card {
+    width: 100% !important;
+  }
 }
 
 .flip-card-inner {
