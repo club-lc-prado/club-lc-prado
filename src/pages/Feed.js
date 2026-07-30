@@ -11,6 +11,8 @@ import { useLanguage } from "../i18n/LanguageContext";
 import "./Feed.css";
 import likeSound from "../like-sound.mp3";
 import notifSound from "../notif-sound.mp3";
+import cardFront from "../card-front.jpg";
+import cardBack from "../card-back.jpg";
 
 function Feed() {
   const { t, lang } = useLanguage();
@@ -28,6 +30,7 @@ function Feed() {
   const [nextJourney, setNextJourney] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [qrOpen, setQrOpen] = useState(false);
+  const [cardFlipped, setCardFlipped] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [notifications, setNotifications] = useState([]);
   const [burstFor, setBurstFor] = useState(null);
@@ -575,14 +578,20 @@ function Feed() {
       </div>
 
       {qrOpen && user && (
-        <div className="qr-modal-overlay" onClick={() => setQrOpen(false)}>
-          <div className="qr-modal" onClick={(e) => e.stopPropagation()}>
-            <img
-              src={`https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(window.location.origin + "/members/" + user.uid)}`}
-              alt="QR"
-            />
-            <div className="qr-modal-text">{t.feed.scanToOpen}</div>
-            <button className="qr-modal-close" onClick={() => setQrOpen(false)}>{t.feed.close}</button>
+        <div className="qr-modal-overlay" onClick={() => { setQrOpen(false); setCardFlipped(false); }}>
+          <div className="qr-modal card-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="flip-card" onClick={() => setCardFlipped(!cardFlipped)}>
+              <div className={"flip-card-inner" + (cardFlipped ? " flipped" : "")}>
+                <div className="flip-card-front">
+                  <img src={cardFront} alt="Визитка клуба" />
+                </div>
+                <div className="flip-card-back">
+                  <img src={cardBack} alt="QR-код" />
+                </div>
+              </div>
+            </div>
+            <div className="qr-modal-text">Нажми на визитку, чтобы перевернуть</div>
+            <button className="qr-modal-close" onClick={() => { setQrOpen(false); setCardFlipped(false); }}>{t.feed.close}</button>
           </div>
         </div>
       )}
