@@ -165,7 +165,7 @@ function Conversation() {
       body: JSON.stringify({
         toUserId: userId,
         title: profile?.name || "Club LC Prado",
-        body: text.trim(),
+        body: sentText,
       }),
     }).catch(() => {});
 

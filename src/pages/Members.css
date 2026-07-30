@@ -254,3 +254,30 @@
   background: #4CAF50;
   border: 3px solid #0B0D0C;
 }
+
+.conversation-report-btn {
+  background: transparent;
+  border: none;
+  color: #6b6558;
+  font-size: 11px;
+  cursor: pointer;
+  margin-left: auto;
+}
+
+.conversation-report-btn:hover {
+  color: #c25c4a;
+}
+
+.conversation-report-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(242,237,227,0.25);
+  color: #F2EDE3;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  resize: none;
+  border-radius: 6px;
+}
