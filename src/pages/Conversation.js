@@ -25,6 +25,9 @@ function Conversation() {
   const [nowTick, setNowTick] = useState(Date.now());
   const [messages, setMessages] = useState([]);
   const [convData, setConvData] = useState(null);
+  const [reportOpen, setReportOpen] = useState(false);
+  const [reportReason, setReportReason] = useState("");
+  const [reportSent, setReportSent] = useState(false);
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -94,6 +97,26 @@ function Conversation() {
     }).catch(() => {});
   }, [convId, user, messages.length]);
 
+  const submitReport = async () => {
+    if (!reportReason.trim()) return;
+    await addDoc(collection(db, "reports"), {
+      reportedBy: user.uid,
+      reportedByName: profile?.name || "Участник",
+      conversationId: convId,
+      otherUserId: userId,
+      otherUserName: otherUser?.name || "",
+      reason: reportReason.trim(),
+      status: "pending",
+      createdAt: new Date().toISOString(),
+    });
+    setReportSent(true);
+    setTimeout(() => {
+      setReportOpen(false);
+      setReportSent(false);
+      setReportReason("");
+    }, 1500);
+  };
+
   const handleSend = async (e) => {
     e.preventDefault();
     if (!text.trim() || !user || !otherUser) return;
@@ -157,7 +180,31 @@ function Conversation() {
       <div className="conversation-back-row">
         <Link to="/messages" className="messages-back">{t.messages.backToAll}</Link>
         <Link to="/feed" className="messages-back">{t.settings.backToFeed}</Link>
+        <button className="conversation-report-btn" onClick={() => setReportOpen(true)}>⚑ Пожаловаться</button>
       </div>
+
+      {reportOpen && (
+        <div className="admin-map-overlay" onClick={() => setReportOpen(false)}>
+          <div className="spec-form-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="useful-card-close" onClick={() => setReportOpen(false)}>✕</button>
+            <div className="spec-form-title">Пожаловаться на переписку</div>
+            <textarea
+              className="conversation-report-textarea"
+              placeholder="Опиши, что не так в этом диалоге"
+              value={reportReason}
+              onChange={(e) => setReportReason(e.target.value)}
+              rows={4}
+            />
+            <button
+              className="profile-btn-small"
+              disabled={!reportReason.trim() || reportSent}
+              onClick={submitReport}
+            >
+              {reportSent ? "Жалоба отправлена" : "Отправить жалобу администратору"}
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="conversation-header">
         <div className="messages-avatar-wrap">

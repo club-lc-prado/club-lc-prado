@@ -260,3 +260,22 @@
   gap: 10px;
   margin-top: 16px;
 }
+
+.admin-chat-view {
+  margin-top: 12px;
+  border-top: 1px solid rgba(242,237,227,0.1);
+  padding-top: 10px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.admin-chat-msg {
+  font-size: 12px;
+  color: #C9C4B8;
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+.admin-chat-msg b {
+  color: #D4831C;
+}

@@ -23,6 +23,9 @@ function AdminPanel() {
   const [members, setMembers] = useState([]);
   const [posts, setPosts] = useState([]);
   const [topics, setTopics] = useState([]);
+  const [reports, setReports] = useState([]);
+  const [openConvId, setOpenConvId] = useState(null);
+  const [reportMessages, setReportMessages] = useState([]);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => {
@@ -36,6 +39,7 @@ function AdminPanel() {
       loadMembers();
       loadPosts();
       loadTopics();
+      loadReports();
     });
     return unsub;
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -78,6 +82,27 @@ function AdminPanel() {
     const list = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
     list.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
     setTopics(list);
+  };
+
+  const loadReports = async () => {
+    const snap = await getDocs(collection(db, "reports"));
+    const list = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+    list.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+    setReports(list);
+  };
+
+  const viewReportedChat = async (r) => {
+    setOpenConvId(r.conversationId);
+    const snap = await getDocs(collection(db, "conversations", r.conversationId, "messages"));
+    const list = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+    list.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    setReportMessages(list);
+  };
+
+  const resolveReport = async (r) => {
+    await updateDoc(doc(db, "reports", r.id), { status: "resolved" });
+    setOpenConvId(null);
+    loadReports();
   };
 
   const openMapFor = (req) => {
@@ -169,6 +194,9 @@ function AdminPanel() {
         </button>
         <button className={"admin-tab" + (tab === "forum" ? " active" : "")} onClick={() => setTab("forum")}>
           Форум ({topics.length})
+        </button>
+        <button className={"admin-tab" + (tab === "reports" ? " active" : "")} onClick={() => setTab("reports")}>
+          Жалобы ({reports.filter((r) => r.status === "pending").length})
         </button>
       </div>
 
@@ -262,6 +290,40 @@ function AdminPanel() {
                   Удалить
                 </button>
               </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {tab === "reports" && (
+        <div className="admin-list">
+          {reports.length === 0 && <div className="admin-empty">Жалоб нет.</div>}
+          {reports.map((r) => (
+            <div key={r.id} className="admin-card">
+              <div className="admin-card-name">
+                {r.reportedByName} → {r.otherUserName} {r.status === "resolved" && <span className="admin-banned-tag" style={{ color: "#8FA37E" }}>решено</span>}
+              </div>
+              <div className="admin-card-row">Причина: {r.reason}</div>
+              <div className="admin-card-actions">
+                <button className="admin-btn-approve" onClick={() => viewReportedChat(r)}>
+                  Посмотреть переписку
+                </button>
+                {r.status === "pending" && (
+                  <button className="admin-btn-reject" onClick={() => resolveReport(r)}>
+                    Отметить решённым
+                  </button>
+                )}
+              </div>
+
+              {openConvId === r.conversationId && (
+                <div className="admin-chat-view">
+                  {reportMessages.map((m) => (
+                    <div key={m.id} className="admin-chat-msg">
+                      <b>{m.senderId === r.reportedBy ? r.reportedByName : r.otherUserName}:</b> {m.text}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           ))}
         </div>
