@@ -5,8 +5,8 @@ import {
   doc, getDoc, setDoc, deleteDoc, collection, addDoc, getDocs, query, orderBy, where, limit, onSnapshot,
   updateDoc, arrayUnion, arrayRemove, writeBatch,
 } from "firebase/firestore";
+import { Home, Send, Plus } from "lucide-react";
 import { auth, db } from "../firebase";
-import { Home, Send } from "lucide-react";
 import { useLanguage } from "../i18n/LanguageContext";
 import "./Feed.css";
 import likeSound from "../like-sound.mp3";
@@ -37,6 +37,9 @@ function Feed() {
   const [notifConverging, setNotifConverging] = useState(null);
   const [notifOpen, setNotifOpen] = useState(false);
   const [conversations, setConversations] = useState([]);
+  const [stories, setStories] = useState([]);
+  const [viewingStory, setViewingStory] = useState(null);
+  const storyFileRef = useRef(null);
 
   const localeMap = { ru: "ru-RU", de: "de-DE", en: "en-US", ua: "uk-UA" };
 
@@ -65,6 +68,10 @@ function Feed() {
       setPosts(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
     });
     return unsub;
+  }, []);
+
+  useEffect(() => {
+    loadStories();
   }, []);
 
   useEffect(() => {
@@ -314,6 +321,62 @@ function Feed() {
     return "/profile";
   };
 
+  const loadStories = async () => {
+    const snap = await getDocs(collection(db, "stories"));
+    const now = Date.now();
+    const active = snap.docs
+      .map((d) => ({ id: d.id, ...d.data() }))
+      .filter((s) => now - new Date(s.createdAt).getTime() < 24 * 60 * 60 * 1000);
+    active.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    setStories(active);
+  };
+
+  const handleStoryFile = (e) => {
+    const file = e.target.files[0];
+    if (!file || !user) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const img = new Image();
+      img.onload = async () => {
+        const canvas = document.createElement("canvas");
+        const maxW = 900;
+        const scale = Math.min(1, maxW / img.width);
+        canvas.width = img.width * scale;
+        canvas.height = img.height * scale;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        const dataUrl = canvas.toDataURL("image/jpeg", 0.75);
+
+        await setDoc(doc(db, "stories", user.uid), {
+          authorId: user.uid,
+          authorName: profile?.name || "Участник",
+          authorPhoto: profile?.photoURL || "",
+          image: dataUrl,
+          createdAt: new Date().toISOString(),
+          viewedBy: [],
+        });
+        loadStories();
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const openStory = async (s) => {
+    setViewingStory(s);
+    if (user && s.authorId !== user.uid && !s.viewedBy?.includes(user.uid)) {
+      await updateDoc(doc(db, "stories", s.authorId), { viewedBy: arrayUnion(user.uid) });
+      loadStories();
+    }
+  };
+
+  const deleteStory = async (s) => {
+    if (!window.confirm("Удалить свою историю?")) return;
+    await deleteDoc(doc(db, "stories", s.authorId));
+    setViewingStory(null);
+    loadStories();
+  };
+
   const acceptFriendFromNotif = async (n) => {
     const rId = [user.uid, n.fromUserId].sort().join("_");
     await updateDoc(doc(db, "friendRequests", rId), { status: "accepted" });
@@ -457,6 +520,62 @@ function Feed() {
           </div>
 
           {user && (
+            <div className="stories-bar">
+              {(() => {
+                const myStory = stories.find((s) => s.authorId === user.uid);
+                return (
+                  <div
+                    className="story-item"
+                    onClick={() => myStory ? openStory(myStory) : storyFileRef.current?.click()}
+                  >
+                    <div className={"story-avatar-wrap story-add" + (myStory ? (myStory.viewedBy?.includes(user.uid) ? " viewed" : " unviewed") : "")}>
+                      <div className="feed-avatar">
+                        {profile?.photoURL ? (
+                          <img src={profile.photoURL} alt="avatar" />
+                        ) : (
+                          profile?.name?.[0]?.toUpperCase() || "?"
+                        )}
+                      </div>
+                      <span
+                        className="story-add-icon"
+                        onClick={(e) => { e.stopPropagation(); storyFileRef.current?.click(); }}
+                      >
+                        <Plus size={12} />
+                      </span>
+                    </div>
+                    <span className="story-name">{myStory ? "Моя история" : "Добавить"}</span>
+                  </div>
+                );
+              })()}
+              <input
+                type="file"
+                accept="image/*"
+                ref={storyFileRef}
+                onChange={handleStoryFile}
+                style={{ display: "none" }}
+              />
+
+              {stories.filter((s) => s.authorId !== user.uid).map((s) => {
+                const viewed = s.viewedBy?.includes(user.uid);
+                return (
+                  <div key={s.id} className="story-item" onClick={() => openStory(s)}>
+                    <div className={"story-avatar-wrap" + (viewed ? " viewed" : " unviewed")}>
+                      <div className="feed-avatar">
+                        {s.authorPhoto ? (
+                          <img src={s.authorPhoto} alt={s.authorName} />
+                        ) : (
+                          s.authorName?.[0]?.toUpperCase() || "?"
+                        )}
+                      </div>
+                    </div>
+                    <span className="story-name">{s.authorName}</span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {user && (
             <div className="feed-composer">
               <textarea
                 placeholder={t.feed.composerPlaceholder}
@@ -593,6 +712,30 @@ function Feed() {
           </Link>
         </div>
       </div>
+
+      {viewingStory && (
+        <div className="story-viewer-overlay" onClick={() => setViewingStory(null)}>
+          <div className="story-viewer" onClick={(e) => e.stopPropagation()}>
+            <div className="story-viewer-header">
+              <div className="feed-avatar" style={{ width: 32, height: 32 }}>
+                {viewingStory.authorPhoto ? (
+                  <img src={viewingStory.authorPhoto} alt="" />
+                ) : (
+                  viewingStory.authorName?.[0]?.toUpperCase() || "?"
+                )}
+              </div>
+              <span>{viewingStory.authorName}</span>
+              {user && viewingStory.authorId === user.uid && (
+                <button className="story-viewer-delete" onClick={() => deleteStory(viewingStory)}>
+                  Удалить
+                </button>
+              )}
+              <button className="story-viewer-close" onClick={() => setViewingStory(null)}>✕</button>
+            </div>
+            <img src={viewingStory.image} alt="" className="story-viewer-image" />
+          </div>
+        </div>
+      )}
 
       {qrOpen && user && (
         <div className="qr-modal-overlay" onClick={() => { setQrOpen(false); setCardFlipped(false); }}>

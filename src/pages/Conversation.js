@@ -25,6 +25,9 @@ function Conversation() {
   const [nowTick, setNowTick] = useState(Date.now());
   const [messages, setMessages] = useState([]);
   const [convData, setConvData] = useState(null);
+  const [otherStory, setOtherStory] = useState(null);
+  const [myStory, setMyStory] = useState(null);
+  const [viewingConvStory, setViewingConvStory] = useState(null);
   const [reportOpen, setReportOpen] = useState(false);
   const [reportReason, setReportReason] = useState("");
   const [reportSent, setReportSent] = useState(false);
@@ -51,9 +54,31 @@ function Conversation() {
       const snap = await getDoc(doc(db, "members", userId));
       if (snap.exists()) setOtherUser({ id: userId, ...snap.data() });
       setLoading(false);
+
+      const storySnap = await getDoc(doc(db, "stories", userId));
+      if (storySnap.exists()) {
+        const data = storySnap.data();
+        if (Date.now() - new Date(data.createdAt).getTime() < 24 * 60 * 60 * 1000) {
+          setOtherStory({ id: userId, ...data });
+        }
+      }
     };
     load();
   }, [userId]);
+
+  useEffect(() => {
+    if (!user) return;
+    const load = async () => {
+      const storySnap = await getDoc(doc(db, "stories", user.uid));
+      if (storySnap.exists()) {
+        const data = storySnap.data();
+        if (Date.now() - new Date(data.createdAt).getTime() < 24 * 60 * 60 * 1000) {
+          setMyStory({ id: user.uid, ...data });
+        }
+      }
+    };
+    load();
+  }, [user]);
 
   useEffect(() => {
     if (!convId) return;
@@ -96,6 +121,14 @@ function Conversation() {
       [`lastReadAt.${user.uid}`]: new Date().toISOString(),
     }).catch(() => {});
   }, [convId, user, messages.length]);
+
+  const openConvStory = async (s) => {
+    setViewingConvStory(s);
+    if (s.id !== user.uid && !s.viewedBy?.includes(user.uid)) {
+      await updateDoc(doc(db, "stories", s.id), { viewedBy: arrayUnion(user.uid) });
+      setOtherStory((prev) => prev ? { ...prev, viewedBy: [...(prev.viewedBy || []), user.uid] } : prev);
+    }
+  };
 
   const submitReport = async () => {
     if (!reportReason.trim()) return;
@@ -207,7 +240,11 @@ function Conversation() {
       )}
 
       <div className="conversation-header">
-        <div className="messages-avatar-wrap">
+        <div
+          className={"messages-avatar-wrap" + (otherStory ? (otherStory.viewedBy?.includes(user.uid) ? " story-ring viewed" : " story-ring unviewed") : "")}
+          onClick={() => otherStory && openConvStory(otherStory)}
+          style={{ cursor: otherStory ? "pointer" : "default" }}
+        >
           <div className="messages-avatar">
             {otherUser.photoURL ? (
               <img src={otherUser.photoURL} alt={otherUser.name} />
@@ -233,7 +270,22 @@ function Conversation() {
           const avatarName = mine ? profile?.name : otherUser?.name;
           return (
             <div key={m.id} className={"conversation-row" + (mine ? " mine" : "")}>
-              <div className="conversation-avatar-outer">
+              <div
+                className={"conversation-avatar-outer" + (() => {
+                  const relevantStory = mine ? myStory : otherStory;
+                  if (!relevantStory) return "";
+                  return relevantStory.viewedBy?.includes(user.uid) ? " story-ring viewed" : " story-ring unviewed";
+                })()}
+                onClick={() => {
+                  const relevantStory = mine ? myStory : otherStory;
+                  if (relevantStory) {
+                    openConvStory(relevantStory);
+                  } else if (!mine) {
+                    navigate(`/members/${userId}`);
+                  }
+                }}
+                style={{ cursor: (mine ? myStory : otherStory) ? "pointer" : "default" }}
+              >
                 <div className="conversation-avatar">
                   {avatarUrl ? (
                     <img src={avatarUrl} alt={avatarName} />
@@ -275,6 +327,18 @@ function Conversation() {
       </div>
 
       <div className="conversation-security-notice">{t.messages.securityNotice}</div>
+
+      {viewingConvStory && (
+        <div className="story-viewer-overlay" onClick={() => setViewingConvStory(null)}>
+          <div className="story-viewer" onClick={(e) => e.stopPropagation()}>
+            <div className="story-viewer-header">
+              <span>{viewingConvStory.id === user.uid ? "Моя история" : otherUser.name}</span>
+              <button className="story-viewer-close" onClick={() => setViewingConvStory(null)}>✕</button>
+            </div>
+            <img src={viewingConvStory.image} alt="" className="story-viewer-image" />
+          </div>
+        </div>
+      )}
 
       <form onSubmit={handleSend} className="conversation-form">
         <input

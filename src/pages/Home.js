@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc, collection, getDocs, query, where, onSnapshot } from "firebase/firestore";
+import { doc, getDoc, collection, getDocs, query, where, onSnapshot, updateDoc, arrayUnion } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import { useLanguage } from "../i18n/LanguageContext";
 import "./Home.css";
@@ -18,6 +18,7 @@ function Home() {
   const [memberCount, setMemberCount] = useState(null);
   const [unreadChats, setUnreadChats] = useState(0);
   const [unreadNotifs, setUnreadNotifs] = useState(0);
+  const [myStory, setMyStory] = useState(null);
   const [cardOpen, setCardOpen] = useState(false);
   const [cardFlipped, setCardFlipped] = useState(false);
 
@@ -62,6 +63,21 @@ function Home() {
       firstLoad = false;
     });
     return unsub;
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) return;
+    const load = async () => {
+      const snap = await getDoc(doc(db, "stories", user.uid));
+      if (snap.exists()) {
+        const data = snap.data();
+        const active = Date.now() - new Date(data.createdAt).getTime() < 24 * 60 * 60 * 1000;
+        setMyStory(active ? data : null);
+      } else {
+        setMyStory(null);
+      }
+    };
+    load();
   }, [user]);
 
   useEffect(() => {
@@ -143,7 +159,7 @@ function Home() {
       <div className="hero-strip">
         <div className="hero-strip-left">
         <Link to={user ? "/feed" : "/login"} className="hero-strip-account">
-          <div className="hero-strip-avatar-wrap">
+          <div className={"hero-strip-avatar-wrap" + (myStory ? (myStory.viewedBy?.includes(user?.uid) ? " story-ring viewed" : " story-ring unviewed") : "")}>
             <div className="hero-strip-avatar">
               {profile?.photoURL ? (
                 <img src={profile.photoURL} alt="avatar" />
