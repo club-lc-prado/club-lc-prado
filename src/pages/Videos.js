@@ -131,27 +131,33 @@ function Videos() {
       <div className="videos-grid">
         {videos.map((v) => (
           <div key={v.id} className="video-card">
-            {playing === v.id ? (
-              <div className="video-player-wrap">
-                <iframe
-                  src={`https://www.youtube.com/embed/${v.id}?autoplay=1`}
-                  title={v.title}
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                ></iframe>
-              </div>
-            ) : (
-              <div className="video-thumb-wrap" onClick={() => setPlaying(v.id)}>
-                <img src={v.thumbnail} alt={v.title} />
-                <div className="video-play-icon">▶</div>
-              </div>
-            )}
+            <div className="video-thumb-wrap" onClick={() => setPlaying(v)}>
+              <img src={v.thumbnail} alt={v.title} />
+              <div className="video-play-icon">▶</div>
+            </div>
             <div className="video-card-title">{v.title}</div>
             <div className="video-card-channel">{v.channel}</div>
           </div>
         ))}
       </div>
+
+      {playing && (
+        <div className="video-modal-overlay" onClick={() => setPlaying(null)}>
+          <div className="video-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="video-modal-close" onClick={() => setPlaying(null)}>✕</button>
+            <div className="video-player-wrap">
+              <iframe
+                src={`https://www.youtube-nocookie.com/embed/${playing.id}?autoplay=1&playsinline=1`}
+                title={playing.title}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            </div>
+            <div className="video-modal-title">{playing.title}</div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
