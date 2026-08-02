@@ -241,6 +241,12 @@ function Feed() {
     </svg>
   );
 
+  const getYouTubeId = (text) => {
+    if (!text) return null;
+    const match = text.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/);
+    return match ? match[1] : null;
+  };
+
   const formatDate = (iso) => {
     const d = new Date(iso);
     return d.toLocaleDateString(localeMap[lang] || "ru-RU", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
@@ -517,6 +523,17 @@ function Feed() {
                   </div>
 
                   {post.text && <p className="feed-post-text">{post.text}</p>}
+                  {getYouTubeId(post.text) && (
+                    <div className="feed-post-video-wrap">
+                      <iframe
+                        src={`https://www.youtube.com/embed/${getYouTubeId(post.text)}`}
+                        title="YouTube video"
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      ></iframe>
+                    </div>
+                  )}
                   {post.image && (
                     <div className="feed-post-image-wrap" onClick={() => handlePhotoTap(post)}>
                       <img src={post.image} alt="post" className="feed-post-image" />
