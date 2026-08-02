@@ -9,6 +9,7 @@ const navItems = [
   { to: "/messages", key: "messagesNav" },
   { to: "/about", key: "about" },
   { to: "/useful", key: "useful" },
+  { to: "/videos", key: "videos" },
   { to: "/gallery", key: "gallery" },
   { to: "/journeys", key: "journeys" },
   { to: "/shop", key: "shop" },

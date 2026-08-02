@@ -32,6 +32,7 @@ import Conversation from "./pages/Conversation";
 import Friends from "./pages/Friends";
 import MapTest from "./pages/MapTest";
 import AdminPanel from "./pages/AdminPanel";
+import Videos from "./pages/Videos";
 
 function App() {
   const [entered, setEntered] = useState(false);
@@ -88,6 +89,7 @@ function App() {
             <Route path="/friends" element={<Friends />} />
             <Route path="/maptest" element={<MapTest />} />
             <Route path="/admin" element={<AdminPanel />} />
+            <Route path="/videos" element={<Videos />} />
           </Routes>
         </BrowserRouter>
       )}
