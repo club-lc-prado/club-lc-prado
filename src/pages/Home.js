@@ -8,6 +8,8 @@ import "./Home.css";
 import HomeCalendar from "../components/HomeCalendar";
 import heroImage from "../hero-prado.jpg";
 import notifSound from "../notif-sound.mp3";
+import cardFront from "../card-front.jpg";
+import cardBack from "../card-back.jpg";
 
 function Home() {
   const { t, lang, changeLang } = useLanguage();
@@ -16,6 +18,8 @@ function Home() {
   const [memberCount, setMemberCount] = useState(null);
   const [unreadChats, setUnreadChats] = useState(0);
   const [unreadNotifs, setUnreadNotifs] = useState(0);
+  const [cardOpen, setCardOpen] = useState(false);
+  const [cardFlipped, setCardFlipped] = useState(false);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (u) => {
@@ -79,6 +83,11 @@ function Home() {
 
   const isMeOnline = profile?.lastActive && (Date.now() - new Date(profile.lastActive).getTime()) < 120000;
 
+  const closeCard = () => {
+    setCardOpen(false);
+    setCardFlipped(false);
+  };
+
   return (
     <div className="hero">
       <div className="hero-bg" style={{ backgroundImage: `url(${heroImage})` }}></div>
@@ -95,12 +104,31 @@ function Home() {
         <HomeCalendar />
       </div>
 
-      <div className="hero-title-block">
+      <button type="button" className="hero-title-block hero-title-clickable" onClick={() => setCardOpen(true)}>
         <div className="hero-eyebrow">TOYOTA</div>
         <h1 className="hero-title">PRADO</h1>
         <div className="hero-sub-label">CLUB</div>
         <div className="hero-tagline">{t.home.eyebrow}</div>
-      </div>
+      </button>
+
+      {cardOpen && (
+        <div className="qr-modal-overlay" onClick={closeCard}>
+          <div className="qr-modal card-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="flip-card" onClick={() => setCardFlipped((f) => !f)}>
+              <div className={"flip-card-inner" + (cardFlipped ? " flipped" : "")}>
+                <div className="flip-card-front">
+                  <img src={cardFront} alt="Визитка клуба" />
+                </div>
+                <div className="flip-card-back">
+                  <img src={cardBack} alt="QR-код" />
+                </div>
+              </div>
+            </div>
+            <div className="qr-modal-text">Нажми на визитку, чтобы перевернуть</div>
+            <button className="qr-modal-close" onClick={closeCard}>Закрыть</button>
+          </div>
+        </div>
+      )}
 
       <div className="hero-content">
         <h2 className="hero-slogan">
