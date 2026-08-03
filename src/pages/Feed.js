@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import {
-  doc, getDoc, setDoc, deleteDoc, collection, addDoc, getDocs, query, orderBy, where, limit, onSnapshot,
+  doc, getDoc, deleteDoc, collection, addDoc, getDocs, query, orderBy, where, limit, onSnapshot,
   updateDoc, arrayUnion, arrayRemove, writeBatch,
 } from "firebase/firestore";
 import { Home, Send, Plus } from "lucide-react";
@@ -38,7 +38,8 @@ function Feed() {
   const [notifOpen, setNotifOpen] = useState(false);
   const [conversations, setConversations] = useState([]);
   const [stories, setStories] = useState([]);
-  const [viewingStory, setViewingStory] = useState(null);
+  const [viewingGroup, setViewingGroup] = useState(null);
+  const [storyIndex, setStoryIndex] = useState(0);
   const storyFileRef = useRef(null);
 
   const localeMap = { ru: "ru-RU", de: "de-DE", en: "en-US", ua: "uk-UA" };
@@ -56,7 +57,7 @@ function Feed() {
 
   useEffect(() => {
     if (!user) return;
-    const ping = () => updateDoc(doc(db, "members", user.uid), { lastActive: new Date().toISOString() }).catch((err) => console.error("PING ERROR:", err));
+    const ping = () => updateDoc(doc(db, "members", user.uid), { lastActive: new Date().toISOString() }).catch(() => {});
     ping();
     const interval = setInterval(ping, 60000);
     return () => clearInterval(interval);
@@ -72,6 +73,7 @@ function Feed() {
 
   useEffect(() => {
     loadStories();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -327,8 +329,23 @@ function Feed() {
     const active = snap.docs
       .map((d) => ({ id: d.id, ...d.data() }))
       .filter((s) => now - new Date(s.createdAt).getTime() < 24 * 60 * 60 * 1000);
-    active.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    setStories(active);
+
+    const groups = {};
+    active.forEach((s) => {
+      if (!groups[s.authorId]) groups[s.authorId] = [];
+      groups[s.authorId].push(s);
+    });
+    Object.values(groups).forEach((arr) => arr.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)));
+
+    const groupList = Object.entries(groups).map(([authorId, items]) => ({
+      authorId,
+      authorName: items[0].authorName,
+      authorPhoto: items[0].authorPhoto,
+      items,
+      hasUnviewed: items.some((i) => !i.viewedBy?.includes(user?.uid)),
+    }));
+    groupList.sort((a, b) => (a.hasUnviewed === b.hasUnviewed ? 0 : a.hasUnviewed ? -1 : 1));
+    setStories(groupList);
   };
 
   const handleStoryFile = (e) => {
@@ -347,7 +364,7 @@ function Feed() {
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         const dataUrl = canvas.toDataURL("image/jpeg", 0.75);
 
-        await setDoc(doc(db, "stories", user.uid), {
+        await addDoc(collection(db, "stories"), {
           authorId: user.uid,
           authorName: profile?.name || "Участник",
           authorPhoto: profile?.photoURL || "",
@@ -362,20 +379,37 @@ function Feed() {
     reader.readAsDataURL(file);
   };
 
-  const openStory = async (s) => {
-    setViewingStory(s);
-    if (user && s.authorId !== user.uid && !s.viewedBy?.includes(user.uid)) {
-      await updateDoc(doc(db, "stories", s.authorId), { viewedBy: arrayUnion(user.uid) });
-      loadStories();
-    }
+  const openStoryGroup = (group, startIndex = 0) => {
+    setViewingGroup(group);
+    setStoryIndex(startIndex);
   };
 
-  const deleteStory = async (s) => {
-    if (!window.confirm("Удалить свою историю?")) return;
-    await deleteDoc(doc(db, "stories", s.authorId));
-    setViewingStory(null);
-    loadStories();
+  const markStoryViewed = async (story) => {
+    if (!user || story.authorId === user.uid || story.viewedBy?.includes(user.uid)) return;
+    await updateDoc(doc(db, "stories", story.id), { viewedBy: arrayUnion(user.uid) });
   };
+
+  useEffect(() => {
+    if (!viewingGroup) return;
+    const current = viewingGroup.items[storyIndex];
+    if (!current) {
+      setViewingGroup(null);
+      return;
+    }
+    markStoryViewed(current);
+
+    const timer = setTimeout(() => {
+      if (storyIndex + 1 < viewingGroup.items.length) {
+        setStoryIndex((i) => i + 1);
+      } else {
+        setViewingGroup(null);
+        loadStories();
+      }
+    }, 5000);
+
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [viewingGroup, storyIndex]);
 
   const acceptFriendFromNotif = async (n) => {
     const rId = [user.uid, n.fromUserId].sort().join("_");
@@ -522,13 +556,13 @@ function Feed() {
           {user && (
             <div className="stories-bar">
               {(() => {
-                const myStory = stories.find((s) => s.authorId === user.uid);
+                const myGroup = stories.find((g) => g.authorId === user.uid);
                 return (
                   <div
                     className="story-item"
-                    onClick={() => myStory ? openStory(myStory) : storyFileRef.current?.click()}
+                    onClick={() => myGroup ? openStoryGroup(myGroup, 0) : storyFileRef.current?.click()}
                   >
-                    <div className={"story-avatar-wrap story-add" + (myStory ? (myStory.viewedBy?.includes(user.uid) ? " viewed" : " unviewed") : "")}>
+                    <div className={"story-avatar-wrap story-add" + (myGroup ? (myGroup.hasUnviewed ? " unviewed" : " viewed") : "")}>
                       <div className="feed-avatar">
                         {profile?.photoURL ? (
                           <img src={profile.photoURL} alt="avatar" />
@@ -543,7 +577,7 @@ function Feed() {
                         <Plus size={12} />
                       </span>
                     </div>
-                    <span className="story-name">{myStory ? "Моя история" : "Добавить"}</span>
+                    <span className="story-name">{myGroup ? "Моя история" : "Добавить"}</span>
                   </div>
                 );
               })()}
@@ -555,23 +589,20 @@ function Feed() {
                 style={{ display: "none" }}
               />
 
-              {stories.filter((s) => s.authorId !== user.uid).map((s) => {
-                const viewed = s.viewedBy?.includes(user.uid);
-                return (
-                  <div key={s.id} className="story-item" onClick={() => openStory(s)}>
-                    <div className={"story-avatar-wrap" + (viewed ? " viewed" : " unviewed")}>
-                      <div className="feed-avatar">
-                        {s.authorPhoto ? (
-                          <img src={s.authorPhoto} alt={s.authorName} />
-                        ) : (
-                          s.authorName?.[0]?.toUpperCase() || "?"
-                        )}
-                      </div>
+              {stories.filter((g) => g.authorId !== user.uid).map((g) => (
+                <div key={g.authorId} className="story-item" onClick={() => openStoryGroup(g, 0)}>
+                  <div className={"story-avatar-wrap" + (g.hasUnviewed ? " unviewed" : " viewed")}>
+                    <div className="feed-avatar">
+                      {g.authorPhoto ? (
+                        <img src={g.authorPhoto} alt={g.authorName} />
+                      ) : (
+                        g.authorName?.[0]?.toUpperCase() || "?"
+                      )}
                     </div>
-                    <span className="story-name">{s.authorName}</span>
                   </div>
-                );
-              })}
+                  <span className="story-name">{g.authorName}</span>
+                </div>
+              ))}
             </div>
           )}
 
@@ -631,14 +662,14 @@ function Feed() {
                 <div key={post.id} className="feed-post">
                   <div className="feed-post-header">
                     {(() => {
-                      const authorStory = stories.find((s) => s.authorId === post.authorId);
-                      const ringClass = authorStory
-                        ? (authorStory.viewedBy?.includes(user?.uid) ? " story-ring viewed" : " story-ring unviewed")
+                      const authorGroup = stories.find((g) => g.authorId === post.authorId);
+                      const ringClass = authorGroup
+                        ? (authorGroup.hasUnviewed ? " story-ring unviewed" : " story-ring viewed")
                         : "";
                       return (
                         <div
                           className={"feed-post-avatar-wrap" + ringClass}
-                          onClick={() => authorStory ? openStory(authorStory) : navigate(`/members/${post.authorId}`)}
+                          onClick={() => authorGroup ? openStoryGroup(authorGroup, 0) : navigate(`/members/${post.authorId}`)}
                           style={{ cursor: "pointer" }}
                         >
                           <div className="feed-avatar">
@@ -727,26 +758,58 @@ function Feed() {
         </div>
       </div>
 
-      {viewingStory && (
-        <div className="story-viewer-overlay" onClick={() => setViewingStory(null)}>
+      {viewingGroup && viewingGroup.items[storyIndex] && (
+        <div className="story-viewer-overlay" onClick={() => setViewingGroup(null)}>
           <div className="story-viewer" onClick={(e) => e.stopPropagation()}>
+            <div className="story-progress-row">
+              {viewingGroup.items.map((_, i) => (
+                <div key={i} className="story-progress-track">
+                  <div
+                    className={
+                      "story-progress-fill" +
+                      (i < storyIndex ? " full" : i === storyIndex ? " active" : "")
+                    }
+                  ></div>
+                </div>
+              ))}
+            </div>
             <div className="story-viewer-header">
               <div className="feed-avatar" style={{ width: 32, height: 32 }}>
-                {viewingStory.authorPhoto ? (
-                  <img src={viewingStory.authorPhoto} alt="" />
+                {viewingGroup.authorPhoto ? (
+                  <img src={viewingGroup.authorPhoto} alt="" />
                 ) : (
-                  viewingStory.authorName?.[0]?.toUpperCase() || "?"
+                  viewingGroup.authorName?.[0]?.toUpperCase() || "?"
                 )}
               </div>
-              <span>{viewingStory.authorName}</span>
-              {user && viewingStory.authorId === user.uid && (
-                <button className="story-viewer-delete" onClick={() => deleteStory(viewingStory)}>
+              <span>{viewingGroup.authorName}</span>
+              {viewingGroup.authorId === user?.uid && (
+                <button
+                  className="story-viewer-delete"
+                  onClick={async () => {
+                    if (!window.confirm("Удалить эту историю?")) return;
+                    await deleteDoc(doc(db, "stories", viewingGroup.items[storyIndex].id));
+                    setViewingGroup(null);
+                    loadStories();
+                  }}
+                >
                   Удалить
                 </button>
               )}
-              <button className="story-viewer-close" onClick={() => setViewingStory(null)}>✕</button>
+              <button className="story-viewer-close" onClick={() => setViewingGroup(null)}>✕</button>
             </div>
-            <img src={viewingStory.image} alt="" className="story-viewer-image" />
+            <img src={viewingGroup.items[storyIndex].image} alt="" className="story-viewer-image" />
+            <div className="story-viewer-nav">
+              <div
+                className="story-viewer-nav-prev"
+                onClick={() => storyIndex > 0 && setStoryIndex((i) => i - 1)}
+              ></div>
+              <div
+                className="story-viewer-nav-next"
+                onClick={() =>
+                  storyIndex + 1 < viewingGroup.items.length ? setStoryIndex((i) => i + 1) : setViewingGroup(null)
+                }
+              ></div>
+            </div>
           </div>
         </div>
       )}

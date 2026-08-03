@@ -1056,3 +1056,49 @@
   border: 1px solid #0B0D0C;
   box-sizing: border-box;
 }
+
+.story-progress-row {
+  display: flex;
+  gap: 4px;
+  padding: 8px 12px 0;
+}
+
+.story-progress-track {
+  flex: 1;
+  height: 3px;
+  background: rgba(255,255,255,0.3);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.story-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: #F2EDE3;
+}
+
+.story-progress-fill.full {
+  width: 100%;
+}
+
+.story-progress-fill.active {
+  animation: storyFill 5s linear forwards;
+}
+
+@keyframes storyFill {
+  from { width: 0%; }
+  to { width: 100%; }
+}
+
+.story-viewer-nav {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  z-index: 1;
+}
+
+.story-viewer-nav-prev,
+.story-viewer-nav-next {
+  flex: 1;
+  cursor: pointer;
+}
