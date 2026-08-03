@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import {
-  doc, getDoc, setDoc, updateDoc, deleteDoc, collection, addDoc, query, orderBy, onSnapshot, arrayUnion,
+  doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, collection, addDoc, query, where, orderBy, onSnapshot, arrayUnion,
 } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import { useLanguage } from "../i18n/LanguageContext";
@@ -27,7 +27,8 @@ function Conversation() {
   const [convData, setConvData] = useState(null);
   const [otherStory, setOtherStory] = useState(null);
   const [myStory, setMyStory] = useState(null);
-  const [viewingConvStory, setViewingConvStory] = useState(null);
+  const [viewingConvGroup, setViewingConvGroup] = useState(null);
+  const [convStoryIndex, setConvStoryIndex] = useState(0);
   const [reportOpen, setReportOpen] = useState(false);
   const [reportReason, setReportReason] = useState("");
   const [reportSent, setReportSent] = useState(false);
@@ -49,35 +50,35 @@ function Conversation() {
     return unsub;
   }, [navigate]);
 
+  const loadPersonStory = async (uid, viewerUid, setter) => {
+    const q = query(collection(db, "stories"), where("authorId", "==", uid));
+    const snap = await getDocs(q);
+    const now = Date.now();
+    const active = snap.docs
+      .map((d) => ({ id: d.id, ...d.data() }))
+      .filter((s) => now - new Date(s.createdAt).getTime() < 24 * 60 * 60 * 1000);
+    if (active.length === 0) {
+      setter(null);
+      return;
+    }
+    const hasUnviewed = active.some((s) => !s.viewedBy?.includes(viewerUid));
+    setter({ id: uid, hasUnviewed, viewedBy: hasUnviewed ? [] : [viewerUid], items: active });
+  };
+
   useEffect(() => {
     const load = async () => {
       const snap = await getDoc(doc(db, "members", userId));
       if (snap.exists()) setOtherUser({ id: userId, ...snap.data() });
       setLoading(false);
-
-      const storySnap = await getDoc(doc(db, "stories", userId));
-      if (storySnap.exists()) {
-        const data = storySnap.data();
-        if (Date.now() - new Date(data.createdAt).getTime() < 24 * 60 * 60 * 1000) {
-          setOtherStory({ id: userId, ...data });
-        }
-      }
+      if (user) loadPersonStory(userId, user.uid, setOtherStory);
     };
     load();
-  }, [userId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId, user]);
 
   useEffect(() => {
     if (!user) return;
-    const load = async () => {
-      const storySnap = await getDoc(doc(db, "stories", user.uid));
-      if (storySnap.exists()) {
-        const data = storySnap.data();
-        if (Date.now() - new Date(data.createdAt).getTime() < 24 * 60 * 60 * 1000) {
-          setMyStory({ id: user.uid, ...data });
-        }
-      }
-    };
-    load();
+    loadPersonStory(user.uid, user.uid, setMyStory);
   }, [user]);
 
   useEffect(() => {
@@ -122,13 +123,31 @@ function Conversation() {
     }).catch(() => {});
   }, [convId, user, messages.length]);
 
-  const openConvStory = async (s) => {
-    setViewingConvStory(s);
-    if (s.id !== user.uid && !s.viewedBy?.includes(user.uid)) {
-      await updateDoc(doc(db, "stories", s.id), { viewedBy: arrayUnion(user.uid) });
-      setOtherStory((prev) => prev ? { ...prev, viewedBy: [...(prev.viewedBy || []), user.uid] } : prev);
-    }
+  const openConvStory = (group) => {
+    setViewingConvGroup(group);
+    setConvStoryIndex(0);
   };
+
+  useEffect(() => {
+    if (!viewingConvGroup) return;
+    const current = viewingConvGroup.items[convStoryIndex];
+    if (!current) {
+      setViewingConvGroup(null);
+      return;
+    }
+    if (current.authorId !== user.uid && !current.viewedBy?.includes(user.uid)) {
+      updateDoc(doc(db, "stories", current.id), { viewedBy: arrayUnion(user.uid) }).catch(() => {});
+    }
+    const timer = setTimeout(() => {
+      if (convStoryIndex + 1 < viewingConvGroup.items.length) {
+        setConvStoryIndex((i) => i + 1);
+      } else {
+        setViewingConvGroup(null);
+      }
+    }, 5000);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [viewingConvGroup, convStoryIndex]);
 
   const submitReport = async () => {
     if (!reportReason.trim()) return;
@@ -328,14 +347,53 @@ function Conversation() {
 
       <div className="conversation-security-notice">{t.messages.securityNotice}</div>
 
-      {viewingConvStory && (
-        <div className="story-viewer-overlay" onClick={() => setViewingConvStory(null)}>
+      {viewingConvGroup && viewingConvGroup.items[convStoryIndex] && (
+        <div className="story-viewer-overlay" onClick={() => setViewingConvGroup(null)}>
           <div className="story-viewer" onClick={(e) => e.stopPropagation()}>
-            <div className="story-viewer-header">
-              <span>{viewingConvStory.id === user.uid ? "Моя история" : otherUser.name}</span>
-              <button className="story-viewer-close" onClick={() => setViewingConvStory(null)}>✕</button>
+            <div className="story-progress-row">
+              {viewingConvGroup.items.map((_, i) => (
+                <div key={i} className="story-progress-track">
+                  <div
+                    className={
+                      "story-progress-fill" +
+                      (i < convStoryIndex ? " full" : i === convStoryIndex ? " active" : "")
+                    }
+                  ></div>
+                </div>
+              ))}
             </div>
-            <img src={viewingConvStory.image} alt="" className="story-viewer-image" />
+            <div className="story-viewer-header">
+              <span>{viewingConvGroup.id === user.uid ? "Моя история" : otherUser.name}</span>
+              {viewingConvGroup.id === user.uid && (
+                <button
+                  className="story-viewer-delete"
+                  onClick={async () => {
+                    if (!window.confirm("Удалить эту историю?")) return;
+                    await deleteDoc(doc(db, "stories", viewingConvGroup.items[convStoryIndex].id));
+                    setViewingConvGroup(null);
+                    loadPersonStory(user.uid, user.uid, setMyStory);
+                  }}
+                >
+                  Удалить
+                </button>
+              )}
+              <button className="story-viewer-close" onClick={() => setViewingConvGroup(null)}>✕</button>
+            </div>
+            <img src={viewingConvGroup.items[convStoryIndex].image} alt="" className="story-viewer-image" />
+            <div className="story-viewer-nav">
+              <div
+                className="story-viewer-nav-prev"
+                onClick={() => convStoryIndex > 0 && setConvStoryIndex((i) => i - 1)}
+              ></div>
+              <div
+                className="story-viewer-nav-next"
+                onClick={() =>
+                  convStoryIndex + 1 < viewingConvGroup.items.length
+                    ? setConvStoryIndex((i) => i + 1)
+                    : setViewingConvGroup(null)
+                }
+              ></div>
+            </div>
           </div>
         </div>
       )}

@@ -41,7 +41,8 @@ function Members() {
     snap.docs.forEach((d) => {
       const data = d.data();
       if (now - new Date(data.createdAt).getTime() < 24 * 60 * 60 * 1000) {
-        map[d.id] = data;
+        if (!map[data.authorId]) map[data.authorId] = { hasUnviewed: false };
+        if (!data.viewedBy?.includes(currentUid)) map[data.authorId].hasUnviewed = true;
       }
     });
     setStoriesByAuthor(map);
@@ -59,7 +60,7 @@ function Members() {
           {members.map((m) => {
             const story = storiesByAuthor[m.id];
             const ringClass = story
-              ? (story.viewedBy?.includes(currentUid) ? " story-ring viewed" : " story-ring unviewed")
+              ? (story.hasUnviewed ? " story-ring unviewed" : " story-ring viewed")
               : "";
             return (
               <Link to={`/members/${m.id}`} key={m.id} className="member-card">

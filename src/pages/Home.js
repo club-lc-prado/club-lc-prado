@@ -68,13 +68,17 @@ function Home() {
   useEffect(() => {
     if (!user) return;
     const load = async () => {
-      const snap = await getDoc(doc(db, "stories", user.uid));
-      if (snap.exists()) {
-        const data = snap.data();
-        const active = Date.now() - new Date(data.createdAt).getTime() < 24 * 60 * 60 * 1000;
-        setMyStory(active ? data : null);
-      } else {
+      const q = query(collection(db, "stories"), where("authorId", "==", user.uid));
+      const snap = await getDocs(q);
+      const now = Date.now();
+      const active = snap.docs
+        .map((d) => d.data())
+        .filter((s) => now - new Date(s.createdAt).getTime() < 24 * 60 * 60 * 1000);
+      if (active.length === 0) {
         setMyStory(null);
+      } else {
+        const hasUnviewed = active.some((s) => !s.viewedBy?.includes(user.uid));
+        setMyStory({ hasUnviewed, viewedBy: hasUnviewed ? [] : [user.uid] });
       }
     };
     load();
