@@ -1058,6 +1058,8 @@
 }
 
 .story-progress-row {
+  position: relative;
+  z-index: 2;
   display: flex;
   gap: 4px;
   padding: 8px 12px 0;
