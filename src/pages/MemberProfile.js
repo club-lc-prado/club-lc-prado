@@ -23,6 +23,8 @@ function MemberProfile() {
   const [friendStatus, setFriendStatus] = useState("none");
   const [reqDocId, setReqDocId] = useState(null);
   const [blockedByMe, setBlockedByMe] = useState(false);
+  const [memberStory, setMemberStory] = useState(null);
+  const [viewingStory, setViewingStory] = useState(false);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (u) => {
@@ -44,6 +46,14 @@ function MemberProfile() {
       const snap = await getDoc(doc(db, "members", id));
       if (snap.exists()) setMember(snap.data());
       setLoading(false);
+
+      const storySnap = await getDoc(doc(db, "stories", id));
+      if (storySnap.exists()) {
+        const data = storySnap.data();
+        if (Date.now() - new Date(data.createdAt).getTime() < 24 * 60 * 60 * 1000) {
+          setMemberStory({ id, ...data });
+        }
+      }
     };
     load();
   }, [id]);
@@ -129,15 +139,39 @@ function MemberProfile() {
     await updateDoc(doc(db, "members", currentUid), { blockedUsers: arrayRemove(id) });
   };
 
+  const openMemberStory = async () => {
+    if (!memberStory) return;
+    setViewingStory(true);
+    if (id !== currentUid && !memberStory.viewedBy?.includes(currentUid)) {
+      await updateDoc(doc(db, "stories", id), { viewedBy: arrayUnion(currentUid) });
+      setMemberStory((prev) => ({ ...prev, viewedBy: [...(prev.viewedBy || []), currentUid] }));
+    }
+  };
+
+  const deleteMemberStory = async () => {
+    if (!window.confirm("Удалить свою историю?")) return;
+    await deleteDoc(doc(db, "stories", id));
+    setViewingStory(false);
+    setMemberStory(null);
+  };
+
   if (loading) return <div className="members-page"></div>;
   if (!member) return <div className="members-page">{t.members.notFound}</div>;
+
+  const ringClass = memberStory
+    ? (memberStory.viewedBy?.includes(currentUid) ? " story-ring viewed" : " story-ring unviewed")
+    : "";
 
   return (
     <div className="members-page">
       <Link to="/members" className="member-back">{t.members.backToAll}</Link>
 
       <div className="member-profile-card">
-        <div className="member-avatar-wrap-large">
+        <div
+          className={"member-avatar-wrap-large" + ringClass}
+          onClick={openMemberStory}
+          style={{ cursor: memberStory ? "pointer" : "default" }}
+        >
           <div className="member-avatar large">
             {member.photoURL ? (
               <img src={member.photoURL} alt={member.name} />
@@ -202,6 +236,21 @@ function MemberProfile() {
           </div>
         )}
       </div>
+
+      {viewingStory && memberStory && (
+        <div className="story-viewer-overlay" onClick={() => setViewingStory(false)}>
+          <div className="story-viewer" onClick={(e) => e.stopPropagation()}>
+            <div className="story-viewer-header">
+              <span>{member.name}</span>
+              {id === currentUid && (
+                <button className="story-viewer-delete" onClick={deleteMemberStory}>Удалить</button>
+              )}
+              <button className="story-viewer-close" onClick={() => setViewingStory(false)}>✕</button>
+            </div>
+            <img src={memberStory.image} alt="" className="story-viewer-image" />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

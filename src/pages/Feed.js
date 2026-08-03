@@ -630,13 +630,27 @@ function Feed() {
               return (
                 <div key={post.id} className="feed-post">
                   <div className="feed-post-header">
-                    <div className="feed-avatar">
-                      {post.authorPhoto ? (
-                        <img src={post.authorPhoto} alt={post.authorName} />
-                      ) : (
-                        post.authorName?.[0]?.toUpperCase() || "?"
-                      )}
-                    </div>
+                    {(() => {
+                      const authorStory = stories.find((s) => s.authorId === post.authorId);
+                      const ringClass = authorStory
+                        ? (authorStory.viewedBy?.includes(user?.uid) ? " story-ring viewed" : " story-ring unviewed")
+                        : "";
+                      return (
+                        <div
+                          className={"feed-post-avatar-wrap" + ringClass}
+                          onClick={() => authorStory ? openStory(authorStory) : navigate(`/members/${post.authorId}`)}
+                          style={{ cursor: "pointer" }}
+                        >
+                          <div className="feed-avatar">
+                            {post.authorPhoto ? (
+                              <img src={post.authorPhoto} alt={post.authorName} />
+                            ) : (
+                              post.authorName?.[0]?.toUpperCase() || "?"
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })()}
                     <span className="feed-post-author">{post.authorName}</span>
                     <span className="feed-post-date">{formatDate(post.createdAt)}</span>
                   </div>
