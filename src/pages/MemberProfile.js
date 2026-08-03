@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import {
-  doc, getDoc, setDoc, collection, addDoc, updateDoc, deleteDoc, arrayUnion, onSnapshot,
+  doc, getDoc, setDoc, getDocs, collection, query, where, addDoc, updateDoc, deleteDoc, arrayUnion, onSnapshot,
 } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import { useLanguage } from "../i18n/LanguageContext";
@@ -23,8 +23,9 @@ function MemberProfile() {
   const [friendStatus, setFriendStatus] = useState("none");
   const [reqDocId, setReqDocId] = useState(null);
   const [blockedByMe, setBlockedByMe] = useState(false);
-  const [memberStory, setMemberStory] = useState(null);
-  const [viewingStory, setViewingStory] = useState(false);
+  const [memberStoryGroup, setMemberStoryGroup] = useState(null);
+  const [viewingGroup, setViewingGroup] = useState(null);
+  const [storyIndex, setStoryIndex] = useState(0);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (u) => {
@@ -36,6 +37,7 @@ function MemberProfile() {
       const meSnap = await getDoc(doc(db, "members", u.uid));
       if (meSnap.exists()) setCurrentProfile(meSnap.data());
       setBlockedByMe((meSnap.data()?.blockedUsers || []).includes(id));
+      loadMemberStory(u.uid);
     });
     return unsub;
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -46,17 +48,25 @@ function MemberProfile() {
       const snap = await getDoc(doc(db, "members", id));
       if (snap.exists()) setMember(snap.data());
       setLoading(false);
-
-      const storySnap = await getDoc(doc(db, "stories", id));
-      if (storySnap.exists()) {
-        const data = storySnap.data();
-        if (Date.now() - new Date(data.createdAt).getTime() < 24 * 60 * 60 * 1000) {
-          setMemberStory({ id, ...data });
-        }
-      }
     };
     load();
   }, [id]);
+
+  const loadMemberStory = async (viewerUid) => {
+    const q = query(collection(db, "stories"), where("authorId", "==", id));
+    const snap = await getDocs(q);
+    const now = Date.now();
+    const active = snap.docs
+      .map((d) => ({ id: d.id, ...d.data() }))
+      .filter((s) => now - new Date(s.createdAt).getTime() < 24 * 60 * 60 * 1000)
+      .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    if (active.length === 0) {
+      setMemberStoryGroup(null);
+      return;
+    }
+    const hasUnviewed = active.some((s) => !s.viewedBy?.includes(viewerUid));
+    setMemberStoryGroup({ authorId: id, authorName: member?.name, items: active, hasUnviewed });
+  };
 
   useEffect(() => {
     if (!currentUid || currentUid === id) return;
@@ -139,27 +149,39 @@ function MemberProfile() {
     await updateDoc(doc(db, "members", currentUid), { blockedUsers: arrayRemove(id) });
   };
 
-  const openMemberStory = async () => {
-    if (!memberStory) return;
-    setViewingStory(true);
-    if (id !== currentUid && !memberStory.viewedBy?.includes(currentUid)) {
-      await updateDoc(doc(db, "stories", id), { viewedBy: arrayUnion(currentUid) });
-      setMemberStory((prev) => ({ ...prev, viewedBy: [...(prev.viewedBy || []), currentUid] }));
-    }
+  const openMemberStory = () => {
+    if (!memberStoryGroup) return;
+    setViewingGroup(memberStoryGroup);
+    setStoryIndex(0);
   };
 
-  const deleteMemberStory = async () => {
-    if (!window.confirm("Удалить свою историю?")) return;
-    await deleteDoc(doc(db, "stories", id));
-    setViewingStory(false);
-    setMemberStory(null);
-  };
+  useEffect(() => {
+    if (!viewingGroup) return;
+    const current = viewingGroup.items[storyIndex];
+    if (!current) {
+      setViewingGroup(null);
+      return;
+    }
+    if (!current.viewedBy?.includes(currentUid)) {
+      updateDoc(doc(db, "stories", current.id), { viewedBy: arrayUnion(currentUid) }).catch(() => {});
+    }
+    const timer = setTimeout(() => {
+      if (storyIndex + 1 < viewingGroup.items.length) {
+        setStoryIndex((i) => i + 1);
+      } else {
+        setViewingGroup(null);
+        loadMemberStory(currentUid);
+      }
+    }, 5000);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [viewingGroup, storyIndex]);
 
   if (loading) return <div className="members-page"></div>;
   if (!member) return <div className="members-page">{t.members.notFound}</div>;
 
-  const ringClass = memberStory
-    ? (memberStory.viewedBy?.includes(currentUid) ? " story-ring viewed" : " story-ring unviewed")
+  const ringClass = memberStoryGroup
+    ? (memberStoryGroup.hasUnviewed ? " story-ring unviewed" : " story-ring viewed")
     : "";
 
   return (
@@ -170,7 +192,7 @@ function MemberProfile() {
         <div
           className={"member-avatar-wrap-large" + ringClass}
           onClick={openMemberStory}
-          style={{ cursor: memberStory ? "pointer" : "default" }}
+          style={{ cursor: memberStoryGroup ? "pointer" : "default" }}
         >
           <div className="member-avatar large">
             {member.photoURL ? (
@@ -237,17 +259,57 @@ function MemberProfile() {
         )}
       </div>
 
-      {viewingStory && memberStory && (
-        <div className="story-viewer-overlay" onClick={() => setViewingStory(false)}>
+      {viewingGroup && viewingGroup.items[storyIndex] && (
+        <div
+          className="story-viewer-overlay"
+          onClick={() => { setViewingGroup(null); loadMemberStory(currentUid); }}
+        >
           <div className="story-viewer" onClick={(e) => e.stopPropagation()}>
+            <div className="story-progress-row">
+              {viewingGroup.items.map((_, i) => (
+                <div key={i} className="story-progress-track">
+                  <div
+                    className={
+                      "story-progress-fill" +
+                      (i < storyIndex ? " full" : i === storyIndex ? " active" : "")
+                    }
+                  ></div>
+                </div>
+              ))}
+            </div>
             <div className="story-viewer-header">
               <span>{member.name}</span>
               {id === currentUid && (
-                <button className="story-viewer-delete" onClick={deleteMemberStory}>Удалить</button>
+                <button
+                  className="story-viewer-delete"
+                  onClick={async () => {
+                    if (!window.confirm("Удалить эту историю?")) return;
+                    await deleteDoc(doc(db, "stories", viewingGroup.items[storyIndex].id));
+                    setViewingGroup(null);
+                    loadMemberStory(currentUid);
+                  }}
+                >
+                  Удалить
+                </button>
               )}
-              <button className="story-viewer-close" onClick={() => setViewingStory(false)}>✕</button>
+              <button
+                className="story-viewer-close"
+                onClick={() => { setViewingGroup(null); loadMemberStory(currentUid); }}
+              >✕</button>
             </div>
-            <img src={memberStory.image} alt="" className="story-viewer-image" />
+            <img src={viewingGroup.items[storyIndex].image} alt="" className="story-viewer-image" />
+            <div className="story-viewer-nav">
+              <div
+                className="story-viewer-nav-prev"
+                onClick={() => storyIndex > 0 && setStoryIndex((i) => i - 1)}
+              ></div>
+              <div
+                className="story-viewer-nav-next"
+                onClick={() =>
+                  storyIndex + 1 < viewingGroup.items.length ? setStoryIndex((i) => i + 1) : setViewingGroup(null)
+                }
+              ></div>
+            </div>
           </div>
         </div>
       )}

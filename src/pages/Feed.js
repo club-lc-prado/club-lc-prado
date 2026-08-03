@@ -385,7 +385,7 @@ function Feed() {
   };
 
   const markStoryViewed = async (story) => {
-    if (!user || story.authorId === user.uid || story.viewedBy?.includes(user.uid)) return;
+    if (!user || story.viewedBy?.includes(user.uid)) return;
     await updateDoc(doc(db, "stories", story.id), { viewedBy: arrayUnion(user.uid) });
   };
 
@@ -759,7 +759,7 @@ function Feed() {
       </div>
 
       {viewingGroup && viewingGroup.items[storyIndex] && (
-        <div className="story-viewer-overlay" onClick={() => setViewingGroup(null)}>
+        <div className="story-viewer-overlay" onClick={() => { setViewingGroup(null); loadStories(); }}>
           <div className="story-viewer" onClick={(e) => e.stopPropagation()}>
             <div className="story-progress-row">
               {viewingGroup.items.map((_, i) => (
@@ -795,7 +795,7 @@ function Feed() {
                   Удалить
                 </button>
               )}
-              <button className="story-viewer-close" onClick={() => setViewingGroup(null)}>✕</button>
+              <button className="story-viewer-close" onClick={() => { setViewingGroup(null); loadStories(); }}>✕</button>
             </div>
             <img src={viewingGroup.items[storyIndex].image} alt="" className="story-viewer-image" />
             <div className="story-viewer-nav">

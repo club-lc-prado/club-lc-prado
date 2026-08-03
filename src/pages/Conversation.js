@@ -135,7 +135,7 @@ function Conversation() {
       setViewingConvGroup(null);
       return;
     }
-    if (current.authorId !== user.uid && !current.viewedBy?.includes(user.uid)) {
+    if (!current.viewedBy?.includes(user.uid)) {
       updateDoc(doc(db, "stories", current.id), { viewedBy: arrayUnion(user.uid) }).catch(() => {});
     }
     const timer = setTimeout(() => {
@@ -348,7 +348,14 @@ function Conversation() {
       <div className="conversation-security-notice">{t.messages.securityNotice}</div>
 
       {viewingConvGroup && viewingConvGroup.items[convStoryIndex] && (
-        <div className="story-viewer-overlay" onClick={() => setViewingConvGroup(null)}>
+        <div
+          className="story-viewer-overlay"
+          onClick={() => {
+            setViewingConvGroup(null);
+            loadPersonStory(userId, user.uid, setOtherStory);
+            loadPersonStory(user.uid, user.uid, setMyStory);
+          }}
+        >
           <div className="story-viewer" onClick={(e) => e.stopPropagation()}>
             <div className="story-progress-row">
               {viewingConvGroup.items.map((_, i) => (
@@ -377,7 +384,14 @@ function Conversation() {
                   Удалить
                 </button>
               )}
-              <button className="story-viewer-close" onClick={() => setViewingConvGroup(null)}>✕</button>
+              <button
+                className="story-viewer-close"
+                onClick={() => {
+                  setViewingConvGroup(null);
+                  loadPersonStory(userId, user.uid, setOtherStory);
+                  loadPersonStory(user.uid, user.uid, setMyStory);
+                }}
+              >✕</button>
             </div>
             <img src={viewingConvGroup.items[convStoryIndex].image} alt="" className="story-viewer-image" />
             <div className="story-viewer-nav">
