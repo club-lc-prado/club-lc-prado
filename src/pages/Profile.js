@@ -52,6 +52,7 @@ function Profile() {
   const [zoom, setZoom] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
 
+  const [avatarViewOpen, setAvatarViewOpen] = useState(false);
   const [specTooltip, setSpecTooltip] = useState(false);
   const [specFormOpen, setSpecFormOpen] = useState(false);
   const [specSubmitted, setSpecSubmitted] = useState(false);
@@ -383,12 +384,19 @@ function Profile() {
 
       <div className="profile-scroll">
         <div className="profile-header">
-          <div className="profile-avatar" onClick={handleAvatarClick} style={{ cursor: "pointer" }}>
-            {profile?.photoURL ? (
-              <img src={profile.photoURL} alt="avatar" />
-            ) : (
-              profile?.name?.[0]?.toUpperCase() || "?"
-            )}
+          <div className="profile-avatar-wrap-edit">
+            <div
+              className="profile-avatar"
+              onClick={() => profile?.photoURL && setAvatarViewOpen(true)}
+              style={{ cursor: profile?.photoURL ? "pointer" : "default" }}
+            >
+              {profile?.photoURL ? (
+                <img src={profile.photoURL} alt="avatar" />
+              ) : (
+                profile?.name?.[0]?.toUpperCase() || "?"
+              )}
+            </div>
+            <button className="profile-avatar-edit-btn" onClick={handleAvatarClick}>✎</button>
           </div>
           <input
             type="file"
@@ -411,22 +419,6 @@ function Profile() {
                 <span className="profile-stat-num">{profile?.friends?.length || 0}</span>
                 <span className="profile-stat-label">{t.friends.friendsCount}</span>
               </Link>
-
-              <div className="profile-spec-wrap">
-                <img
-                  src={specialistEmblem}
-                  alt={t.specialist.tooltip}
-                  className="profile-spec-icon"
-                  onMouseEnter={() => setSpecTooltip(true)}
-                  onMouseLeave={() => setSpecTooltip(false)}
-                  onClick={() => setSpecFormOpen(true)}
-                />
-                {specTooltip && (
-                  <div className="profile-spec-tooltip">
-                    {t.specialist.tooltip}
-                  </div>
-                )}
-              </div>
             </div>
 
             {!editing ? (
@@ -448,6 +440,21 @@ function Profile() {
               </>
             ) : (
               <div className="profile-edit-form">
+                <div className="profile-spec-wrap">
+                  <img
+                    src={specialistEmblem}
+                    alt={t.specialist.tooltip}
+                    className="profile-spec-icon"
+                    onMouseEnter={() => setSpecTooltip(true)}
+                    onMouseLeave={() => setSpecTooltip(false)}
+                    onClick={() => setSpecFormOpen(true)}
+                  />
+                  {specTooltip && (
+                    <div className="profile-spec-tooltip">
+                      {t.specialist.tooltip}
+                    </div>
+                  )}
+                </div>
                 <input
                   type="text"
                   name="city"
@@ -514,6 +521,13 @@ function Profile() {
           )}
         </div>
       </div>
+
+      {avatarViewOpen && profile?.photoURL && (
+        <div className="avatar-view-overlay" onClick={() => setAvatarViewOpen(false)}>
+          <img src={profile.photoURL} alt="" className="avatar-view-image" onClick={(e) => e.stopPropagation()} />
+          <button className="avatar-view-close" onClick={() => setAvatarViewOpen(false)}>✕</button>
+        </div>
+      )}
 
       {specFormOpen && (
         <div className="spec-form-overlay" onClick={() => { setSpecFormOpen(false); setSpecSubmitted(false); }}>

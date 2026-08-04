@@ -26,6 +26,7 @@ function MemberProfile() {
   const [memberStoryGroup, setMemberStoryGroup] = useState(null);
   const [viewingGroup, setViewingGroup] = useState(null);
   const [storyIndex, setStoryIndex] = useState(0);
+  const [avatarViewOpen, setAvatarViewOpen] = useState(false);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (u) => {
@@ -150,9 +151,12 @@ function MemberProfile() {
   };
 
   const openMemberStory = () => {
-    if (!memberStoryGroup) return;
-    setViewingGroup(memberStoryGroup);
-    setStoryIndex(0);
+    if (memberStoryGroup) {
+      setViewingGroup(memberStoryGroup);
+      setStoryIndex(0);
+    } else if (member?.photoURL) {
+      setAvatarViewOpen(true);
+    }
   };
 
   useEffect(() => {
@@ -192,7 +196,7 @@ function MemberProfile() {
         <div
           className={"member-avatar-wrap-large" + ringClass}
           onClick={openMemberStory}
-          style={{ cursor: memberStoryGroup ? "pointer" : "default" }}
+          style={{ cursor: (memberStoryGroup || member?.photoURL) ? "pointer" : "default" }}
         >
           <div className="member-avatar large">
             {member.photoURL ? (
@@ -259,11 +263,15 @@ function MemberProfile() {
         )}
       </div>
 
+      {avatarViewOpen && member?.photoURL && (
+        <div className="avatar-view-overlay" onClick={() => setAvatarViewOpen(false)}>
+          <img src={member.photoURL} alt="" className="avatar-view-image" onClick={(e) => e.stopPropagation()} />
+          <button className="avatar-view-close" onClick={() => setAvatarViewOpen(false)}>✕</button>
+        </div>
+      )}
+
       {viewingGroup && viewingGroup.items[storyIndex] && (
-        <div
-          className="story-viewer-overlay"
-          onClick={() => { setViewingGroup(null); loadMemberStory(currentUid); }}
-        >
+        <div className="story-viewer-overlay" onClick={() => { setViewingGroup(null); loadMemberStory(currentUid); }}>
           <div className="story-viewer" onClick={(e) => e.stopPropagation()}>
             <div className="story-progress-row">
               {viewingGroup.items.map((_, i) => (
