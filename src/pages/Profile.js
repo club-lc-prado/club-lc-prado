@@ -293,6 +293,8 @@ function Profile() {
     }));
   };
 
+  const ADMIN_UID = "L5b3uj2dWraKaPK6h3gMjXr4V5T2";
+
   const handleSpecSubmit = async (e) => {
     e.preventDefault();
     await addDoc(collection(db, "specialists"), {
@@ -310,6 +312,14 @@ function Profile() {
       approved: false,
       x: null,
       y: null,
+      createdAt: new Date().toISOString(),
+    });
+    await addDoc(collection(db, "notifications"), {
+      toUserId: ADMIN_UID,
+      fromUserId: user.uid,
+      fromUserName: profile?.name || "Участник",
+      type: "specialistRequest",
+      read: false,
       createdAt: new Date().toISOString(),
     });
     setSpecSubmitted(true);

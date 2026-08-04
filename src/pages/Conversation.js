@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import {
-  doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, collection, addDoc, query, where, orderBy, onSnapshot, arrayUnion,
+  doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, collection, addDoc, query, where, orderBy, onSnapshot, arrayUnion, arrayRemove,
 } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import { useLanguage } from "../i18n/LanguageContext";
@@ -49,6 +49,24 @@ function Conversation() {
     });
     return unsub;
   }, [navigate]);
+
+  const isBlocked =
+    profile?.blockedUsers?.includes(userId) || otherUser?.blockedUsers?.includes(user?.uid);
+
+  const blockOtherUser = async () => {
+    if (!user || !otherUser) return;
+    if (!window.confirm(`Заблокировать ${otherUser.name}?`)) return;
+    await updateDoc(doc(db, "members", user.uid), {
+      friends: arrayRemove(userId),
+      blockedUsers: arrayUnion(userId),
+    });
+    await updateDoc(doc(db, "members", userId), { friends: arrayRemove(user.uid) });
+    setProfile((prev) => ({
+      ...prev,
+      friends: (prev?.friends || []).filter((f) => f !== userId),
+      blockedUsers: [...(prev?.blockedUsers || []), userId],
+    }));
+  };
 
   const loadPersonStory = async (uid, viewerUid, setter) => {
     const q = query(collection(db, "stories"), where("authorId", "==", uid));
@@ -171,7 +189,7 @@ function Conversation() {
 
   const handleSend = async (e) => {
     e.preventDefault();
-    if (!text.trim() || !user || !otherUser) return;
+    if (!text.trim() || !user || !otherUser || isBlocked) return;
 
     const convRef = doc(db, "conversations", convId);
     const convSnap = await getDoc(convRef);
@@ -233,6 +251,7 @@ function Conversation() {
         <Link to="/messages" className="messages-back">{t.messages.backToAll}</Link>
         <Link to="/feed" className="messages-back">{t.settings.backToFeed}</Link>
         <button className="conversation-report-btn" onClick={() => setReportOpen(true)}>⚑ Пожаловаться</button>
+        <button className="conversation-report-btn" onClick={blockOtherUser}>Заблокировать</button>
       </div>
 
       {reportOpen && (
@@ -261,8 +280,8 @@ function Conversation() {
       <div className="conversation-header">
         <div
           className={"messages-avatar-wrap" + (otherStory ? (otherStory.viewedBy?.includes(user.uid) ? " story-ring viewed" : " story-ring unviewed") : "")}
-          onClick={() => otherStory && openConvStory(otherStory)}
-          style={{ cursor: otherStory ? "pointer" : "default" }}
+          onClick={() => otherStory ? openConvStory(otherStory) : navigate(`/members/${userId}`)}
+          style={{ cursor: "pointer" }}
         >
           <div className="messages-avatar">
             {otherUser.photoURL ? (
@@ -303,7 +322,7 @@ function Conversation() {
                     navigate(`/members/${userId}`);
                   }
                 }}
-                style={{ cursor: (mine ? myStory : otherStory) ? "pointer" : "default" }}
+                style={{ cursor: (mine ? myStory : otherStory) || !mine ? "pointer" : "default" }}
               >
                 <div className="conversation-avatar">
                   {avatarUrl ? (
@@ -346,6 +365,22 @@ function Conversation() {
       </div>
 
       <div className="conversation-security-notice">{t.messages.securityNotice}</div>
+
+      {isBlocked ? (
+        <div className="conversation-blocked-notice">
+          Переписка недоступна — один из участников заблокировал другого.
+        </div>
+      ) : (
+        <form onSubmit={handleSend} className="conversation-form">
+          <input
+            type="text"
+            placeholder={t.messages.writeMsg}
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+          />
+          <button type="submit" disabled={!text.trim()}>{t.messages.send}</button>
+        </form>
+      )}
 
       {viewingConvGroup && viewingConvGroup.items[convStoryIndex] && (
         <div
@@ -411,16 +446,6 @@ function Conversation() {
           </div>
         </div>
       )}
-
-      <form onSubmit={handleSend} className="conversation-form">
-        <input
-          type="text"
-          placeholder={t.messages.writeMsg}
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-        />
-        <button type="submit" disabled={!text.trim()}>{t.messages.send}</button>
-      </form>
     </div>
   );
 }

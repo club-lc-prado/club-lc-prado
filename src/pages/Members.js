@@ -22,7 +22,7 @@ function Members() {
       }
       setCurrentUid(u.uid);
       load();
-      loadStories();
+      loadStories(u.uid);
     });
     return unsub;
   }, [navigate]);
@@ -34,7 +34,7 @@ function Members() {
     setLoading(false);
   };
 
-  const loadStories = async () => {
+  const loadStories = async (uidArg) => {
     const snap = await getDocs(collection(db, "stories"));
     const now = Date.now();
     const map = {};
@@ -42,7 +42,7 @@ function Members() {
       const data = d.data();
       if (now - new Date(data.createdAt).getTime() < 24 * 60 * 60 * 1000) {
         if (!map[data.authorId]) map[data.authorId] = { hasUnviewed: false };
-        if (!data.viewedBy?.includes(currentUid)) map[data.authorId].hasUnviewed = true;
+        if (!data.viewedBy?.includes(uidArg)) map[data.authorId].hasUnviewed = true;
       }
     });
     setStoriesByAuthor(map);

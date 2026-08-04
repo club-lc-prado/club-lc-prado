@@ -314,12 +314,14 @@ function Feed() {
     if (n.type === "message") return `${n.fromUserName}: ${t.messages.writeMsg.replace("...", "")}`;
     if (n.type === "friendRequest") return `${n.fromUserName} ${t.friends.requestFrom}`;
     if (n.type === "friendAccepted") return `${n.fromUserName} ${t.friends.accepted}`;
+    if (n.type === "specialistRequest") return `${n.fromUserName} подал заявку стать специалистом`;
     return n.fromUserName;
   };
 
   const linkFor = (n) => {
     if (n.type === "message") return `/messages/${n.fromUserId}`;
     if (n.type === "friendAccepted") return `/members/${n.fromUserId}`;
+    if (n.type === "specialistRequest") return "/admin";
     if (n.journeyId) return `/journeys/${n.journeyId}`;
     return "/profile";
   };
