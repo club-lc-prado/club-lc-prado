@@ -72,9 +72,10 @@ function Feed() {
   }, []);
 
   useEffect(() => {
+    if (!user) return;
     loadStories();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     const loadSide = async () => {
