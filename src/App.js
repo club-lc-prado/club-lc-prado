@@ -33,6 +33,8 @@ import Friends from "./pages/Friends";
 import MapTest from "./pages/MapTest";
 import AdminPanel from "./pages/AdminPanel";
 import Videos from "./pages/Videos";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
 
 function App() {
   const [entered, setEntered] = useState(false);
@@ -90,6 +92,8 @@ function App() {
             <Route path="/maptest" element={<MapTest />} />
             <Route path="/admin" element={<AdminPanel />} />
             <Route path="/videos" element={<Videos />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
           </Routes>
         </BrowserRouter>
       )}
