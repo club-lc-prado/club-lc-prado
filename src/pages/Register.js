@@ -13,6 +13,7 @@ function Register() {
   const fileInputRef = useRef(null);
   const [form, setForm] = useState({ name: "", city: "", email: "", password: "" });
   const [photoPreview, setPhotoPreview] = useState(null);
+  const [agreed, setAgreed] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -52,6 +53,11 @@ function Register() {
       return;
     }
 
+    if (!agreed) {
+      setError("Нужно согласиться с Политикой конфиденциальности и Условиями использования");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -86,6 +92,7 @@ function Register() {
       <form className="auth-form" onSubmit={handleSubmit}>
         <h1 className="auth-title">{t.auth.registerTitle}</h1>
         <p className="auth-notice">{t.auth.notice}</p>
+        <p className="auth-required-note">* — поля, обязательные для заполнения</p>
 
         <div className="auth-photo-upload-wrap">
           <div className="auth-photo-upload" onClick={() => fileInputRef.current?.click()}>
@@ -157,7 +164,21 @@ function Register() {
           <span className="auth-required-star">*</span>
         </div>
 
-        <button type="submit" disabled={loading}>
+        <label className="auth-agree-row">
+          <input
+            type="checkbox"
+            checked={agreed}
+            onChange={(e) => setAgreed(e.target.checked)}
+          />
+          <span>
+            Я согласен(на) с{" "}
+            <Link to="/privacy" target="_blank">Политикой конфиденциальности</Link>{" "}
+            и{" "}
+            <Link to="/terms" target="_blank">Условиями использования</Link>
+          </span>
+        </label>
+
+        <button type="submit" disabled={loading || !agreed}>
           {loading ? t.auth.creating : t.auth.registerBtn}
         </button>
 
