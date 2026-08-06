@@ -16,7 +16,7 @@ function AdminPanel() {
   const [tab, setTab] = useState("specialists");
 
   const [pending, setPending] = useState([]);
-  const [stats, setStats] = useState({ members: 0, posts: 0, journeys: 0 });
+  const [stats, setStats] = useState({ members: 0, posts: 0, journeys: 0, totalVisitors: 0, onlineGuests: 0 });
   const [editing, setEditing] = useState(null);
   const [pickedPos, setPickedPos] = useState(null);
 
@@ -53,15 +53,22 @@ function AdminPanel() {
   };
 
   const loadStats = async () => {
-    const [membersSnap, postsSnap, journeysSnap] = await Promise.all([
+    const [membersSnap, postsSnap, journeysSnap, visitorsSnap] = await Promise.all([
       getDocs(collection(db, "members")),
       getDocs(collection(db, "posts")),
       getDocs(collection(db, "journeys")),
+      getDocs(collection(db, "visitors")),
     ]);
+    const now = Date.now();
+    const onlineGuests = visitorsSnap.docs.filter(
+      (d) => now - new Date(d.data().lastActive).getTime() < 120000
+    ).length;
     setStats({
       members: membersSnap.size,
       posts: postsSnap.size,
       journeys: journeysSnap.size,
+      totalVisitors: visitorsSnap.size,
+      onlineGuests,
     });
   };
 
@@ -179,6 +186,14 @@ function AdminPanel() {
         <div className="admin-stat-card">
           <div className="admin-stat-num">{stats.journeys}</div>
           <div className="admin-stat-label">Кличей</div>
+        </div>
+        <div className="admin-stat-card">
+          <div className="admin-stat-num">{stats.totalVisitors}</div>
+          <div className="admin-stat-label">Гостей всего</div>
+        </div>
+        <div className="admin-stat-card">
+          <div className="admin-stat-num">{stats.onlineGuests}</div>
+          <div className="admin-stat-label">Гостей сейчас</div>
         </div>
       </div>
 

@@ -1,0 +1,61 @@
+.guest-lock-page {
+  min-height: 100vh;
+  background: #0B0D0C;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 32px 40px 232px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 900px) {
+  .guest-lock-page {
+    padding: 90px 20px 40px;
+  }
+}
+
+.guest-lock-box {
+  max-width: 380px;
+  text-align: center;
+}
+
+.guest-lock-title {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: 22px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #D4831C;
+  margin-bottom: 12px;
+}
+
+.guest-lock-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #C9C4B8;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.guest-lock-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.guest-lock-btn {
+  background: #D4831C;
+  color: #0B0D0C;
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 500;
+  font-size: 13px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  text-decoration: none;
+}
+
+.guest-lock-btn.secondary {
+  background: transparent;
+  border: 1px solid rgba(242,237,227,0.25);
+  color: #F2EDE3;
+}

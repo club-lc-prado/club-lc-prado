@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc, setDoc, getDoc } from "firebase/firestore";
 import { auth, db } from "./firebase";
 import { LanguageProvider } from "./i18n/LanguageContext";
 import BootScreen from "./components/BootScreen";
 import Sidebar from "./components/Sidebar";
+import GuestLock from "./components/GuestLock";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Forum from "./pages/Forum";
@@ -57,6 +58,22 @@ function App() {
     return () => clearInterval(interval);
   }, [user]);
 
+  useEffect(() => {
+    if (user || authLoading) return;
+
+    let visitorId = localStorage.getItem("club_visitor_id");
+    if (!visitorId) {
+      visitorId = "v_" + Date.now() + "_" + Math.random().toString(36).slice(2, 10);
+      localStorage.setItem("club_visitor_id", visitorId);
+    }
+
+    const ping = () =>
+      setDoc(doc(db, "visitors", visitorId), { lastActive: new Date().toISOString() }, { merge: true }).catch(() => {});
+    ping();
+    const interval = setInterval(ping, 60000);
+    return () => clearInterval(interval);
+  }, [user, authLoading]);
+
   return (
     <LanguageProvider>
       {!entered && <BootScreen user={user} onEnter={() => setEntered(true)} />}
@@ -66,28 +83,28 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/about" element={<About />} />
-            <Route path="/forum" element={<Forum />} />
-            <Route path="/forum/new" element={<NewTopic />} />
-            <Route path="/forum/:id" element={<TopicDetail />} />
+            <Route path="/forum" element={<GuestLock><Forum /></GuestLock>} />
+            <Route path="/forum/new" element={<GuestLock><NewTopic /></GuestLock>} />
+            <Route path="/forum/:id" element={<GuestLock><TopicDetail /></GuestLock>} />
             <Route path="/gallery" element={<Gallery />} />
-            <Route path="/useful" element={<Useful />} />
+            <Route path="/useful" element={<GuestLock><Useful /></GuestLock>} />
             <Route path="/journeys" element={<Journeys />} />
             <Route path="/journeys/new" element={<NewJourney />} />
             <Route path="/journeys/:id" element={<JourneyDetail />} />
             <Route path="/shop" element={<Shop />} />
-            <Route path="/contacts" element={<Contacts />} />
+            <Route path="/contacts" element={<GuestLock><Contacts /></GuestLock>} />
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="/profile" element={<Profile />} />
-            <Route path="/feed" element={<Feed />} />
+            <Route path="/feed" element={<GuestLock><Feed /></GuestLock>} />
             <Route path="/members" element={<Members />} />
             <Route path="/members/:id" element={<MemberProfile />} />
-            <Route path="/settings" element={<Settings />} />
+            <Route path="/settings" element={<GuestLock><Settings /></GuestLock>} />
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/album" element={<Album />} />
             <Route path="/album/:uid" element={<Album />} />
-            <Route path="/messages" element={<Messages />} />
-            <Route path="/messages/:userId" element={<Conversation />} />
+            <Route path="/messages" element={<GuestLock><Messages /></GuestLock>} />
+            <Route path="/messages/:userId" element={<GuestLock><Conversation /></GuestLock>} />
             <Route path="/friends" element={<Friends />} />
             <Route path="/maptest" element={<MapTest />} />
             <Route path="/admin" element={<AdminPanel />} />
