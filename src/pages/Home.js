@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc, collection, getDocs, query, where, onSnapshot, updateDoc, arrayUnion } from "firebase/firestore";
+import { doc, getDoc, collection, getDocs, query, where, onSnapshot } from "firebase/firestore";
 import { auth, db } from "../firebase";
 import { useLanguage } from "../i18n/LanguageContext";
 import "./Home.css";
@@ -18,7 +18,6 @@ function Home() {
   const [memberCount, setMemberCount] = useState(null);
   const [unreadChats, setUnreadChats] = useState(0);
   const [unreadNotifs, setUnreadNotifs] = useState(0);
-  const [myStory, setMyStory] = useState(null);
   const [cardOpen, setCardOpen] = useState(false);
   const [cardFlipped, setCardFlipped] = useState(false);
 
@@ -67,25 +66,6 @@ function Home() {
 
   useEffect(() => {
     if (!user) return;
-    const load = async () => {
-      const q = query(collection(db, "stories"), where("authorId", "==", user.uid));
-      const snap = await getDocs(q);
-      const now = Date.now();
-      const active = snap.docs
-        .map((d) => d.data())
-        .filter((s) => now - new Date(s.createdAt).getTime() < 24 * 60 * 60 * 1000);
-      if (active.length === 0) {
-        setMyStory(null);
-      } else {
-        const hasUnviewed = active.some((s) => !s.viewedBy?.includes(user.uid));
-        setMyStory({ hasUnviewed, viewedBy: hasUnviewed ? [] : [user.uid] });
-      }
-    };
-    load();
-  }, [user]);
-
-  useEffect(() => {
-    if (!user) return;
     const nq = query(collection(db, "notifications"), where("toUserId", "==", user.uid), where("read", "==", false));
     const unsub = onSnapshot(nq, (snap) => {
       setUnreadNotifs(snap.size);
@@ -103,15 +83,18 @@ function Home() {
 
   const isMeOnline = profile?.lastActive && (Date.now() - new Date(profile.lastActive).getTime()) < 120000;
 
-  const closeCard = () => {
-    setCardOpen(false);
-    setCardFlipped(false);
-  };
-
   return (
     <div className="hero">
       <div className="hero-bg" style={{ backgroundImage: `url(${heroImage})` }}></div>
       <div className="hero-overlay"></div>
+
+      {!user && (
+        <div className="home-auth-links">
+          <Link to="/register">Регистрация</Link>
+          <span>·</span>
+          <Link to="/login">Войти</Link>
+        </div>
+      )}
 
       <div className="lang-switch">
         <button className={lang === "ru" ? "active" : ""} onClick={() => changeLang("ru")}>RU</button>
@@ -132,9 +115,9 @@ function Home() {
       </button>
 
       {cardOpen && (
-        <div className="qr-modal-overlay" onClick={closeCard}>
+        <div className="qr-modal-overlay" onClick={() => { setCardOpen(false); setCardFlipped(false); }}>
           <div className="qr-modal card-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="flip-card" onClick={() => setCardFlipped((f) => !f)}>
+            <div className="flip-card" onClick={() => setCardFlipped(!cardFlipped)}>
               <div className={"flip-card-inner" + (cardFlipped ? " flipped" : "")}>
                 <div className="flip-card-front">
                   <img src={cardFront} alt="Визитка клуба" />
@@ -145,7 +128,7 @@ function Home() {
               </div>
             </div>
             <div className="qr-modal-text">Нажми на визитку, чтобы перевернуть</div>
-            <button className="qr-modal-close" onClick={closeCard}>Закрыть</button>
+            <button className="qr-modal-close" onClick={() => { setCardOpen(false); setCardFlipped(false); }}>Закрыть</button>
           </div>
         </div>
       )}
@@ -163,7 +146,7 @@ function Home() {
       <div className="hero-strip">
         <div className="hero-strip-left">
         <Link to={user ? "/feed" : "/login"} className="hero-strip-account">
-          <div className={"hero-strip-avatar-wrap" + (myStory ? (myStory.viewedBy?.includes(user?.uid) ? " story-ring viewed" : " story-ring unviewed") : "")}>
+          <div className="hero-strip-avatar-wrap">
             <div className="hero-strip-avatar">
               {profile?.photoURL ? (
                 <img src={profile.photoURL} alt="avatar" />
