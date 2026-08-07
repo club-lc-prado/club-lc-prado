@@ -331,13 +331,13 @@
     padding-top: 180px;
   }
 
-  .home-auth-links {
-    top: 50px;
+  .lang-switch {
+    top: 76px;
     right: 16px;
   }
 
-  .lang-switch {
-    top: 76px;
+  .home-auth-links {
+    top: 118px;
     right: 16px;
   }
 
