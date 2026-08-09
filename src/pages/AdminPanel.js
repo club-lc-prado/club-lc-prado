@@ -70,11 +70,12 @@ function AdminPanel() {
     const onlineGuests = visitorList.filter(
       (v) => now - new Date(v.lastActive).getTime() < 120000
     ).length;
+    const totalNonAdmin = visitorList.filter((v) => !v.isAdmin).length;
     setStats({
       members: membersSnap.size,
       posts: postsSnap.size,
       journeys: journeysSnap.size,
-      totalVisitors: visitorsSnap.size,
+      totalVisitors: totalNonAdmin,
       onlineGuests,
     });
   };

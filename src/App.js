@@ -46,6 +46,9 @@ function App() {
     const unsub = onAuthStateChanged(auth, (u) => {
       setUser(u);
       setAuthLoading(false);
+      if (u?.email === "pp.stela.ua@gmail.com") {
+        localStorage.setItem("club_admin_device", "1");
+      }
     });
     return unsub;
   }, []);
@@ -84,10 +87,12 @@ function App() {
       return `${os} · ${browser} · ${isMobile ? "телефон" : "компьютер"}`;
     };
 
+    const isAdminDevice = localStorage.getItem("club_admin_device") === "1";
+
     const ping = () =>
       setDoc(
         doc(db, "visitors", visitorId),
-        { lastActive: new Date().toISOString(), device: getDeviceLabel() },
+        { lastActive: new Date().toISOString(), device: getDeviceLabel(), isAdmin: isAdminDevice },
         { merge: true }
       ).catch(() => {});
     ping();
@@ -124,7 +129,7 @@ function App() {
             <Route path="/forum/new" element={<GuestLock><NewTopic /></GuestLock>} />
             <Route path="/forum/:id" element={<GuestLock><TopicDetail /></GuestLock>} />
             <Route path="/gallery" element={<Gallery />} />
-            <Route path="/useful" element={<GuestLock><Useful /></GuestLock>} />
+            <Route path="/useful" element={<Useful />} />
             <Route path="/journeys" element={<Journeys />} />
             <Route path="/journeys/new" element={<NewJourney />} />
             <Route path="/journeys/:id" element={<JourneyDetail />} />
@@ -133,7 +138,7 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="/profile" element={<Profile />} />
-            <Route path="/feed" element={<GuestLock><Feed /></GuestLock>} />
+            <Route path="/feed" element={<Feed />} />
             <Route path="/members" element={<Members />} />
             <Route path="/members/:id" element={<MemberProfile />} />
             <Route path="/settings" element={<GuestLock><Settings /></GuestLock>} />
