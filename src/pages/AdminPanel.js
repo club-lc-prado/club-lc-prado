@@ -13,7 +13,8 @@ const ADMIN_EMAIL = "pp.stela.ua@gmail.com";
 function AdminPanel() {
   const navigate = useNavigate();
   const [allowed, setAllowed] = useState(null);
-  const [tab, setTab] = useState("specialists");
+  const [tab, setTab] = useState(null);
+  const [visitorFilter, setVisitorFilter] = useState("all");
 
   const [pending, setPending] = useState([]);
   const [stats, setStats] = useState({ members: 0, posts: 0, journeys: 0, totalVisitors: 0, onlineGuests: 0 });
@@ -24,6 +25,8 @@ function AdminPanel() {
   const [posts, setPosts] = useState([]);
   const [topics, setTopics] = useState([]);
   const [reports, setReports] = useState([]);
+  const [visitors, setVisitors] = useState([]);
+  const [journeys, setJourneys] = useState([]);
   const [openConvId, setOpenConvId] = useState(null);
   const [reportMessages, setReportMessages] = useState([]);
 
@@ -40,6 +43,7 @@ function AdminPanel() {
       loadPosts();
       loadTopics();
       loadReports();
+      loadJourneys();
     });
     return unsub;
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -60,8 +64,11 @@ function AdminPanel() {
       getDocs(collection(db, "visitors")),
     ]);
     const now = Date.now();
-    const onlineGuests = visitorsSnap.docs.filter(
-      (d) => now - new Date(d.data().lastActive).getTime() < 120000
+    const visitorList = visitorsSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
+    visitorList.sort((a, b) => new Date(b.lastActive || 0) - new Date(a.lastActive || 0));
+    setVisitors(visitorList);
+    const onlineGuests = visitorList.filter(
+      (v) => now - new Date(v.lastActive).getTime() < 120000
     ).length;
     setStats({
       members: membersSnap.size,
@@ -96,6 +103,13 @@ function AdminPanel() {
     const list = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
     list.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
     setReports(list);
+  };
+
+  const loadJourneys = async () => {
+    const snap = await getDocs(collection(db, "journeys"));
+    const list = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+    list.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+    setJourneys(list);
   };
 
   const viewReportedChat = async (r) => {
@@ -167,52 +181,70 @@ function AdminPanel() {
     loadTopics();
   };
 
+  const deleteJourney = async (j) => {
+    if (!window.confirm(`Удалить клич "${j.title}" навсегда?`)) return;
+    await deleteDoc(doc(db, "journeys", j.id));
+    loadJourneys();
+    loadStats();
+  };
+
+  const resetVisitors = async () => {
+    if (!window.confirm("Обнулить счётчик гостей? Это удалит весь список посетителей безвозвратно.")) return;
+    const snap = await getDocs(collection(db, "visitors"));
+    await Promise.all(snap.docs.map((d) => deleteDoc(doc(db, "visitors", d.id))));
+    loadStats();
+  };
+
+  const openVisitors = (filter) => {
+    setVisitorFilter(filter);
+    setTab("visitors");
+  };
+
   if (allowed === null) return <div className="admin-page"></div>;
   if (!allowed) return null;
+
+  const shownVisitors =
+    visitorFilter === "online"
+      ? visitors.filter((v) => Date.now() - new Date(v.lastActive).getTime() < 120000)
+      : visitors;
 
   return (
     <div className="admin-page">
       <h1 className="admin-title">Админ-панель</h1>
 
       <div className="admin-stats-row">
-        <div className="admin-stat-card">
+        <div className={"admin-stat-card admin-stat-clickable" + (tab === "members" ? " active-card" : "")} onClick={() => setTab("members")}>
           <div className="admin-stat-num">{stats.members}</div>
           <div className="admin-stat-label">Участников</div>
         </div>
-        <div className="admin-stat-card">
+        <div className={"admin-stat-card admin-stat-clickable" + (tab === "posts" ? " active-card" : "")} onClick={() => setTab("posts")}>
           <div className="admin-stat-num">{stats.posts}</div>
           <div className="admin-stat-label">Постов</div>
         </div>
-        <div className="admin-stat-card">
+        <div className={"admin-stat-card admin-stat-clickable" + (tab === "journeys" ? " active-card" : "")} onClick={() => setTab("journeys")}>
           <div className="admin-stat-num">{stats.journeys}</div>
           <div className="admin-stat-label">Кличей</div>
         </div>
-        <div className="admin-stat-card">
+        <div className={"admin-stat-card admin-stat-clickable" + (tab === "visitors" && visitorFilter === "all" ? " active-card" : "")} onClick={() => openVisitors("all")}>
           <div className="admin-stat-num">{stats.totalVisitors}</div>
           <div className="admin-stat-label">Гостей всего</div>
         </div>
-        <div className="admin-stat-card">
+        <div className={"admin-stat-card admin-stat-clickable" + (tab === "visitors" && visitorFilter === "online" ? " active-card" : "")} onClick={() => openVisitors("online")}>
           <div className="admin-stat-num">{stats.onlineGuests}</div>
           <div className="admin-stat-label">Гостей сейчас</div>
         </div>
-      </div>
-
-      <div className="admin-tabs">
-        <button className={"admin-tab" + (tab === "specialists" ? " active" : "")} onClick={() => setTab("specialists")}>
-          Заявки специалистов ({pending.length})
-        </button>
-        <button className={"admin-tab" + (tab === "members" ? " active" : "")} onClick={() => setTab("members")}>
-          Участники ({members.length})
-        </button>
-        <button className={"admin-tab" + (tab === "posts" ? " active" : "")} onClick={() => setTab("posts")}>
-          Посты ({posts.length})
-        </button>
-        <button className={"admin-tab" + (tab === "forum" ? " active" : "")} onClick={() => setTab("forum")}>
-          Форум ({topics.length})
-        </button>
-        <button className={"admin-tab" + (tab === "reports" ? " active" : "")} onClick={() => setTab("reports")}>
-          Жалобы ({reports.filter((r) => r.status === "pending").length})
-        </button>
+        <div className={"admin-stat-card admin-stat-clickable" + (tab === "specialists" ? " active-card" : "")} onClick={() => setTab("specialists")}>
+          <div className="admin-stat-num">{pending.length}</div>
+          <div className="admin-stat-label">Заявки специалистов</div>
+        </div>
+        <div className={"admin-stat-card admin-stat-clickable" + (tab === "forum" ? " active-card" : "")} onClick={() => setTab("forum")}>
+          <div className="admin-stat-num">{topics.length}</div>
+          <div className="admin-stat-label">Форум</div>
+        </div>
+        <div className={"admin-stat-card admin-stat-clickable" + (tab === "reports" ? " active-card" : "")} onClick={() => setTab("reports")}>
+          <div className="admin-stat-num">{reports.filter((r) => r.status === "pending").length}</div>
+          <div className="admin-stat-label">Жалобы</div>
+        </div>
       </div>
 
       {tab === "specialists" && (
@@ -310,6 +342,25 @@ function AdminPanel() {
         </div>
       )}
 
+      {tab === "journeys" && (
+        <div className="admin-list">
+          {journeys.length === 0 && <div className="admin-empty">Кличей нет.</div>}
+          {journeys.map((j) => (
+            <div key={j.id} className="admin-card admin-card-row-layout">
+              <div className="admin-member-info">
+                <div className="admin-card-name">{j.title}</div>
+                <div className="admin-card-row">{j.place} · {j.date}</div>
+              </div>
+              <div className="admin-card-actions">
+                <button className="admin-btn-reject" onClick={() => deleteJourney(j)}>
+                  Удалить
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
       {tab === "reports" && (
         <div className="admin-list">
           {reports.length === 0 && <div className="admin-empty">Жалоб нет.</div>}
@@ -341,6 +392,37 @@ function AdminPanel() {
               )}
             </div>
           ))}
+        </div>
+      )}
+
+      {tab === "visitors" && (
+        <div>
+          <div className="admin-card-actions" style={{ marginBottom: 16 }}>
+            <button className="admin-btn-reject" onClick={resetVisitors}>
+              Обнулить счётчик гостей
+            </button>
+          </div>
+          <div className="admin-list">
+            {shownVisitors.length === 0 && <div className="admin-empty">Гостей пока не было.</div>}
+            {shownVisitors.map((v) => {
+              const isOnline = Date.now() - new Date(v.lastActive).getTime() < 120000;
+              return (
+                <div key={v.id} className="admin-card admin-card-row-layout">
+                  <div className="admin-member-info">
+                    <div className="admin-card-name">
+                      {isOnline && <span style={{ color: "#4CAF50" }}>● </span>}
+                      {v.city || v.country ? `${v.city || "?"}, ${v.country || "?"}` : "Местоположение неизвестно"}
+                    </div>
+                    <div className="admin-card-row">ID: {v.id}</div>
+                    <div className="admin-card-row">{v.device || "Устройство неизвестно"}</div>
+                    <div className="admin-card-row">
+                      Последний визит: {new Date(v.lastActive).toLocaleString("ru-RU")}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
 

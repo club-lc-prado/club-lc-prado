@@ -67,10 +67,47 @@ function App() {
       localStorage.setItem("club_visitor_id", visitorId);
     }
 
+    const getDeviceLabel = () => {
+      const ua = navigator.userAgent;
+      const isMobile = /Mobile|Android|iPhone|iPad/i.test(ua);
+      let os = "Неизвестно";
+      if (/Windows/i.test(ua)) os = "Windows";
+      else if (/Android/i.test(ua)) os = "Android";
+      else if (/iPhone|iPad|iOS/i.test(ua)) os = "iOS";
+      else if (/Mac/i.test(ua)) os = "Mac";
+      else if (/Linux/i.test(ua)) os = "Linux";
+      let browser = "Браузер";
+      if (/Chrome/i.test(ua) && !/Edg/i.test(ua)) browser = "Chrome";
+      else if (/Firefox/i.test(ua)) browser = "Firefox";
+      else if (/Safari/i.test(ua) && !/Chrome/i.test(ua)) browser = "Safari";
+      else if (/Edg/i.test(ua)) browser = "Edge";
+      return `${os} · ${browser} · ${isMobile ? "телефон" : "компьютер"}`;
+    };
+
     const ping = () =>
-      setDoc(doc(db, "visitors", visitorId), { lastActive: new Date().toISOString() }, { merge: true }).catch(() => {});
+      setDoc(
+        doc(db, "visitors", visitorId),
+        { lastActive: new Date().toISOString(), device: getDeviceLabel() },
+        { merge: true }
+      ).catch(() => {});
     ping();
     const interval = setInterval(ping, 60000);
+
+    const locKnown = localStorage.getItem("club_visitor_loc_done");
+    if (!locKnown) {
+      fetch("https://ipwho.is/")
+        .then((res) => res.json())
+        .then((data) => {
+          setDoc(
+            doc(db, "visitors", visitorId),
+            { country: data.country || "", city: data.city || "" },
+            { merge: true }
+          ).catch(() => {});
+          localStorage.setItem("club_visitor_loc_done", "1");
+        })
+        .catch(() => {});
+    }
+
     return () => clearInterval(interval);
   }, [user, authLoading]);
 

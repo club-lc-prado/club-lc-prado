@@ -279,3 +279,17 @@
 .admin-chat-msg b {
   color: #D4831C;
 }
+
+.admin-stat-clickable {
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.admin-stat-clickable:hover {
+  border-color: rgba(212,131,28,0.5);
+}
+
+.admin-stat-clickable.active-card {
+  border-color: #D4831C;
+  background: rgba(212,131,28,0.08);
+}

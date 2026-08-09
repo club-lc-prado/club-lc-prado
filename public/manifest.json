@@ -18,8 +18,10 @@
       "sizes": "512x512"
     }
   ],
-  "start_url": ".",
+  "start_url": "https://club-lc-prado.vercel.app/",
   "display": "standalone",
   "theme_color": "#0B0D0C",
-  "background_color": "#0B0D0C"
+  "background_color": "#0B0D0C",
+  "description": "Club LC Prado — сообщество автолюбителей, пробеги, путешествия на внедорожниках. Лента, автосервис, форум, чат, карта специалистов и совместные поездки.",
+  "id": "/"
 }
